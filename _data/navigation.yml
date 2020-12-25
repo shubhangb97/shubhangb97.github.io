@@ -7,7 +7,7 @@ main:
     url: /files/Resume_Shubhang.pdf
 
   - title: "Research"
-    url: /research.html
+    url: /_pages/research.html
 
   - title: "Tech Projects"
-    url: /projects.html
+    url: /_pages/projects.html
