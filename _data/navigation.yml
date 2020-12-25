@@ -5,3 +5,9 @@ main:
 
   - title: "CV"
     url: /files/Resume_Shubhang.pdf
+
+  - title: "Research"
+    url: /research.html
+
+  - title: "Projects"
+  url: /projects.html
