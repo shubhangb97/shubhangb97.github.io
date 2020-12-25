@@ -9,5 +9,5 @@ main:
   - title: "Research"
     url: /research.html
 
-  - title: "Projects"
-  url: /projects.html
+  - title: "Tech Projects"
+    url: /projects.html
