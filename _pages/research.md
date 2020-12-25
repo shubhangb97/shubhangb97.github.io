@@ -7,11 +7,11 @@ redirect_from:
   - /research/
 ---
 
-# **Research**
-### PAL - Pretext Based Active Learning [paper] Submitted, CVPR ’21
-Master’s Thesis, Advisor - Prof. Amit Sethi, IIT Bombay Mar ’20 – Present
 
-**Introduction**- Labelling data for deep learning is expensive, and active learning helps minimise that cost by choosing a
+### **1) PAL - Pretext Based Active Learning [[paper]](https://shubhangb97.github.io/files/PAL_cvpr.pdf) Submitted, CVPR ’21**
+*Master’s Thesis, Advisor -[Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay*
+
+**Introduction**- Labelling data for deep learning is expensive, and active learning helps minimize that cost by choosing a
 subset of most informative unlabeled images for labelling. Most current active learning approaches rely overly on task
 based uncertainty, which is error prone or use diversity as a metric which is susceptible to dimensionality. We propose using
 self supervision to address these issues.
@@ -24,8 +24,8 @@ novel function for better reliability and robustness, using the difficulty of so
 - Outperformed current State of the Art Active learning techniques in a variety of experiments including noisy
 labeling scenarios on multiple datasets including CIFAR10, CIFAR100, SVHN and Caltech-101, setting new benchmarks
 
-### **Robust Cross Validation in Compressed Sensing [paper] [supplement] Submitted, ICASSP ’21**
-Advisor - Prof. Ajit Rajwade, IIT Bombay March ’20 – Oct ’20
+### **2)Robust Cross Validation in Compressed Sensing [[paper]](https://shubhangb97.github.io/files/RobustCross_Validation_paper_ICASSP.pdf) [[supplement]](https://shubhangb97.github.io/files/RobustCross_Validation_supplement_ICASSP.pdf) Submitted, ICASSP ’21**
+*Advisor - [Prof. Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay*
 
 **Introduction**- Compressive reconstruction algorithms require careful selection of parameters for optimal performance. We
 study the use of cross validation for tuning these parameters and providing probabilistic quality assurance for the recovered
@@ -39,8 +39,8 @@ error which is robust to impulsive and gaussian noise
 - Conducted extensive simulations, demonstrating that the L1 CV based strategy yields a more than order of magnitude
 gain in PSNR over traditional L2 CV based methods in presence of mixed gaussian and impulsive noise
 
-### **Real Time Wireless Video Transmission Through Obstacles [report]**
-Advisor- Prof. Shalabh Gupta, IIT Bombay Jan’19-May’19
+### **3)Real Time Wireless Video Transmission Through Obstacles [[report]](https://shubhangb97.github.io/files/EDL_Report.pdf)**
+*Advisor- [Prof. Shalabh Gupta](https://www.ee.iitb.ac.in/wiki/faculty/shalabh), IIT Bombay*
 
 **Introduction**- Transmitting video in real time through obstacles like buildings using portable transmitters and receivers is
 a difficult, but important task. We try to develop a small, efficient system for solving this problem.
@@ -50,8 +50,8 @@ of video achieving a range of more than 100 m out of line of sight
 - Designed upconverter, downcoverter, noise rejection filter and amplifiers for increasing range of the system
 - Submitted system capable of robustly sending and receiving video for use by Indian Armed Forces
 
-### **Noise Tolerant QR Code Recognizer using Hopfield Network [pre-print]**
-Advisor - Prof. Suyash Awate, IIT Bombay May’18-Jul’18
+### **4)Noise Tolerant QR Code Recognizer using Hopfield Network [[pre-print]](https://shubhangb97.github.io/files/QR_code_1.pdf)**
+*Advisor - [Prof. Suyash Awate](https://www.cse.iitb.ac.in/~suyash/), IIT Bombay*
 
 **Introduction**- Hopfield networks are a type of recurrent neural networks used for noise tolerant associative memory, but
 are limited by their low memory capacity. We study their use for Robust QR code recognition.
@@ -61,8 +61,8 @@ are limited by their low memory capacity. We study their use for Robust QR code 
 and false energy minima, providing a method to deal with applications requiring large storage capacity
 - Expanded capacity of Hopfield network QR code recognition by an order of magnitude using proposed technique
 
-### **Self Supervision for COVID-19 Detection Research Project**
-Advisor - Prof. Amit Sethi, IIT Bombay Feb’20-June’20
+### **5)Self Supervision for COVID-19 Detection**
+*Advisor - [Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay*
 
 **Introduction**- X-Rays were a promising and more accessible alternative for detecting COVID-19. There was a shortage of
 annotated images for its diagnosis. We explore using Self supervision to mitigate this problem.
@@ -70,8 +70,8 @@ annotated images for its diagnosis. We explore using Self supervision to mitigat
 - Achieved over 90% accuracy on the COVID-Net dataset using a state of the art contrastive self supervision method on
 the CheXpert dataset with 200,000+ chest X rays, comparing favourably to ImageNet based initialization for our task.
 
-### **Designing Efficient Network Caching Algorithms Research Project**
-Advisor - Prof. Prasanna Chaporkar, IIT Bombay Jan’20-June’20
+### **6)Designing Efficient Network Caching Algorithms Research Project**
+*Advisor - [Prof. Prasanna Chaporkar](https://www.ee.iitb.ac.in/wiki/faculty/chaporkar), IIT Bombay*
 
 **Introduction**- Most network caching algorithms are built on the premise that file popularity distributions remain static.
 Recent studies indicate this assumption is not accurate in the real world. We study caching algorithms considering a more

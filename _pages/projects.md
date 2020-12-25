@@ -1,17 +1,29 @@
-# **Tech Projects**
-**End to End Number Plate Recognition**
+---
+permalink: /
+title: "Tech Projects"
+excerpt: "Tech Projects"
+author_profile: true
+redirect_from:
+  - /projects/
+---
 
- | Prof. Arjun Jain [code] (Mar’19-May’19)
-- Implemented system for detecting bounding box and recognising characters of a plate, with over 92% accuracy.
+
+**End to End Number Plate Recognition [[code]](https://github.com/ShubAn1901/License-Plate-Recognition)**
+
+ Prof. Arjun Jain, IIT Bombay
+- Implemented system for detecting bounding box and recognizing characters of a plate, with over 92% accuracy.
 - Trained the system End to End, backpropagating on a single combined loss from both the box detector and digit
 recognizer, over more than 250,000 images in the CCPD dataset
 
 **Face Image De-Specularization**
 
- | Prof. Cham Tat Jen (Sep’19-Dec’19)
+ Prof. Cham Tat Jen, NTU Singapore
 - Reviewed and analyzed issues with accurate face recognition in images with specular reflection
 - Applied transfer learning from reflection removal domain to deal with specular reflection in face images
-Music Genre Detection | Prof. Sunita Sarawagi [slides] (July’18-Dec’18)
+
+**Music Genre Detection [[slides]](https://shubhangb97.github.io/files/Music_Genre_Report.pdf)**
+
+ Prof. Sunita Sarawagi, IIT Bombay
 - Classified music into 4 distinct genres using their MFC coefficients with over 85% accuracy on GTZAN dataset
 - Used CNN based classifier and SVM’s, using bagging, boosting and other techniques performing a detailed comparison
 

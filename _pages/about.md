@@ -8,7 +8,7 @@ redirect_from:
   - /about.html
 ---
 Hi,
-I am Shubhang Bhatnagar, a Final year Dual degree (B.Tech + M.Tech) student studying Electrical Engineering, with a Minor on Computer Science at the [Indian Institute of Technology, Bombay](https://www.iitb.ac.in/). Broadly, I am deeply interested in machine learning, computer vision, compressed sensing and signal processing. I am pursuing my Master's Thesis on Data efficient methods in Deep learning , advised by [Prof Amit Sethi](https://www.ee.iitb.ac.in/~asethi/) at the [Medical Deep learning and Artificial intelligence lab (MEDAL)](https://www.ee.iitb.ac.in/web/research/labs/medal), IIT Bombay. A part of it has been submitted to CVPR '21 and a pre-print is available [here](https://shubhangb97.github.io/files/PAL_cvpr.pdf).
+I am Shubhang Bhatnagar, a final year dual degree (B.Tech + M.Tech) student studying electrical engineering, with a minor in computer science at the [Indian Institute of Technology, Bombay](https://www.iitb.ac.in/). Broadly, I am deeply interested in machine learning, computer vision, compressed sensing and signal processing. I am pursuing my master's thesis on data efficient methods in deep learning , advised by [Prof Amit Sethi](https://www.ee.iitb.ac.in/~asethi/) at the [Medical Deep learning and Artificial intelligence lab (MEDAL)](https://www.ee.iitb.ac.in/web/research/labs/medal), IIT Bombay. A part of it has been submitted to CVPR '21 and a pre-print is available [here](https://shubhangb97.github.io/files/PAL_cvpr.pdf).
 More details about my Research can be found [here](https://shubhangb97.github.io/files/Resume_Shubhang.pdf).
 
 ## **Publications**
