@@ -1,3 +1,11 @@
+---
+permalink: /
+title: "Research"
+excerpt: "Research"
+author_profile: true
+redirect_from:
+  - /research/
+---
 
 # **Research**
 ### PAL - Pretext Based Active Learning [paper] Submitted, CVPR ’21
