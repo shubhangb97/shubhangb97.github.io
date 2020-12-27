@@ -1,5 +1,5 @@
 ---
-
+layout: archive
 title: "Research"
 excerpt: "Research"
 author_profile: true
@@ -55,7 +55,6 @@ annotated images for its diagnosis. We explore using Self supervision to mitigat
 the CheXpert dataset with 200,000+ chest X rays, comparing favourably to ImageNet based initialization for our task.
 
 ### **6)Designing Efficient Network Caching Algorithms Research Project** <br> *Advisor - [Prof. Prasanna Chaporkar](https://www.ee.iitb.ac.in/wiki/faculty/chaporkar), IIT Bombay*<br>
-
 **Introduction**- Most network caching algorithms are built on the premise that file popularity distributions remain static.
 Recent studies indicate this assumption is not accurate in the real world. We study caching algorithms considering a more
 realistic changing distribution model.

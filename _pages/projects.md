@@ -1,4 +1,5 @@
 ---
+layout: archive
 title: "Tech Projects"
 excerpt: "Tech Projects"
 author_profile: true
