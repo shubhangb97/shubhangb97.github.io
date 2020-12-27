@@ -9,13 +9,11 @@ redirect_from:
 
 
 **End to End Number Plate Recognition [[code]](https://github.com/ShubAn1901/License-Plate-Recognition)**
-
 - Implemented system for detecting bounding box and recognizing characters of a plate, with over 92% accuracy.
 - Trained the system End to End, backpropagating on a single combined loss from both the box detector and digit
 recognizer, over more than 250,000 images in the CCPD dataset
 
 **Face Image De-Specularization**
-
 - Reviewed and analyzed issues with accurate face recognition in images with specular reflection
 - Applied transfer learning from reflection removal domain to deal with specular reflection in face images
 
