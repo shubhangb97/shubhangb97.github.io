@@ -8,3 +8,5 @@ main:
 
   - title: "Research"
     url: /research
+  - title: "Tech Projects"
+    url: /projects
