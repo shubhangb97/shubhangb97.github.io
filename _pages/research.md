@@ -15,9 +15,7 @@ based uncertainty, which is error prone or use diversity as a metric which is su
 self supervision to address these issues. <br>
 - Proposed a novel technique to predict informativeness of a sample combining supervision and self supervision using a
 novel function for better reliability and robustness, using the difficulty of solving the pretext task as an input
-
 - Introduced diversity using a self supervised sub-querying strategy, mitigating dimensionality related disadvantages
-
 - Outperformed current State of the Art Active learning techniques in a variety of experiments including noisy
 labeling scenarios on multiple datasets including CIFAR10, CIFAR100, SVHN and Caltech-101, setting new benchmarks
 
@@ -27,7 +25,6 @@ study the use of cross validation for tuning these parameters and providing prob
 signal in absence of information about noise level and signal sparsity.
 - Proposed a novel technique for selecting parameters using the L1 CV error and theoretically proved that it’s use
 yields optimal reconstruction with high probability in presence of mixed gaussian and impulsive noise
-
 - Derived novel bound on the Compressed Sensing(CS) recovery error estimate in terms of the L1 Cross Validation(CV)
 error which is robust to impulsive and gaussian noise
 - Conducted extensive simulations, demonstrating that the L1 CV based strategy yields a more than order of magnitude
