@@ -2,7 +2,7 @@
 layout: archive
 title: "Tech Projects"
 excerpt: "Tech Projects"
-author_profile: true
+author_profile: false
 redirect_from:
   - /projects
 ---
