@@ -48,7 +48,8 @@ are limited by their low memory capacity. We study their use for Robust QR code 
 and false energy minima, providing a method to deal with applications requiring large storage capacity
 - Expanded capacity of Hopfield network QR code recognition by an order of magnitude using proposed technique
 
-### **5)Self Supervision for COVID-19 Detection** <br> *Advisor - [Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay*<br> **Introduction**- X-Rays were a promising and more accessible alternative for detecting COVID-19. There was a shortage of
+### **5)Self Supervision for COVID-19 Detection** <br> *Advisor - [Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay* <br>
+ **Introduction**- X-Rays were a promising and more accessible alternative for detecting COVID-19. There was a shortage of
 annotated images for its diagnosis. We explore using Self supervision to mitigate this problem.
 - Explored literature on use of Self supervision for deep learning on medical images and in computer vision
 - Achieved over 90% accuracy on the COVID-Net dataset using a state of the art contrastive self supervision method on
