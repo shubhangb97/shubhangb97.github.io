@@ -1,4 +1,5 @@
 ---
+classes: wide
 layout: archive
 title: "Tech Projects"
 excerpt: "Tech Projects"
@@ -15,7 +16,7 @@ redirect_from:
 **End to End Number Plate Recognition [[code]](https://github.com/ShubAn1901/License-Plate-Recognition)** <br> *Advisor- [Prof Arjun Jain](http://arjunjain.co.in/), IIT Bombay* <br>
 - Implemented system for detecting bounding box and recognizing characters of a plate, with over 92% accuracy.
 - Trained the system End to End, backpropagating on a single combined loss from both the box detector and digit
-recognizer, over more than 250,000 images in the CCPD dataset{: .align-right}
+recognizer, over more than 250,000 images in the CCPD dataset {: .align-right}
 
 **Face Image De-Specularization** <br> *Advisor- [Prof Cham Tat-Jen](http://research.ntu.edu.sg/expertise/academicprofile/pages/StaffProfile.aspx?ST_EMAILID=ASTJCHAM&CategoryDescription=interactivedigitalmedia), NTU Singapore* <br>
 - Reviewed and analyzed issues with accurate face recognition in images with specular reflection
