@@ -14,7 +14,7 @@ redirect_from:
 
 </div>
 
-<div class="col-md-6">
+<div class="col-md-7">
 
 **End to End Number Plate Recognition [[code]](https://github.com/ShubAn1901/License-Plate-Recognition)** <br> *Advisor- [Prof Arjun Jain](http://arjunjain.co.in/), IIT Bombay* <br>
 - Implemented system for detecting bounding box and recognizing characters of a plate, with over 92% accuracy.
@@ -32,7 +32,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 
 </div>
 
-<div class="col-md-6">
+<div class="col-md-7">
 
 **Face Image De-Specularization** <br> *Advisor- [Prof Cham Tat-Jen](http://research.ntu.edu.sg/expertise/academicprofile/pages/StaffProfile.aspx?ST_EMAILID=ASTJCHAM&CategoryDescription=interactivedigitalmedia), NTU Singapore* <br>
 - Reviewed and analyzed issues with accurate face recognition in images with specular reflection

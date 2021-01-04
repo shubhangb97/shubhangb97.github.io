@@ -247,13 +247,19 @@
   float: left;
   margin-right: 10em;
 }
-.row {
+.col-md-6{
   float: left;
   width: 33.33%;
 }
 
-.col-md-6{
+.col-md-7{
   float: left;
   width: 66.67%;
 
+}
+
+.row:after{
+  content: "";
+  display: table;
+  clear: both;
 }
