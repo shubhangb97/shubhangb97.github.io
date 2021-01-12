@@ -1,6 +1,6 @@
 ---
 classes: wide
-layout: archive2
+layout: archive
 title: "Tech Projects"
 excerpt: "Tech Projects"
 author_profile: false
