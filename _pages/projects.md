@@ -26,7 +26,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 <div class="row">
 {::options parse_block_html="true" /}
 <div class="col-md-6">
-<img src="images/Face_DeSpec.jpg" width="300" height="300">
+<img src="/images/Face_DeSpec.jpg" width="300" height="300">
 
 </div>
 {::options parse_block_html="true" /}
