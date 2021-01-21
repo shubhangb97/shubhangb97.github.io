@@ -11,6 +11,7 @@ redirect_from:
 <div class="row">
 {::options parse_block_html="true" /}
 <div class="col-md-6">
+&emsp;
 <img src="/images/LPR_car1.jpg" width="300" height="300">
 </div>
 {::options parse_block_html="true" /}
@@ -26,6 +27,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 <div class="row">
 {::options parse_block_html="true" /}
 <div class="col-md-6">
+&emsp;
 <img src="/images/Face_DeSpec.jpg" width="300" height="300">
 
 </div>
@@ -43,6 +45,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 <div class="row">
 {::options parse_block_html="true" /}
 <div class="col-md-6">
+&emsp;
 <img src="/images/IoT1.png" width="300" height="300">
 </div>
 {::options parse_block_html="true" /}
@@ -59,10 +62,19 @@ recognizer, over more than 250,000 images in the CCPD dataset
 <div class="row">
 {::options parse_block_html="true" /}
 <div class="col-md-6">
+&emsp;
 <img src="/images/Iris_Recog1.png" width="300" height="300">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **Iris Recognition [[slides]](https://shubhangb97.github.io/files/Iris_Recognition.pdf)**<br> *Advisor- [Prof Suyash Awate](https://www.cse.iitb.ac.in/~suyash/) and [Prof Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay* <br>
 - Pre-processed the images using Adaptive histogram equalization and removed the pupil using segmentation
 - Used PCA to reduce dimensionality of the data and applied Fisher’s LDA achieving more than 97% accuracy
+
+</div>
+
+</div>
+
 
 **Designing of pipelined RISC processors [[code]](https://github.com/shubhangb97/RISC-Processor-design)** <br> *Advisor- [Prof Virendra Singh](https://www.ee.iitb.ac.in/~viren/), IIT Bombay* <br>
 - Designed and implemented datapath and control unit of a multicycle and a pipelined processor on an FPGA
