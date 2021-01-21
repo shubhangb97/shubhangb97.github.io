@@ -99,7 +99,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/Music_genre.png" width="300" height="200">
+<img src="/images/Music_genre.PNG" width="300" height="200">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-7">
@@ -118,7 +118,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/GEQ1.jpg" width="300" height="200">
+<img src="/images/GEQ1.JPG" width="300" height="200">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-7">
@@ -156,7 +156,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/Low_CostClassD.png" width="300" height="200">
+<img src="/images/Low_CostClassD.PNG" width="300" height="200">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-7">
@@ -195,7 +195,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/DTH_Comm.jpg" width="300" height="200">
+<img src="/images/DTH_Comm.JPG" width="300" height="200">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-7">
