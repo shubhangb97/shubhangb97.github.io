@@ -1,8 +1,8 @@
 ---
 classes: wide
 layout: archive2
-title: "Tech Projects"
-excerpt: "Tech Projects"
+title: "          Tech Projects"
+excerpt: "         Tech Projects"
 author_profile: false
 redirect_from:
   - /projects
@@ -39,13 +39,27 @@ recognizer, over more than 250,000 images in the CCPD dataset
 
 </div>
 
-
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+<img src="/images/IoT1.png" width="300" height="300">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **Enabling deep learning for IoT with efficient scheduling [[poster]](https://shubhangb97.github.io/files/Deep_Learning_IoT.pdf)**<br> *NTU Singapore* <br>
 - Analyzed use of deep learning in IoT devices with a focus on using edge models for deployment
 - Studied use of efficient scheduling algorithms using online learning to enable use of edge and cloud computing for this, presenting a poster on the same
+</div>
+
+</div>
 
 
-
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+<img src="/images/Iris_Recog1.png" width="300" height="300">
 **Iris Recognition [[slides]](https://shubhangb97.github.io/files/Iris_Recognition.pdf)**<br> *Advisor- [Prof Suyash Awate](https://www.cse.iitb.ac.in/~suyash/) and [Prof Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay* <br>
 - Pre-processed the images using Adaptive histogram equalization and removed the pupil using segmentation
 - Used PCA to reduce dimensionality of the data and applied Fisher’s LDA achieving more than 97% accuracy
