@@ -1,7 +1,7 @@
 ---
 classes: wide
 layout: archive2
-title: "          Tech Projects"
+title: "     &emsp;     Tech Projects"
 excerpt: "         Tech Projects"
 author_profile: false
 redirect_from:
@@ -12,7 +12,7 @@ redirect_from:
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/LPR_car1.jpg" width="300" height="300">
+<img src="/images/LPR_car1.jpg" width="300" height="200">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-7">
@@ -28,7 +28,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/Face_DeSpec.jpg" width="300" height="300">
+<img src="/images/Face_DeSpec.jpg" width="300" height="200">
 
 </div>
 {::options parse_block_html="true" /}
@@ -46,7 +46,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/IoT1.png" width="300" height="300">
+<img src="/images/IoT1.png" width="300" height="200">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-7">
@@ -63,7 +63,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-6">
 &emsp;
-<img src="/images/Iris_Recog1.png" width="300" height="300">
+<img src="/images/Iris_Recog1.png" width="300" height="200">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-7">
@@ -75,35 +75,133 @@ recognizer, over more than 250,000 images in the CCPD dataset
 
 </div>
 
-
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+&emsp;
+<img src="/images/IITB_RISC.jfif" width="300" height="200">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **Designing of pipelined RISC processors [[code]](https://github.com/shubhangb97/RISC-Processor-design)** <br> *Advisor- [Prof Virendra Singh](https://www.ee.iitb.ac.in/~viren/), IIT Bombay* <br>
 - Designed and implemented datapath and control unit of a multicycle and a pipelined processor on an FPGA
 - Implemented Turing complete IITB-RISC instruction set with instructions like conditional jump and store multiple
 - Designed and included logic for hazard detection, data forwarding, stalling etc in the 6-stage pipeline design
 
+</div>
+
+</div>
+
+
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+&emsp;
+<img src="/images/Music_genre.png" width="300" height="200">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **Music Genre Detection [[slides]](https://shubhangb97.github.io/files/Music_Genre_Report.pdf)** <br> *Advisor- [Prof Sunita Sarawagi](https://www.cse.iitb.ac.in/~sunita/), IIT Bombay* <br>
 - Classified music into 4 distinct genres using their MFC coefficients with over 85% accuracy on GTZAN dataset
 - Used CNN based classifier and SVM’s, using bagging, boosting and other techniques performing a detailed comparison
 
+</div>
+
+</div>
+
+
+
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+&emsp;
+<img src="/images/GEQ1.jpg" width="300" height="200">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **General Equalizer design [[report]](https://shubhangb97.github.io/files/Graphic_Equalizer.pdf)** <br> *Advisor- [Prof Ng Boon Poh](http://research.ntu.edu.sg/expertise/academicprofile/pages/StaffProfile.aspx?ST_EMAILID=EBPNG), NTU Singapore* <br>
 - Created an interactive equalizer system with3 bands and 25 levels adjustable gain using theTMS320C5515DSP
 - Designed and optimized digital FIR filters to implement the band pass filtering in real time on the DSP
 
+</div>
+
+</div>
+
+
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+&emsp;
+<img src="/images/stegan1.png" width="300" height="200">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **Steganography using wavelet transform [[slides]](https://shubhangb97.github.io/files/Steganography.pdf)**<br> *Advisor- [Prof VM Gadre](https://www.ee.iitb.ac.in/wiki/faculty/vmgadre), IIT Bombay* <br>
 - Coded a technique to encode data into an image / audio by using its discrete wavelet transform to hide data, without changing the original image or audio significantly
 - Additionally implemented patch based DWT algorithm to encode/hide more data in the same image with better robustness to noise
 - Presented the technique to participants at the MHRD-TEQIP workshop
 
+</div>
+
+</div>
+
+
+
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+&emsp;
+<img src="/images/Low_CostClassD.png" width="300" height="200">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **Low Cost Class D amplifier [[report]](https://shubhangb97.github.io/files/Low_cost_classD.pdf)**<br> *IIT Bombay* <br>
 - Designed a high efficiency class D amplifier in a half bridge configuration using 2 power MOSFET’s
 - Used PWM(Pulse width modulation) of audio signal with a low pass filter at output to minimize power losses and remove high frequency interference
 - Used a bootstrap power supply to drive the floating high side MOSFET
 
+</div>
 
+</div>
+
+
+
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+&emsp;
+<img src="/images/Noise_Cancelling_Headphones.jfif" width="300" height="200">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **Noise cancelling headphones [[report]](https://shubhangb97.github.io/files/Noise_Cancelling.pdf)**<br> *IIT Bombay* <br>
 - Designed an active noise cancelling system using a closed loop feedback system
 - Designed and calibrated compensator and open loop gain using simulations to ensure stability of the system
 
+</div>
 
+</div>
+
+
+
+{::options parse_block_html="true" /}
+<div class="row">
+{::options parse_block_html="true" /}
+<div class="col-md-6">
+&emsp;
+<img src="/images/DTH_Comm.jpg" width="300" height="200">
+</div>
+{::options parse_block_html="true" /}
+<div class="col-md-7">
 **A study on Direct To Home communication [[report]](https://shubhangb97.github.io/files/DTH_report.pdf)**<br> *NTU, Singapore* <br>
 - Studied the evolution of Direct To Home satellite communication technology, including what led to it's creation and challenges faced by it.
+
+</div>
+
+</div>
