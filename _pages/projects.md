@@ -1,7 +1,7 @@
 ---
 classes: wide
 layout: archive2
-title: "     &emsp;     Tech Projects"
+title: "     &emsp; &emsp;     Tech Projects"
 excerpt: "         Tech Projects"
 author_profile: false
 redirect_from:
@@ -12,7 +12,7 @@ redirect_from:
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/LPR_car1.jpg" width="300" height="200" style="padding:10px">
+<img src="/images/LPR_car1.jpg" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -28,7 +28,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/Face_DeSpec.jpg" width="300" height="200" style="padding:10px">
+<img src="/images/Face_DeSpec.jpg" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 
 </div>
 {::options parse_block_html="true" /}
@@ -46,7 +46,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/IoT1.png" width="300" height="200" style="padding:10px">
+<img src="/images/IoT1.png" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -63,7 +63,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/Iris_Recog1.png" width="300" height="200" style="padding:10px">
+<img src="/images/Iris_Recog1.png" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -80,7 +80,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/IITB_RISC.jfif" width="300" height="200" style="padding:10px">
+<img src="/images/IITB_RISC.jfif" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -99,7 +99,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/Music_genre.PNG" width="300" height="200" style="padding:10px">
+<img src="/images/Music_genre.PNG" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -118,7 +118,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/GEQ1.JPG" width="300" height="200" style="padding:10px">
+<img src="/images/GEQ1.JPG" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -136,7 +136,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/stegan1.png" width="300" height="200" style="padding:10px">
+<img src="/images/stegan1.png" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -156,7 +156,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/Low_CostClassD.PNG" width="300" height="200" style="padding:10px">
+<img src="/images/Low_CostClassD.PNG" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -176,7 +176,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/Noise_Cancelling_Headphones.jfif" width="300" height="200" style="padding:10px">
+<img src="/images/Noise_Cancelling_Headphones.jfif" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
@@ -195,7 +195,7 @@ recognizer, over more than 250,000 images in the CCPD dataset
 {::options parse_block_html="true" /}
 <div class="col-md-3">
 &emsp;
-<img src="/images/DTH_Comm.JPG" width="300" height="200" style="padding:10px">
+<img src="/images/DTH_Comm.JPG" width="400" height="200" style="padding-top:10px; padding-bottom:10px; padding-left:80px; padding-right:20px;">
 </div>
 {::options parse_block_html="true" /}
 <div class="col-md-6">
