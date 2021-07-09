@@ -37,7 +37,7 @@ a difficult, but important task. We try to develop a small, efficient system for
 - Designed, simulated, soldered and tested PAL video transmitter and receiver modules at 400 MHz for real time exchange
 of video achieving a range of more than 100 m out of line of sight
 - Designed upconverter, downcoverter, noise rejection filter and amplifiers for increasing range of the system
-- Submitted system capable of robustly sending and receiving video for use by Indian Armed Forces
+- Designed system capable of robustly sending and receiving video
 
 ### **4)Noise Tolerant QR Code Recognizer using Hopfield Network [[pre-print]](https://shubhangb97.github.io/files/QR_code_1.pdf)** <br> *Advisor - [Prof. Suyash Awate](https://www.cse.iitb.ac.in/~suyash/), IIT Bombay*<br>
 **Introduction**- Hopfield networks are a type of recurrent neural networks used for noise tolerant associative memory, but
