@@ -8,15 +8,19 @@ redirect_from:
   - /about.html
 ---
 Hi,
-I am Shubhang Bhatnagar, a final year dual degree (B.Tech + M.Tech) student studying electrical engineering, with a minor in computer science at the [Indian Institute of Technology, Bombay](https://www.iitb.ac.in/). Broadly, I am deeply interested in machine learning, computer vision, compressed sensing and signal processing. I am pursuing my master's thesis on data efficient methods in deep learning , advised by [Prof Amit Sethi](https://www.ee.iitb.ac.in/~asethi/) at the [Medical Deep learning and Artificial intelligence lab (MEDAL)](https://www.ee.iitb.ac.in/web/research/labs/medal), IIT Bombay. A part of it has been submitted to CVPR '21 and a pre-print is available [here](https://shubhangb97.github.io/files/PAL_cvpr.pdf).
+I am Shubhang Bhatnagar, a first year PhD student in ECE at [University of Illinois Urbana-Champaign](https://illinois.edu/). I am advised by [Prof Narendra Ahuja](https://ece.illinois.edu/about/directory/faculty/n-ahuja). Broadly, I am deeply interested in machine learning, computer vision, compressed sensing and signal processing.
+
+Previously, I completed my Dual degree (B.Tech + M.Tech) in electrical engineering from [Indian Institute of Technology, Bombay](https://www.iitb.ac.in/) with a specialization in communication and signal processing and a minor in computer science. Here, I worked on data efficient methods in deep learning , advised by [Prof Amit Sethi](https://www.ee.iitb.ac.in/~asethi/) at the [Medical Deep learning and Artificial intelligence lab (MEDAL)](https://www.ee.iitb.ac.in/web/research/labs/medal), IIT Bombay.
+
 More details about my Research can be found [here](https://shubhangb97.github.io/files/Resume_Shubhang.pdf).
 
 ## **Publications**
-1. "[**PAL: Pretext based Active Learning**](https://shubhangb97.github.io/files/PAL_cvpr.pdf)",  
-**Shubhang Bhatnagar**, Sachin Goyal\*, Darshan Tank\*, Amit Sethi, Submitted to **CVPR 2021**
-2. "[**Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with L1 Errors**](https://shubhangb97.github.io/files/RobustCross_Validation_paper_ICASSP.pdf)",  
-**Shubhang Bhatnagar**\*, Chinmay Gurjarpadhye\*, Ajit Rajwade, Submitted to **ICASSP 2021**  
-Supplemental material is available [**here**](https://shubhangb97.github.io/files/RobustCross_Validation_supplement_ICASSP.pdf)
+1. "[**Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with L1 Errors**](https://arxiv.org/abs/2102.10165)",  
+**Shubhang Bhatnagar**\*, Chinmay Gurjarpadhye\*, Ajit Rajwade, Presented at European Signal Processing Conference, EUSIPCO 2021  
+
+2. "[**PAL: Pretext based Active Learning**](https://shubhangb97.github.io/files/PAL_BMVC.pdf)",  
+**Shubhang Bhatnagar**, Sachin Goyal\*, Darshan Tank\*, Amit Sethi, Submitted to **BMVC 2021**
+
 
 ## **Pre-prints**
 1. "[**QR Code Denoising using Parallel Hopfield Networks**](https://shubhangb97.github.io/files/QR_code_1.pdf)",  
