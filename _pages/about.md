@@ -8,7 +8,7 @@ redirect_from:
   - /about.html
 ---
 Hi,
-I am Shubhang Bhatnagar, a first year PhD student in ECE at [University of Illinois Urbana-Champaign](https://illinois.edu/). I am advised by [Prof Narendra Ahuja](https://ece.illinois.edu/about/directory/faculty/n-ahuja). Broadly, I am deeply interested in machine learning, computer vision, compressed sensing and signal processing.
+I am Shubhang Bhatnagar, a first year PhD student in ECE at [University of Illinois Urbana-Champaign](https://illinois.edu/). I am advised by [Prof Narendra Ahuja](https://ece.illinois.edu/about/directory/faculty/n-ahuja). Broadly, I am deeply interested in  computer vision, machine learning and signal processing.
 
 Previously, I completed my Dual degree (B.Tech + M.Tech) in electrical engineering from [Indian Institute of Technology, Bombay](https://www.iitb.ac.in/) with a specialization in communication and signal processing and a minor in computer science. Here, I worked on data efficient methods in deep learning , advised by [Prof Amit Sethi](https://www.ee.iitb.ac.in/~asethi/) at the [Medical Deep learning and Artificial intelligence lab (MEDAL)](https://www.ee.iitb.ac.in/web/research/labs/medal), IIT Bombay.
 

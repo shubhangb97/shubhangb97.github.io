@@ -8,7 +8,7 @@ redirect_from:
 ---
 
 
-### **1) PAL - Pretext Based Active Learning [[paper]](https://shubhangb97.github.io/files/PAL_cvpr.pdf) Submitted, CVPR ’21**<br>*Master’s Thesis, Advisor -[Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay* <br>
+### **1) PAL - Pretext Based Active Learning [[paper]](https://shubhangb97.github.io/files/PAL_cvpr.pdf) Submitted, BMVC ’21**<br>*Master’s Thesis, Advisor -[Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay* <br>
 **Introduction**- Labelling data for deep learning is expensive, and active learning helps minimize that cost by choosing a
 subset of most informative unlabeled images for labelling. Most current active learning approaches rely overly on task
 based uncertainty, which is error prone or use diversity as a metric which is susceptible to dimensionality. We propose using
@@ -19,7 +19,7 @@ novel function for better reliability and robustness, using the difficulty of so
 - Outperformed current State of the Art Active learning techniques in a variety of experiments including noisy
 labeling scenarios on multiple datasets including CIFAR10, CIFAR100, SVHN and Caltech-101, setting new benchmarks
 
-### **2)Robust Cross Validation in Compressed Sensing [[paper]](https://shubhangb97.github.io/files/RobustCross_Validation_paper_ICASSP.pdf) [[supplement]](https://shubhangb97.github.io/files/RobustCross_Validation_supplement_ICASSP.pdf) Submitted, ICASSP ’21** <br>*Advisor - [Prof. Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay* <br>
+### **2)Robust Cross Validation in Compressed Sensing [[paper]](https://shubhangb97.github.io/files/RobustCross_Validation_paper_ICASSP.pdf) [[supplement]](https://shubhangb97.github.io/files/RobustCross_Validation_supplement_ICASSP.pdf) EUSIPCO ’21** <br>*Advisor - [Prof. Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay* <br>
 **Introduction**- Compressive reconstruction algorithms require careful selection of parameters for optimal performance. We
 study the use of cross validation for tuning these parameters and providing probabilistic quality assurance for the recovered
 signal in absence of information about noise level and signal sparsity.
