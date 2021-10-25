@@ -8,7 +8,7 @@ redirect_from:
 ---
 
 
-### **1) PAL - Pretext Based Active Learning [[paper]](https://shubhangb97.github.io/files/PAL_cvpr.pdf) Submitted, BMVC ’21**<br>*Master’s Thesis, Advisor -[Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay* <br>
+### **1) PAL - Pretext Based Active Learning [[paper]](https://shubhangb97.github.io/files/PAL_cvpr.pdf) BMVC ’21**<br>*Master’s Thesis, Advisor -[Prof. Amit Sethi](https://www.ee.iitb.ac.in/~asethi/), IIT Bombay* <br>
 **Introduction**- Labelling data for deep learning is expensive, and active learning helps minimize that cost by choosing a
 subset of most informative unlabeled images for labelling. Most current active learning approaches rely overly on task
 based uncertainty, which is error prone or use diversity as a metric which is susceptible to dimensionality. We propose using

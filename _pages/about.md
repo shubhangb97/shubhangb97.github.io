@@ -15,11 +15,13 @@ Previously, I completed my Dual degree (B.Tech + M.Tech) in electrical engineeri
 More details about my Research can be found [here](https://shubhangb97.github.io/files/Resume_Shubhang.pdf).
 
 ## **Publications**
-1. "[**Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with L1 Errors**](https://arxiv.org/abs/2102.10165)",  
-**Shubhang Bhatnagar**\*, Chinmay Gurjarpadhye\*, Ajit Rajwade, Presented at European Signal Processing Conference, EUSIPCO 2021  
+1. "[**PAL: Pretext based Active Learning**](https://shubhangb97.github.io/files/PAL_BMVC.pdf)",  
+**Shubhang Bhatnagar**, Sachin Goyal\*, Darshan Tank\*, Amit Sethi, **BMVC 2021**
 
-2. "[**PAL: Pretext based Active Learning**](https://shubhangb97.github.io/files/PAL_BMVC.pdf)",  
-**Shubhang Bhatnagar**, Sachin Goyal\*, Darshan Tank\*, Amit Sethi, Submitted to **BMVC 2021**
+2. "[**Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with L1 Errors**](https://arxiv.org/abs/2102.10165)",  
+**Shubhang Bhatnagar**\*, Chinmay Gurjarpadhye\*, Ajit Rajwade, Presented at European Signal Processing Conference, **EUSIPCO 2021**  
+
+
 
 
 ## **Pre-prints**
