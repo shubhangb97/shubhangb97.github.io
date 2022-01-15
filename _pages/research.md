@@ -19,7 +19,7 @@ novel function for better reliability and robustness, using the difficulty of so
 - Outperformed current State of the Art Active learning techniques in a variety of experiments including noisy
 labeling scenarios on multiple datasets including CIFAR10, Cityscapes, SVHN and Caltech-101, setting new benchmarks
 
-### **2)Robust Cross Validation in Compressed Sensing [[paper]](https://shubhangb97.github.io/files/RobustCross_Validation_paper_ICASSP.pdf) [[supplement]](https://shubhangb97.github.io/files/RobustCross_Validation_supplement_ICASSP.pdf) EUSIPCO ’21** <br>*Advisor - [Prof. Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay* <br>
+### **2)Robust Cross Validation in Compressed Sensing [[paper]](https://ieeexplore.ieee.org/document/9615951) [[arxiv]](https://arxiv.org/abs/2102.10165) EUSIPCO ’21** <br>*Advisor - [Prof. Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay* <br>
 **Introduction**- Compressive reconstruction algorithms require careful selection of parameters for optimal performance. We
 study the use of cross validation for tuning these parameters and providing probabilistic quality assurance for the recovered
 signal in absence of information about noise level and signal sparsity.
@@ -30,7 +30,7 @@ error which is robust to impulsive and gaussian noise
 - Conducted extensive simulations, demonstrating that the L1 CV based strategy yields a more than order of magnitude
 gain in PSNR over traditional L2 CV based methods in presence of mixed gaussian and impulsive noise
 
-### **3)CCNet : Explainable CNN’s through clustering**  <br> *Advisor- [Prof. Narendra Ahuja](https://ece.illinois.edu/about/directory/faculty/n-ahuja), UIUC*<br>
+### **3)CCNet : Explainable CNN’s through clustering'**  <br> *Advisor- [Prof. Narendra Ahuja](https://ece.illinois.edu/about/directory/faculty/n-ahuja), UIUC*<br>
 **Introduction**- Convolutional Neural networks, despite all their success represent a black box, with very little information available about their decision and confidence metrics. We work to make the decisions made by CNN's more explainable by replacing the opaque fully connected (FC) layers with a clustering algorithm (CA) modelling the probability density function of a class in an embedding space.
 - Proposed novel CA (clustering algorithm) which is used to train convolutional layers without using fully connected layers helping better interpretability (OOD, error awareness).
 - Use of CA in place of FC layers helps reduce network size by upto 90 % without a loss in performance, with results demonstrated on ImageNet, CIFAR-10 and CIFAR-100.
