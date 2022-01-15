@@ -20,7 +20,7 @@ novel function for better reliability and robustness, using the difficulty of so
 labeling scenarios on multiple datasets including CIFAR10, Cityscapes, SVHN and Caltech-101, setting new benchmarks
 
 ### **2)Robust Cross Validation in Compressed Sensing [[paper]](https://ieeexplore.ieee.org/document/9615951) [[arxiv]](https://arxiv.org/abs/2102.10165) EUSIPCO ’21** <br>*Advisor - [Prof. Ajit Rajwade](https://www.cse.iitb.ac.in/~ajitvr/), IIT Bombay* <br>
-**Introduction**- Compressive reconstruction algorithms require careful selection of parameters for optimal performance. We
+**Introduction**-Compressive reconstruction algorithms require careful selection of parameters for optimal performance. We
 study the use of cross validation for tuning these parameters and providing probabilistic quality assurance for the recovered
 signal in absence of information about noise level and signal sparsity.
 - Proposed a novel technique for selecting parameters using the L1 CV error and theoretically proved that it’s use
