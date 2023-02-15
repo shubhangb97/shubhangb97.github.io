@@ -82,11 +82,11 @@ analytics:
 author:
   name             : "Shubhang Bhatnagar"
   avatar           : "Web_img1.jpg" #"profile.png"
-  bio              : "Machine Learning, Computer Vision Researcher, Tech Enthusiast"
+  bio              : "Computer Vision & Machine Learning Researcher, Tech Enthusiast"
   location         :
   employer         :
   pubmed           :  #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
-  googlescholar    :  #"http://yourfullgooglescholarurl.com"
+  googlescholar    :  "https://scholar.google.com/citations?user=x_6C2vEAAAAJ&hl=en"
   email            : "shubhangb97@gmail.com"
   researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
   uri              :

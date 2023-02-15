@@ -8,9 +8,9 @@ redirect_from:
   - /about.html
 ---
 Hi,
-I am Shubhang Bhatnagar, a first year PhD student in ECE at [University of Illinois Urbana-Champaign](https://illinois.edu/). I am advised by [Prof Narendra Ahuja](https://ece.illinois.edu/about/directory/faculty/n-ahuja). Broadly, I am deeply interested in  computer vision, machine learning and signal processing.
+I am Shubhang Bhatnagar, a second year PhD student in the [Computer Vision and Robotics Laboratory](https://vision.ai.illinois.edu/) at the [University of Illinois Urbana-Champaign](https://illinois.edu/). I am advised by [Prof Narendra Ahuja](https://ece.illinois.edu/about/directory/faculty/n-ahuja). Broadly, I am interested in computer vision, machine learning and their applications.
 
-Previously, I completed my Dual degree (B.Tech + M.Tech) in electrical engineering from [Indian Institute of Technology, Bombay](https://www.iitb.ac.in/) with a specialization in communication and signal processing and a minor in computer science. Here, I worked on data efficient methods in deep learning , advised by [Prof Amit Sethi](https://www.ee.iitb.ac.in/~asethi/) at the [Medical Deep learning and Artificial intelligence lab (MEDAL)](https://www.ee.iitb.ac.in/web/research/labs/medal), IIT Bombay.
+Previously, I completed my Dual degree (B.Tech + M.Tech) in electrical engineering from [Indian Institute of Technology, Bombay](https://www.iitb.ac.in/). Here, I worked on increasing the data efficiency of deep learning using self-supervised and active learning advised by [Prof Amit Sethi](https://www.ee.iitb.ac.in/~asethi/) at the [Medical Deep learning and Artificial intelligence lab (MEDAL)](https://www.ee.iitb.ac.in/web/research/labs/medal), IIT Bombay.
 
 More details about my Research can be found [here](https://shubhangb97.github.io/files/Resume_Shubhang.pdf).
 
