@@ -21,7 +21,7 @@ More details about my Research can be found [here](https://shubhangb97.github.io
 2. "[**Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with L1 Errors**](https://arxiv.org/abs/2102.10165)",  
 **Shubhang Bhatnagar**\*, Chinmay Gurjarpadhye\*, Ajit Rajwade, Presented at European Signal Processing Conference, **EUSIPCO 2021**  
 
-2. "[**Insights on coding gain and its properties for principal component filter banks**](https://rdcu.be/dbulY)",  
+3. "[**Insights on coding gain and its properties for principal component filter banks**](https://rdcu.be/dbulY)",  
 Prasad Chaphekar, Aniket Bhatia, **Shubhang Bhatnagar**, Abhiraj Kanse, Ashish V Vanmali & Vikram M Gadre, Published in **Sādhanā** , Journal of the Indian Academy of Sciences
 
 
