@@ -21,9 +21,14 @@ More details about my Research can be found [here](https://shubhangb97.github.io
 2. "[**Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with L1 Errors**](https://arxiv.org/abs/2102.10165)",  
 **Shubhang Bhatnagar**\*, Chinmay Gurjarpadhye\*, Ajit Rajwade, Presented at European Signal Processing Conference, **EUSIPCO 2021**  
 
+2. "[**Insights on coding gain and its properties for principal component filter banks**](https://rdcu.be/dbulY)",  
+Prasad Chaphekar, Aniket Bhatia, **Shubhang Bhatnagar**, Abhiraj Kanse, Ashish V Vanmali & Vikram M Gadre, Published in **Sādhanā** , Journal of the Indian Academy of Sciences
 
 
 
 ## **Pre-prints**
 1. "[**QR Code Denoising using Parallel Hopfield Networks**](https://shubhangb97.github.io/files/QR_code_1.pdf)",  
 **Shubhang Bhatnagar**\*, Ishan Bhatnagar\*, Arxiv Pre-print
+
+2. "[**Memory Efficient Adaptive Attention For Multiple Domain Learning**](https://arxiv.org/pdf/2110.10969.pdf)",  
+Himanshu Pradeep Aswani, Abhiraj Sunil Kanse, **Shubhang Bhatnagar**, Amit Sethi, Arxiv Pre-print
