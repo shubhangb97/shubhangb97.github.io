@@ -90,9 +90,10 @@ strong {
 }
 
 h2 {
+  margin: 0;
+  font-weight: normal;
   font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 22px;
 }
 
 
