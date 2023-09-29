@@ -1,31 +1,374 @@
----
-layout: compress
----
+<!DOCTYPE HTML>
+<html lang="en">
 
-{% include base_path %}
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E00L9PT3V9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-<!doctype html>
-<html lang="{{ site.locale | slice: 0,2 }}" class="no-js">
-  <head>
-    {% include head.html %}
-    {% include head/custom.html %}
-  </head>
+    gtag('config', 'G-E00L9PT3V9');
+  </script>
+  <title>{{ site.name }}</title>
 
-  <body>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 
-    {% include browser-upgrade.html %}
-    {% include masthead.html %}
+  <meta name="author" content="{{ site.name }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{ content }}
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css" />
+  <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 
-    <div class="page__footer">
-      <footer>
-        {% include footer/custom.html %}
-        {% include footer.html %}
-      </footer>
-    </div>
+</head>
 
-    {% include scripts.html %}
+<body>
+  <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:60%;vertical-align:middle">
+              <h1>
+                Shubhang Bhatnagar
+              </h1>
+              <p>Hi, I am Shubhang Bhatnagar, a second year PhD student in the <a href="https://vision.ai.illinois.edu/">Computer Vision and Robotics Laboratory</a> at the <a href="https://illinois.edu/">University of Illinois Urbana-Champaign</a>. 
+                I am advised by <a href="https://ece.illinois.edu/about/directory/faculty/n-ahuja"> Prof Narendra Ahuja </a>. 
+                Broadly, I am interested in computer vision, machine learning and their applications.
+                Previously, I completed my Dual degree (B.Tech + M.Tech) in electrical engineering from <a href="https://www.iitb.ac.in/">Indian Institute of Technology, Bombay</a>. 
+                Here, I worked on developing label efficient deep learning techniques using self-supervised and active learning advised by <a href="https://www.ee.iitb.ac.in/~asethi/">Amit Sethi</a>.
+              </p>
+              
+              <p style="text-align:center">
+                E-mail <a target="_blank" href="mailto:shubhangb97@gmail.com">E-mail</a> &nbsp;/&nbsp;
+                E-mail <a target="_blank" href="https://shubhangb97.github.io/files/Resume_Shubhang.pdf">Resume</a> &nbsp;/&nbsp;
+                <a href="https://github.com/shubhangb97">GitHub</a> &nbsp;/&nbsp;
+                <a href="https://scholar.google.com/citations?user=x_6C2vEAAAAJ&hl=en">Google Scholar</a> &nbsp;/&nbsp;
+                <a href="https://www.linkedin.com/in/shubhang-bhatnagar-b78b24186"> LinkedIn </a> &nbsp;/&nbsp;
+                <a href="https://twitter.com/s_bhatnagar_tw">Twitter</a> 
+              </p>
+            </td>
+            <td style="padding:2.5%;width:40%;max-width:40%">
+              <img style="width:100%;max-width:100%" alt="profile photo" src="images/circle_bw_crop.jpg">
+            </td>
+          </tr>
+        </table>
+        
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <tr>
+            <td style="padding:2.5%;width:100%;vertical-align:middle">
+              <h2>Research</h2>
+            </td>
+          </tr>
+        </table>
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <tr>
+            <td style="padding:2.5%;width:25%;vertical-align:middle;min-width:120px">
+              <img src="images/ld_gr_iros.png" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+            </td>
+            <td style="padding:2.5%;width:75%;vertical-align:middle">
+              <h3>Long-Distance Gesture Recognition using Dynamic Neural Networks</h3>
+              <br>
+              <strong>Shubhang Bhatnagar</strong>, Sharath Gopal, Narendra Ahuja, Liu Ren
 
-  </body>
+              <br>
+              <em>IROS</em>, 2023
+              <br>
+              <a href="javascript:toggleblock('ldgest_abs')">abstract</a> /
+              <a href="https://arxiv.org/abs/2308.14737">arxiv</a> /
+              <!-- <a href="coming soon">video</a> / 
+              <a href="{{post.website}}">project page</a> / -->
+              <br>
+
+                <p align="justify"> <i id="ldgest_abs">Gestures form an important medium of communication between humans and machines. An overwhelming
+                  majority of existing gesture recognition methods are tailored to
+                  a scenario where humans and machines are located very close
+                  to each other. This short-distance assumption does not hold
+                  true for several types of interactions, for example gesture-based
+                  interactions with a floor cleaning robot or with a drone. Methods
+                  made for short-distance recognition are unable to perform
+                  well on long-distance recognition due to gestures occupying
+                  only a small portion of the input data. Their performance is
+                  especially worse in resource constrained settings where they
+                  are not able to effectively focus their limited compute on the
+                  gesturing subject. We propose a novel, accurate and efficient
+                  method for the recognition of gestures from longer distances. It
+                  uses a dynamic neural network to select features from gesturecontaining
+                  spatial regions of the input sensor data for further
+                  processing. This helps the network focus on features important
+                  for gesture recognition while discarding background features
+                  early on, thus making it more compute efficient compared
+                  to other techniques. We demonstrate the performance of our
+                  method on the LD-ConGR long-distance dataset where it
+                  outperforms previous state-of-the-art methods on recognition
+                  accuracy and compute efficiency.</i></p>
+              
+            </td>
+          </tr>
+
+
+
+          <tr>
+            <td style="padding:2.5%;width:25%;vertical-align:middle;min-width:120px">
+              <img src="images/PAL_bmvc.png" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+            </td>
+            <td style="padding:2.5%;width:75%;vertical-align:middle">
+              <h3>PAL: Pretext based Active Learning</h3>
+              <br>
+              <strong>Shubhang Bhatnagar</strong>, Sachin Goyal<sup>*</sup>, Darshan Tank<sup>*</sup>, Amit Sethi
+              <br><strong>British Machine Vision Conference (BMVC), 2021</strong>
+              <br>
+              <a href="javascript:toggleblock('pal_abs')">abstract</a> /
+              <a href="https://www.bmvc2021-virtualconference.com/conference/papers/paper_1061.html">project page</a> /
+              <a href="https://www.bmvc2021-virtualconference.com/assets/papers/1061.pdf">paper</a> /
+              <a href="https://github.com/shubhangb97/PAL_pretext_based_active_learning">code</a> / 
+              <br>
+
+                <p align="justify"> <i id="pal_abs">The goal of pool-based active learning is to judiciously select a fixed-sized subset of
+                  unlabeled samples from a pool to query an oracle for their labels, in order to maximize
+                  the accuracy of a supervised learner. However, the unsaid requirement that the oracle
+                  should always assign correct labels is unreasonable for most situations. We propose an
+                  active learning technique for deep neural networks that is more robust to mislabeling than
+                  the previously proposed techniques. Previous techniques rely on the task network itself
+                  to estimate the novelty of the unlabeled samples, but learning the task (generalization)
+                  and selecting samples (out-of-distribution detection) can be conflicting goals. We use
+                  a separate network to score the unlabeled samples for selection. The scoring network
+                  relies on self-supervision for modeling the distribution of the labeled samples to reduce
+                  the dependency on potentially noisy labels. To counter the paucity of data, we also deploy
+                  another head on the scoring network for regularization via multi-task learning and use an
+                  unusual self-balancing hybrid scoring function. Furthermore, we divide each query into
+                  sub-queries before labeling to ensure that the query has diverse samples. In addition to
+                  having a higher tolerance to mislabeling of samples by the oracle, the resultant technique
+                  also produces competitive accuracy in the absence of label noise. The technique also
+                  handles the introduction of new classes on-the-fly well by temporarily increasing the
+                  sampling rate of these classes. We make our code publicly available at https://
+                  github.com/shubhangb97/PAL_pretext_based_active_learning</i></p>
+              
+            </td>
+          </tr>
+
+
+          <td style="padding:2.5%;width:25%;vertical-align:middle;min-width:120px">
+            <img src="images/l1_eusipco" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+          </td>
+          <td style="padding:2.5%;width:75%;vertical-align:middle">
+            <h3>Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with L1 Errors</h3>
+            <br>
+            <strong>Shubhang Bhatnagar</strong><sup>*</sup>, Chinmay Gurjarpadhye<sup>*</sup>, Ajit Rajwade
+            <br><strong>European Signal Processing Conference (EUSIPCO),</strong>
+            <br>
+            <a href="javascript:toggleblock('l1_cv_abs')">abstract</a> /
+            <a href="https://ieeexplore.ieee.org/document/9615951">paper</a> /
+            <a href="https://arxiv.org/abs/2102.10165">extended arxiv</a> /
+            
+            <br>
+
+              <p align="justify"> <i id="l1_cv_abs">Compressed sensing (CS) involves sampling 
+                signals at rates less than their Nyquist rates and attempting to reconstruct them after sample acquisition. 
+                Most such algorithms have parameters, for example the regularization parameter in LASSO, which need to be chosen carefully for optimal 
+                performance. These parameters can be chosen based on assumptions on the noise level or signal sparsity, but this knowledge may often be 
+                unavailable. In such cases, cross validation (CV) can be used to choose these parameters in a purely data-driven fashion. Previous work 
+                analyzing the use of CV in CS has been based on the ℓ2 cross-validation error with Gaussian measurement noise. But it is well known that the ℓ2 
+                error is not robust to impulse noise and provides a poor estimate of the recovery error, failing to choose the best parameter. Here we propose 
+                using the ℓ1−CV error which provides substantial performance benefits given impulse measurement noise. Most importantly, we provide a detailed 
+                theoretical analysis and error bounds for the use of ℓ1−CV error in CS reconstruction. We show that with high probability, choosing the parameter
+                 that yields the minimum ℓ1−CV error is equivalent to choosing the minimum recovery error (which is not observable in practice). To our best 
+                 knowledge, this is the first paper which theoretically analyzes ℓ1 -based CV in CS.</i></p>
+            
+          </td>
+        </tr>
+
+        <td style="padding:2.5%;width:25%;vertical-align:middle;min-width:120px">
+          <img src="images/subband_coder" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+        </td>
+        <td style="padding:2.5%;width:75%;vertical-align:middle">
+          <h3>Insights on coding gain and its properties for principal component filter banks</h3>
+          <br>
+          Prasad Chaphekar, Aniket Bhatia,<strong>Shubhang Bhatnagar</strong>, Abhiraj Kanse, Ashish V Vanmali, Vikram M Gadre
+          <br><strong> Sādhanā</strong> , Journal of the Indian Academy of Sciences, 2023
+          <br>
+          <a href="javascript:toggleblock('pcfb_abs')">abstract</a> /
+          <a href="https://rdcu.be/dbulY">paper</a> /
+                   
+          <br>
+
+            <p align="justify"> <i id="pcfb_abs">Principal Component Filter Bank (PCFB) is considered optimal in terms of coding gain for speciﬁcconditions. 
+              P P Vaidyanathan stated that coding gain does not necessarily always increase with the increase inthe number of bands. However, very few attempts are made 
+              in the literature to go beyond the conﬁnes of work done by P P Vaidyanathan. We present analytic proofs for the monotonicity of speciﬁc shapes of PSDs.
+               This papers also derives properties of coding gain of PCFBs, which brings the new insights on the coding gain of Principal Component Filter Banks.</i></p>
+          
+        </td>
+      </tr>
+
+
+
+      <td style="padding:2.5%;width:25%;vertical-align:middle;min-width:120px">
+        <img src="images/qr_hopfield_denoise" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+      </td>
+      <td style="padding:2.5%;width:75%;vertical-align:middle">
+        <h3>QR Code Denoising using Parallel Hopfield Networks</h3>
+        <br>
+        <strong>Shubhang Bhatnagar</strong><sup>*</sup>, Ishan Bhatnagar<sup>*</sup>
+        <br><strong>Arxiv</strong> , 2018
+        <br>
+        <a href="javascript:toggleblock('qr_abs')">abstract</a> /
+        <a href="https://arxiv.org/abs/1812.01065">arxiv</a> /
+                 
+        <br>
+
+          <p align="justify"> <i id="qr_abs">We propose a novel algorithm for using Hopfield
+            networks to denoise QR codes. Hopfield networks have mostly been
+            used as a noise tolerant memory or to solve difficult combinatorial
+            problems. One of the major drawbacks in their use in noise tolerant
+            associative memory is their low capacity of storage, scaling only
+            linearly with the number of nodes in the network. A larger capacity
+            therefore requires a larger number of nodes, thereby reducing the
+            speed of convergence of the network in addition to increasing
+            hardware costs for acquiring more precise data to be fed to a larger
+            number of nodes. Our paper proposes a new algorithm to allow the
+            use of several Hopfield networks in parallel thereby increasing the
+            cumulative storage capacity of the system many times as compared
+            to a single Hopfield network. Our algorithm would also be much
+            faster than a larger single Hopfield network with the same total
+            capacity. This enables their use in applications like denoising QR
+            codes, which we have demonstrated in our paper. We then test our
+            network on a large set of QR code images with different types of
+            noise and demonstrate that such a system of Hopfield networks can
+            be used to denoise and recognize QR codes in real time.</i></p>
+        
+      </td>
+    </tr>
+
+
+    <td style="padding:2.5%;width:25%;vertical-align:middle;min-width:120px">
+      <img src="images/adapter_img" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+    </td>
+    <td style="padding:2.5%;width:75%;vertical-align:middle">
+      <h3>Memory Efficient Adaptive Attention For Multiple Domain Learning</h3>
+      <br>
+      Himanshu Pradeep Aswani, Abhiraj Sunil Kanse, <strong>Shubhang Bhatnagar</strong>, Amit Sethi
+      <br><strong>Arxiv</strong> , 2021
+      <br>
+      <a href="javascript:toggleblock('adapter_abs')">abstract</a> /
+      <a href="https://arxiv.org/abs/2110.10969">arxiv</a> /
+               
+      <br>
+
+        <p align="justify"> <i id="adapter_abs">We propose a novel algorithm for using Hopfield
+          networks to denoise QR codes. Hopfield networks have mostly been
+          used as a noise tolerant memory or to solve difficult combinatorial
+          problems. One of the major drawbacks in their use in noise tolerant
+          associative memory is their low capacity of storage, scaling only
+          linearly with the number of nodes in the network. A larger capacity
+          therefore requires a larger number of nodes, thereby reducing the
+          speed of convergence of the network in addition to increasing
+          hardware costs for acquiring more precise data to be fed to a larger
+          number of nodes. Our paper proposes a new algorithm to allow the
+          use of several Hopfield networks in parallel thereby increasing the
+          cumulative storage capacity of the system many times as compared
+          to a single Hopfield network. Our algorithm would also be much
+          faster than a larger single Hopfield network with the same total
+          capacity. This enables their use in applications like denoising QR
+          codes, which we have demonstrated in our paper. We then test our
+          network on a large set of QR code images with different types of
+          noise and demonstrate that such a system of Hopfield networks can
+          be used to denoise and recognize QR codes in real time.</i></p>
+      
+    </td>
+  </tr>
+
+
+        </table>
+        <script xml:space="preserve" language="JavaScript">
+          hideblock('ldgest_abs');
+        </script>
+         <script xml:space="preserve" language="JavaScript">
+          hideblock('l1_cv_abs');
+        </script>
+         <script xml:space="preserve" language="JavaScript">
+          hideblock('pal_abs');
+        </script>
+        <script xml:space="preserve" language="JavaScript">
+          hideblock('pcfb_abs');
+        </script>
+        <script xml:space="preserve" language="JavaScript">
+          hideblock('qr_abs');
+        </script>
+        <script xml:space="preserve" language="JavaScript">
+          hideblock('adapter_abs');
+        </script>
+        <br>
+        <br>
+        <br>
+        <!--
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <tr>
+            <td style="padding:2.5%;width:100%;vertical-align:middle">
+              <h2>Intel Projects</h2>
+              <p>Besides my work on the RealSense depth sensors and the publications above, a sampling of my publicly disclosed work
+              </p>
+            </td>
+          </tr>
+        </table>
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+
+          {% for post in site.posts %}
+          {% for cat in post.categories %}
+          {% if cat == 'Intel' %}
+          <tr>
+            <td style="padding:2.5%;width:25%;vertical-align:middle;min-width:120px">
+              <img src="/tn{{post.image}}" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+            </td>
+            <td style="padding:2.5%;width:75%;vertical-align:middle">
+              <h3>{{post.title}}</h3>
+              <br>
+              <em>{{post.categories}} {{post.course}}</em>
+              <br>
+              {{ post.date | date: "%Y-%m-%d" }}
+
+              <br>
+              {% if post.website %}
+              <a href="{{post.website}}">website</a> /
+              {% endif %}
+              {% if post.paper %}
+              <a href="{{post.paper}}">paper</a> /
+              {% endif %}
+              {% if post.patent %}
+              <a href="{{post.patent}}">patent</a> /
+              {% endif %}
+              {% if post.patent2 %}
+              <a href="{{post.patent2}}">patent #2</a> /
+              {% endif %}
+              {% if post.patent3 %}
+              <a href="{{post.patent3}}">patent #3</a> /
+              {% endif %}
+              {% if post.video %}
+              <a href="{{post.video}}">video</a> /
+              {% endif %}
+              {% if post.video2 %}
+              <a href="{{post.video2}}">video #2</a> /
+              {% endif %}
+              {% if post.code %}
+              <a href="{{post.code}}">code</a> /
+              {% endif %}
+              {% if post.poster %}
+              <a href="{{post.poster}}">poster</a> /
+              {% endif %}
+              {% if post.slides %}
+              <a href="{{post.slides}}">slides</a> /
+              {% endif %}
+              <p></p>
+              {{ post.excerpt }}
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </table>-->
+        
+</body>
+
 </html>
+
