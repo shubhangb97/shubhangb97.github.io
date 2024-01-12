@@ -91,7 +91,7 @@
                         </li>
                         <li>
                             <a href="img/37_Piecewise-Linear Manifold for Deep Metric Learning_CPAL_presentation.pdf">
-                            <image src="img/PL_manifold_slides_snapshot.PNG" height="60px">
+                            <image src="img/PL_manifold_slides_snapshot.png" height="60px">
                                 <h4><strong>Slides</strong></h4>
                             </a>
                         </li> 
@@ -244,14 +244,23 @@
                 </h3>
                 <div class="form-group col-md-10 col-md-offset-1">
                     <textarea id="bibtex" class="form-control" readonly>
-                        @inproceedings{
-                            bhatnagar2023piecewiselinear,
-                            title={Piecewise-Linear Manifolds for Deep Metric Learning},
-                            author={Shubhang Bhatnagar and Narendra Ahuja},
-                            booktitle={Conference on Parsimony and Learning (Proceedings Track)},
-                            year={2024},
-                            url={https://openreview.net/forum?id=Z0Fk5MyxkY}
+                       
+                            @InProceedings{pmlr-v234-bhatnagar24a,
+                                title = 	 {Piecewise-Linear Manifolds for Deep Metric Learning},
+                                author =       {Bhatnagar, Shubhang and Ahuja, Narendra},
+                                booktitle = 	 {Conference on Parsimony and Learning},
+                                pages = 	 {269--281},
+                                year = 	 {2024},
+                                editor = 	 {Chi, Yuejie and Dziugaite, Gintare Karolina and Qu, Qing and Wang, Atlas Wang and Zhu, Zhihui},
+                                volume = 	 {234},
+                                series = 	 {Proceedings of Machine Learning Research},
+                                month = 	 {03--06 Jan},
+                                publisher =    {PMLR},
+                                pdf = 	 {https://proceedings.mlr.press/v234/bhatnagar24a/bhatnagar24a.pdf},
+                                url = 	 {https://proceedings.mlr.press/v234/bhatnagar24a.html},
+                                abstract = 	 {Unsupervised deep metric learning (UDML) focuses on learning a semantic representation space using only unlabeled data. This challenging problem requires accurately estimating the similarity between data points, which is used to supervise a deep network. For this purpose, we propose to model the high-dimensional data manifold using a piecewise-linear approximation, with each low-dimensional linear piece approximating the data manifold in a small neighborhood of a point. These neighborhoods are used to estimate similarity between data points. We empirically show that this similarity estimate correlates better with the ground truth than the similarity estimates of current state-of-the-art techniques. We also show that proxies, commonly used in supervised metric learning, can be used to model the piecewise-linear manifold in an unsupervised setting, helping improve performance. Our method outperforms existing unsupervised metric learning approaches on standard zero-shot image retrieval benchmarks.}
                             }
+  
                     </textarea>
                 </div>
             </div>
