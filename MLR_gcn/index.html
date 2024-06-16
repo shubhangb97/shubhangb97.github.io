@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>Prior-Aware Multilabel Food Recognition using Graph
+        Convolutional Networks</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:title" content="Prior-Aware Multilabel Food Recognition using Graph
+    Convolutional Networks" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Prior-Aware Multilabel Food Recognition using Graph
+    Convolutional Networks" />
+
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👍</text></svg>">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/video_comparison.js"></script>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <h2 class="col-md-12 text-center">
+                <b>Prior-Aware Multilabel Food Recognition using Graph
+                    Convolutional Networks</b></br> 
+                
+                Meta Food Workshop CVPR 2024 
+                
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                    <li>
+                        <a href="https://shubhangb97.github.io/">
+                            <strong> Shubhang Bhatnagar*</strong> <sup>1</sup> 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://samyakr99.github.io/">
+                            Samyak Rawlekar*<sup>1</sup> 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://sites.google.com/site/liurenshomepage/">
+                            Vishnuvardhan Pogunulu Srinivasulu<sup>2</sup>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://ece.illinois.edu/about/directory/faculty/n-ahuja">
+                            Narendra Ahuja 
+                        </a><sup>1</sup>
+                    </li>
+                    
+                   
+                    </br>
+                    <li>
+                        <sup>1</sup><a href="https://illinois.edu/">
+                            University of Illinois at Urbana-Champaign
+                        </a>
+                    </li>
+                    <li>
+                        <sup>2</sup><a href="https://vizzhy.com/">
+                            Vizzhy.com
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="row">
+                <div class="col-md-4 col-md-offset-4 text-center">
+                    <ul class="nav nav-pills nav-justified">
+                        <li>
+                            <a href="https://illinois.edu/">
+                           <image src="img/uiuc_logo.png" height="60px">
+                                
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://drive.google.com/file/d/1yqAci33Hi6S_MkdYLZ2XLV1--FYrACnq/view">
+                            <image src="img/MLR_food_snapshot.PNG" height="60px">
+                                <h4><strong>Workshop paper</strong></h4>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://arxiv.org/abs/2404.16193">
+                            <image src="img/MLR_gcn_snapshot.PNG" height="60px">
+                                <h4><strong>Extended Arxiv</strong></h4>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="img/MLR_GCN_poster.pdf">
+                            <image src="img/poster_snapshot.PNG" height="60px">
+                                <h4><strong>Poster</strong></h4>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://sites.google.com/view/cvpr-metafood-2024/overview?authuser=0">
+                           <image src="img/CVPRw_logo.png" height="60px">
+                                
+                            </a>
+                        </li>
+                        <!-- <li>
+                            <a href="img/LongDistanceGestureRecognition_IROS_final.pdf">
+                            <image src="img/slides_snapshot.PNG" height="60px">
+                                <h4><strong>Slides</strong></h4>
+                            </a>
+                        </li> -->
+                    </ul>
+                </div>
+        </div>
+
+
+         <!--
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <video id="v0" width="100%" autoplay loop muted controls>
+                  <source src="img/demo_final_noaudio.mp4" type="video/mp4" />
+                </video>
+                <div class="text-center">
+                <strong>A demonstration of our method used to control a mobile Robot</strong>
+            </div>
+						</div>
+        </div>
+        -->
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Multi-label Recognition (MLR) involves the identification of multiple objects within an image. 
+                    To address the additional complexity of this problem, recent works have leveraged information from vision-language models (VLMs) trained on large text-images datasets for the task. These methods learn an independent classifier for each object (class),
+                     overlooking correlations in their occurrences. Such co-occurrences can be captured from the training data as
+                      conditional probabilities between a pair of classes. We propose a framework to extend the independent
+                       classifiers by incorporating the co-occurrence information for object pairs to improve the performance
+                        of independent classifiers. We use a Graph Convolutional Network (GCN) to enforce the conditional
+                         probabilities between classes, by refining the initial estimates derived from image and text
+                          sources obtained using VLMs. We validate our method on four MLR datasets, where our approach
+                           outperforms all state-of-the-art methods.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Motivation
+                </h3>
+                <!--<div class="text-center">
+                    <img src="./img/motivation_diagram.svg" width="100%">
+                </div>-->
+                <br><br>
+                <div class="text-justify">
+                    To mitigate the paucity of labeled data in Multi-label recognition (MLR),
+                    recent approaches have focused on adapting large Vision Language Models (VLMs) with a common approach being learning 
+                    pair of positive/negative prompts forming a binary classifier for each class. 
+                    However, these methods learn independent prompts (classifiers) for each class. In practice,
+                    many objects are in sets, making their occurrences interdependent. Using independent
+                    classifiers neglects the mutual information present, which, if used, could
+                    enhance the performance of individual classifiers.
+                
+                
+                
+			</div>
+
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Proposed Model
+                </h3>
+            
+            <div class="text-justify">
+                Given an image with multiple objects, we extract image
+                features and text features from the subimages using a vision-language model
+                (CLIP). An image-text feature aggregation module (Sec. 3.1) combines these features
+                to identify all classes present in the image as a union of the classes present
+                in the subimages, giving an initial set of image level class logits. These logits are
+                passed to a GCN, that uses conditional probabilities between classes to refine
+                these initial predictions (Sec. 3.2). We train this framework while reweighting
+                the loss generated by classes to address any class imbalance in the training data
+                using a Reweighted Asymmetric Loss (RASL), a weighted version of the familiar
+                ASL.
+                <br><br>
+                <div class="text-center">
+                    <img src="./img/overview.png" width="50%">
+                </div>
+                
+			</div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Results
+                </h3>
+            
+            <div class="text-justify">
+                Our method outperforms all state-of-the-art
+                baselines, on four MLR datasets in the low data regime: FoodSeg103, UNIMIB
+                2016, COCO-small (5% of COCO’s training data) and VOC-2007. Our approach
+                achieves the best performance on all metrics: per-class and overall average precisions
+                (CP and OP), recalls (CR and OR), F1 scores (CF1 and OF1), and mean
+                average precision (mAP).
+                <br><br>
+                <div class="text-center">
+                    <img src="./img/results.png" width="50%">
+                </div>
+                
+			</div>
+
+            <div class="text-justify">
+                A comparison of the average performance of our approach with the
+                previous state-of-the-art VLM-based method DualCoOp[41] on classes that are
+                difficult to recognize using only visual features (having 10 lowest CF1 values
+                on the FoodSeg103[44] and UNIMIB[10]). Our approach significantly improves
+                MLR performance on such classes due to its use of information derived from
+                class conditional probabilities.
+                <br><br>
+                <div class="text-center">
+                    <img src="./img/results2.png" width="50%">
+                </div>
+                
+			</div>
+
+            <div class="text-justify">
+                Improvement in average precision (ΔAP) of a class obtained by refining
+                VLM-based initial logits to incorporate the information provided by conditional
+                probabilities, shown as a function of the mean conditional probability of most
+                co-occurring three classes.
+                <br><br>
+                <div class="text-center">
+                    <img src="./img/results3.png" width="50%">
+                </div>
+                
+			</div>
+
+            </div>
+        </div>
+       
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Citation
+                </h3>
+                <div class="form-group col-md-10 col-md-offset-1">
+                    <textarea id="bibtex" class="form-control" readonly>
+                        @article{rawlekar2024improving,
+                            title={Improving Multi-label Recognition using Class Co-Occurrence Probabilities},
+                            author={Rawlekar, Samyak and Bhatnagar, Shubhang and Srinivasulu, Vishnuvardhan Pogunulu and Ahuja, Narendra},
+                            journal={arXiv preprint arXiv:2404.16193},
+                            year={2024}
+                          }
+                    </textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            
+                <p class="text-justify">
+                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
+                </p>
+            
+        </div>
+    </div>
+</body>
+</html>
