@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>Potential Field DML</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:title" content="Potential Field Based Deep Metric Learning" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Potential Field Based Deep Metric Learning" />
+
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👍</text></svg>">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/video_comparison.js"></script>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <h2 class="col-md-12 text-center">
+                <b>Potential Field Based Deep Metric Learning</b></br> 
+                
+                <!-- NeurIPS 2024 --> 
+                
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                    <li>
+                        <a href="https://shubhangb97.github.io/">
+                            <strong> Shubhang Bhatnagar*</strong> 
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://ece.illinois.edu/about/directory/faculty/n-ahuja">
+                            Narendra Ahuja 
+                        </a>
+                    </li>
+                    
+                   
+                    </br>
+                    <li>
+                        <a href="https://illinois.edu/">
+                            University of Illinois at Urbana-Champaign
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="row">
+                <div class="col-md-4 col-md-offset-2 text-center">
+                    <ul class="nav nav-pills nav-justified">
+                        <li>
+                            <a href="https://illinois.edu/">
+                           <image src="img/uiuc_logo.png" height="60px">
+                                
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="https://arxiv.org/abs/2404.16193">
+                            <image src="img/potential_field_snapshot.png" height="60px">
+                                <h4><strong> Arxiv</strong></h4>
+                            </a>
+                        </li>
+                        <!-- <li>
+                            <a href="img/MLR_GCN_poster.pdf">
+                            <image src="img/poster_snapshot.png" height="60px">
+                                <h4><strong>Poster</strong></h4>
+                            </a>
+                        </li> -->
+                        <!-- <li>
+                            <a href="https://sites.google.com/view/cvpr-metafood-2024/overview?authuser=0">
+                           <image src="img/CVPRw_logo.png" height="60px">
+                                
+                            </a>
+                        </li> -->
+                        <!-- <li>
+                            <a href="img/LongDistanceGestureRecognition_IROS_final.pdf">
+                            <image src="img/slides_snapshot.PNG" height="60px">
+                                <h4><strong>Slides</strong></h4>
+                            </a>
+                        </li> -->
+                    </ul>
+                </div>
+        </div>
+
+
+         <!--
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <video id="v0" width="100%" autoplay loop muted controls>
+                  <source src="img/demo_final_noaudio.mp4" type="video/mp4" />
+                </video>
+                <div class="text-center">
+                <strong>A demonstration of our method used to control a mobile Robot</strong>
+            </div>
+						</div>
+        </div>
+        -->
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Deep metric learning (DML) involves training a network to learn a semantically meaningful representation space. 
+                    Many current approaches mine n-tuples of examples and model interactions within each tuplets. 
+                    We present Potential Field based metric learning (PFML), a novel compositional DML model, inspired by electrostatic fields in physics that, instead of in tuples, 
+                    represents the influence of each example (embedding) by a continuous potential field, and superposes the fields to 
+                    obtain their combined global potential field. We use attractive/repulsive potential fields to represent interactions 
+                    among embeddings from images of the same/different classes. Contrary to typical learning methods, where mutual 
+                    influence of samples is proportional to their distance, we enforce reduction in such influence with distance, 
+                    leading to a decaying field. We show that such decay helps improve performance on real world datasets with large 
+                    intra-class variations and label noise. Like other proxy-based methods, we also use proxies to succinctly represent 
+                    sub-populations of examples. We evaluate our method on three standard DML benchmarks- Cars-196, CUB-200-2011, and SOP datasets where it outperforms state-of-the-art baselines.
+                </p>
+
+                <h3>
+                    TLDR
+                </h3>
+                <p class="text-justify"> Use a continous potential field to represent interactions between a set of example mbeddings instead of using subsets of examples (triplets/tuplets) or proxies</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Intuition
+                </h3>
+                <div class="text-center">
+                    <img src="./img/charge_animation.gif" width="100%">
+                </div>
+
+                <div class="text-center">
+                        <strong> An example of PFML on a toy problem with embeddings from 2 classes shown. PFML creates a potential field (visualized)
+                             by superposing attractive and repulsive fields of individual embeddings. It draws embeddings towards other nearby embeddings belonging to the same class, 
+                            while also being driven away from embeddings of other classes which is a mirror image of the behavior of an isolated system of electric charges. 
+                            It forms a compositional representation of the embeddings, capturing the combined influence at a given location (or sample) as a weighted addition of the influences of the individual samples. 
+                              </strong>
+                </div>
+                
+                <br><br>
+                
+
+            </div>
+        </div>
+        <br><br>
+        
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Advatages of PFML vs Previous DML Approaches
+                </h3>
+
+                <div class="text-justify">
+                <ol>   
+                    <li> Potential field representation enables modelling interactions between <strong>all</strong> sample embeddings, 
+                        as opposed to modeling those between small subsets (of sample or proxy points) as done in all previous methods using
+                         e.g. point-tuplets based (e.g., contrastive, triplet, N-tuplet ) loss and Proxy-based losses (e.g., Proxy NCA, Proxy Anchor). </li>
+                    <li> Modeling interactions of all points, made possible by the use of potentials helps: 
+                    <ul> 
+                        <li>improve the quality of features learned while also </li>
+                        <li>increasing robustness to noise since the effect of noise on interactions among a smaller number of
+                            samples will have a larger variance. </li>
+                    </ul>
+                    </li>
+                    
+                    <li> A major difference of our potential field based approach compared to previous approaches 
+                        is in the variation of <strong>strength of interaction</strong> between two points
+                         as the distance between them increases: instead of remaining constant or even becoming stronger, 
+                         as is the case with most existing methods,
+                         in our model it becomes <strong>weaker with distance</strong>.
+                        This decay in interaction strength is helpful in several ways:
+                        <ul> 
+                            <li> It ensures the intuitive expectation that two distant positive samples are too different to be
+                        considered as variants of each other, helping treat them as different varieties (e.g., associated with
+                        different proxies).</li>
+                            <li> The decay property also significantly improves performance for the
+                        specific type of noise affecting labels, e.g., due to annotation errors common in real-world datasets
+                        (Sec. 4.3).</li> 
+                            <li> As a result of the decay, the learned proxies remain closer to (at smaller Wasserstein
+                        distance W2 from) the sample embeddings they represent than for (e.g., current proxy-based) methods
+                        where interactions strengthen with distance, thereby enhancing their desired
+                        role.</li>
+                        </ul>
+                    </li> 
+                    
+                    
+                    </ol>  
+                Further details can be found in our  <a href="https://arxiv.org/abs/2404.16193">paper</a>.
+                
+                
+			    </div>
+            
+
+                
+			</div>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Method
+                </h3>
+                <div class="text-justify">
+                    For each class, PFML defines a class potential field Ψ that affects embeddings of only the selected class. This class potential field brings together embeddings of the class while pushing them away from embeddings of other classes.
+                    The class potential field is formed from a superposition of potentials belonging to individual embeddings from all classes. The potential field exerted by indivdual embeddings
+                    is designed based on both, the principles from electrostatics and observations from DML literature. More details and exact definitions of the potential field can be found in Section 3 of our  <a href="https://arxiv.org/abs/2404.16193">paper</a>.
+                    <br><br>
+                    <div class="text-justify">
+                        <div class="text-center">
+                            <img src="./img/new_flow_diagram.svg" width="100%">
+                        </div>
+                        Our Potential-field based
+                        DML pipeline includes (1) Computing attraction and repulsion fields generated
+                        by each embedding and proxy, (2) Computing
+                        the class potential fields by superposition of individual fields (3) Evaluating total potential energy
+                        by summing up the potentials of embeddings and
+                        proxies under the class potential field and (4) Updating locations of sample embeddings (through
+                        network parameters) and proxies to minimize total potential energy through backprop.
+                        <br><br>
+                        
+                        
+                    </div>                    
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Results
+                </h3>
+            
+                <div class="text-justify">
+                    As is common, we evaluate the metric learnt by our method using its performance for zero-shot image retrieval.
+                    <br><br>
+                    <div class="text-center">
+                        <img src="./img/perf_table.png" width="50%">
+                    </div>
+                    <br><br>
+                </div>
+
+                <div class="text-justify">
+                    As seen in the table our method outperforms state-of-the-art methods in terms of Recall@1 on all three datasets.
+                    <br><br>
+                </div>
+            </div>
+
+            
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Example Embedding 
+                </h3>
+            
+            <div class="text-justify">
+                The figure below shows a t-sne visualization of the embedding learnt by our network for the Cars-196 dataset.
+                <br><br>
+                <div class="text-center">
+                    <img src="./img/example-tSNE-cars_new.png" width="70%">
+                </div>
+               
+
+            </div>
+        </div>
+        </div>
+       
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Citation
+                </h3>
+                <div class="form-group col-md-10 col-md-offset-1">
+                    <textarea id="bibtex" class="form-control" readonly>
+                        @misc{bhatnagar2024potentialfieldbaseddeep,
+                            title={Potential Field Based Deep Metric Learning}, 
+                            author={Shubhang Bhatnagar and Narendra Ahuja},
+                            year={2024},
+                            eprint={2405.18560},
+                            archivePrefix={arXiv},
+                            primaryClass={cs.CV},
+                            url={https://arxiv.org/abs/2405.18560}, 
+                      }
+                    </textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            
+                <p class="text-justify">
+                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
+                </p>
+            
+        </div>
+    </div>
+</body>
+</html>
