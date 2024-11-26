@@ -154,6 +154,37 @@
           </td>
         </tr>
         
+        <tr>
+          <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
+            <img src="images/MLR1_snap.PNG" alt="project image" style="width:auto; height:auto; max-width:100%;" />
+          </td>
+          <td style="padding:2.5%;width:60%;vertical-align:top">
+            <h3>Rethinking Prompting Strategies for Multi-Label Recognition with Partial Annotations</h3>
+            <br>
+             <a href="https://samyakr99.github.io">Samyak Rawlekar</a>,<strong>Shubhang Bhatnagar</strong>, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
+
+            <br>
+            <em> <a href="https://wacv2025.thecvf.com/">WACV </a></em> 2025,
+            <br>
+
+            <a href="javascript:toggleblock('MLR2_abs')">abstract</a> /
+             <a href="https://samyakr99.github.io/PositiveCoOp/">project page</a> /
+            <a href="https://arxiv.org/pdf/2409.08381">paper</a>
+            
+            <!-- <a href="coming soon">video</a> / 
+             -->
+            <br>
+
+              <p align="justify"> <i id="MLR2_abs"> Vision-language models (VLMs) like CLIP have been adapted for Multi-Label Recognition (MLR) with partial annotations by leveraging prompt-learning, where positive and negative prompts 
+                are learned for each class to associate their embeddings with class presence or absence in the shared vision-text feature space. While this approach improves MLR performance by 
+                relying on VLM priors, we hypothesize that learning negative prompts may be suboptimal, as the datasets used to train VLMs lack image-caption pairs explicitly focusing on class 
+                absence. To analyze the impact of positive and negative prompt learning on MLR, we introduce PositiveCoOp and NegativeCoOp, where only one prompt is learned with VLM guidance 
+                while the other is replaced by an embedding vector learned directly in the shared feature space without relying on the text encoder. Through empirical analysis, we observe that 
+                negative prompts degrade MLR performance, and learning only positive prompts, combined with learned negative embeddings (PositiveCoOp), outperforms dual prompt learning approaches.
+                 Moreover, we quantify the performance benefits that prompt-learning offers over a simple vision-features-only baseline, observing that the baseline displays strong performance 
+                 comparable to dual prompt learning approach (DualCoOp), when the proportion of missing labels is low, while requiring half the training compute and 16 times fewer parameters. </i></p>
+          </td>
+        </tr>
 
         <tr>
           <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
@@ -490,6 +521,9 @@ Annotations</h3>
         </table>
         <script xml:space="preserve" language="JavaScript">
           hideblock('potential_field_abs');
+        </script>
+        <script xml:space="preserve" language="JavaScript">
+          hideblock('MLR2_abs');
         </script>
         <script xml:space="preserve" language="JavaScript">
           hideblock('MLR1_abs');
