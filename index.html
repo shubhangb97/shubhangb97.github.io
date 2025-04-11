@@ -16,6 +16,7 @@
     <meta name="robots" content="index, follow">
     <meta property="og:image" content="images/Web_img1.jpg">
     <style type="text/css">
+
       /* Design Credits: Jon Barron, Deepak Pathak*/
       a {
         color: #1772d0;
@@ -66,6 +67,67 @@
         font-weight: 400
       }
     </style>
+
+    <style type="text/css">
+      /* Smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Mobile responsiveness improvements */
+      @media only screen and (max-width: 768px) {
+        body, td, th {
+          font-size: 14px;
+        }
+
+        .name {
+          font-size: 26px;
+        }
+
+        h2 {
+          font-size: 20px;
+        }
+
+        h3 {
+          font-size: 16px;
+        }
+
+        p {
+          text-align: left !important;
+        }
+
+        td {
+          display: block;
+          width: 100% !important;
+          max-width: 100% !important;
+          padding: 10px 0 !important;
+        }
+
+        /* Fix the social links on small screens */
+        p[style*="text-align:center"] {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        p[style*="text-align:center"] a {
+          margin: 5px;
+        }
+      }
+      /* Animate sections when they come into view */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+
     <!-- <link rel="icon" type="image/png" href="images/W.png"> -->
     <script type="text/javascript" src="js/hidebib.js"></script>
     <title>Shubhang Bhatnagar</title>
