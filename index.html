@@ -194,6 +194,32 @@
       
       <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
         
+        <tr>
+          <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
+            <a href="https://shubhangb97.github.io/LUQ"><img src="images/LUQ_tradeoff.png" alt="project image" style="width:auto; height:auto; max-width:100%;" /> </a>
+          </td>
+          <td style="padding:2.5%;width:60%;vertical-align:top">
+            <h3>LUQ: Layerwise Ultra-Low Bit Quantization for MLLMs</h3>
+
+            <br>
+            <strong>Shubhang Bhatnagar</strong>, Andy Xu, <a href="https://karhan-tan.github.io/"> Kar Han Tan</a>, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
+            <br>
+            <em>Under Review</em>
+            <br>
+            <a href="javascript:toggleblock('LUQ_abs')">abstract</a> /
+             <a href="https://shubhangb97.github.io/LUQ">project page</a> /
+            <a href="https://arxiv.org/abs/2509.23729">paper</a>
+            
+             
+             
+            <br>
+
+              <p align="justify"> <i id="LUQ_abs">Large Language Models (LLMs) with multimodal capabilities have revolutionized vision-language tasks, but their deployment often requires huge memory and computational resources. While post-training quantization (PTQ) has successfully compressed language models to as low as 1-bit precision without significant performance loss, its effectiveness for multimodal LLMs (MLLMs) remains relatively unexplored. In this paper, we present the first study on ultra-low bit (&lt 4-bit) quantization for multimodal LLMs. Our analysis reveals that multimodal tokens and intermediate layer activations produced by them exhibit significantly higher statistical variance and entropy compared to text tokens, making them less tolerant to ultra-low bit quantization.  However, the activation distributions of multimodal tokens varies significantly over different layers, with some layers having lower entropy activation distributions. We empirically show that such layers in these models can better tolerate ultra-low bit quantization. Building on these insights, we propose a novel strategy for MLLM quantization, LUQ: Layerwise Ultra-Low Bit Quantization, which selectively applies ultra-low bit quantization to layers that are more resilient to it. Additionally, we also show that using a mix of multimodal tokens  (image and text) for PTQ boosts VQA performance in the ultra-low bit regime. We evaluate our method on LLaVA-1.5 and Qwen-2.5-VL across 9 popular VQA benchmarks. The resulting LUQ models use 40% and 31% less memory than their 4-bit counterparts, respectively, while exhibiting a performance degradation of less than 10% on the MME benchmark.</i></p>
+
+          </td>
+        </tr>
+
+
          <tr>
           <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
             <a href="https://shubhangb97.github.io/potential_field_DML"><img src="images/charge_animation_small.gif" alt="project image" style="width:auto; height:auto; max-width:100%;" /> </a>
@@ -589,6 +615,9 @@ Annotations</h3>
             </td>
           </tr>
         </table>
+        <script xml:space="preserve" language="JavaScript">
+          hideblock('LUQ_abs');
+        </script>
         <script xml:space="preserve" language="JavaScript">
           hideblock('potential_field_abs');
         </script>

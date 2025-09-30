@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>LUQ: Layerwise Ultra-Low Bit Quantization for MLLMs</title>
+
+    <meta name="description" content="Project page for LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models" />
+
+    <!--<link rel="icon" href="img/luq_icon.svg"> --> <!-- You might want to create a simple icon for LUQ -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    
+    <!-- Local CSS files for styling -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    
+    <style>
+        .table-responsive {
+            margin-top: 20px;
+        }
+        .table thead th {
+            vertical-align: middle;
+            text-align: center;
+        }
+        .table tbody td {
+            vertical-align: middle;
+            text-align: center;
+        }
+        .table .info > td {
+            background-color: #d9edf7 !important;
+            font-weight: bold;
+        }
+        .section-header {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <h2 class="col-md-12 text-center">
+                <b>LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models</b><br/> 
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                    <li>
+                        <a href="https://shubhangb97.github.io/">
+                            <strong>Shubhang Bhatnagar<sup>†</sup></strong> 
+                        </a>
+                    </li>
+                    <li>
+                         Andy Xu<sup>†</sup>
+                    </li>
+                    <li>
+                        <a href="https://karhan-tan.github.io/">
+                         Kar Han Tan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://n-ahuja.ece.illinois.edu/">
+                            Narendra Ahuja
+                        </a>
+                    </li>
+                    <br/>
+                     <i><sup>†</sup>Work done as an intern at HP Inc.</small></i>
+                    <br/>
+                    <li>
+                        <a href="https://illinois.edu/">
+                            University of Illinois at Urbana-Champaign
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.ucla.edu/">
+                            University of California, Los Angeles
+                        </a>
+                    </li>
+                     <li>
+                        <a href="https://www.hp.com/">
+                            HP Inc.
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <!--  <div class="row">
+                    Logos 
+                    <div class="col-xs-6 text-right">
+                         <a href="https://illinois.edu/"><image src="img/uiuc_logo.png" height="60px" alt="UIUC Logo"></a>
+                    </div>
+                    <div class="col-xs-6 text-left">
+                         <a href="https://www.hp.com/"><image src="img/hp_logo.png" height="60px" alt="HP Logo"></a>
+                    </div>
+                </div>
+                 <br/>-->
+                <ul class="nav nav-pills nav-justified">
+                    <!--
+                    <li>
+                        <a href="Multimodal_LLM_Quantization_TMLR (7).pdf"> 
+                            <h4><i class="fa fa-file-pdf-o"></i> Paper</h4>
+                        </a>
+                    </li>
+                    -->
+                    <li>
+                        <a href="https://arxiv.org/abs/2509.23729"> <!-- Link to your Arxiv PDF -->
+                            <h4><i class="fa fa-archive"></i> Arxiv</h4>
+                        </a>
+                    </li>
+                    <!--
+                    <li>
+                        <a href="#"> 
+                             <h4><i class="fa fa-github"></i> Code (Coming Soon)</h4>
+                        </a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+        </div>
+
+        <!--
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Side-by-Side Demo
+                </h3>
+                <p class="text-justify">
+                    This is a demonstration of our method compared to a baseline. The video on the left shows the baseline model's output, while the video on the right shows our LUQ-quantized model's output. Note the reduced memory footprint and comparable performance.
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Baseline Model (4-bit)</h4>
+                        <video width="100%" autoplay loop muted controls preload="metadata">
+                          <source src="videos/baseline_demo.mp4#t=0.5" type="video/mp4" />
+                        </video>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Our LUQ Model (2.75-bit)</h4>
+                        <video width="100%" autoplay loop muted controls preload="metadata">
+                          <source src="videos/luq_demo.mp4#t=0.5" type="video/mp4" />
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Large Language Models (LLMs) with multimodal capabilities have revolutionized vision-language tasks, but their deployment often requires huge memory and computational resources. While post-training quantization (PTQ) has successfully compressed language models to as low as 1-bit precision without significant performance loss, its effectiveness for multimodal LLMs (MLLMs) remains relatively unexplored. In this paper, we present the first study on ultra-low bit (&lt;4-bit) quantization for multimodal LLMs. Our analysis reveals that multimodal tokens and intermediate layer activations produced by them exhibit significantly higher statistical variance and entropy compared to text tokens, making them less tolerant to ultra-low bit quantization. However, the activation distributions of multimodal tokens varies significantly over different layers, with some layers having lower entropy activation distributions. We empirically show that such layers in these models can better tolerate ultra-low bit quantization. Building on these insights, we propose a novel strategy for MLLM quantization, LUQ: Layerwise Ultra-Low Bit Quantization, which selectively applies ultra-low bit quantization to layers that are more resilient to it. Additionally, we also show that using a mix of multimodal tokens (image and text) for PTQ boosts VQA performance in the ultra-low bit regime. We evaluate our method on LLaVA-1.5 and Qwen-2.5-VL across 9 popular VQA benchmarks. The resulting LUQ models use 40% and 31% less memory than their 4-bit counterparts, respectively, while exhibiting a performance degradation of less than 10% on the MME benchmark.
+                </p>
+
+                <h3>
+                    TL;DR:
+                </h3>
+                <p class="text-justify"> We introduce LUQ, a method for extreme (&lt;4-bit) compression of Multimodal LLMs. By selectively quantizing only the layers that are robust to it (low activation entropy), we significantly reduce memory usage while preserving performance on vision-language tasks.</p>
+            </div>
+        </div>
+
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Method Overview
+                </h3>
+                <div class="text-center">
+                    <img src="./img/LUQ_overview_diagram.png" width="100%" alt="LUQ Method Overview Diagram">
+                </div>
+                <div class="text-center">
+                        <strong> An overview of our LUQ pipeline:</strong> (i) Generate multimodal calibration tokens. (ii) Extract layerwise activations from the MLLM. (iii) Calculate the activation entropy for each layer to identify quantization-resilient layers (lower entropy). (iv) Iteratively quantize the lowest-entropy layers to an ultra-low bit-width until a performance or memory budget is met. (v) Combine the layers, already quantized into different precision to the final compressed model.
+                </div>
+            </div>
+        </div>
+
+        <div class="row section-header">
+            <div class="col-md-10 col-md-offset-1">
+                <h3>
+                    Results
+                </h3>
+                <p class="text-justify">
+                    We compare LUQ to state-of-the-art PTQ methods on 9 VQA benchmarks for LLaVA-1.5 7B and Qwen 2.5 VL 7B models. The table below shows that LUQ achieves a much better trade-off between performance and model size. For LLaVA-1.5, LUQ is 40% smaller than 4-bit models with comparable accuracy. For Qwen 2.5 VL, LUQ provides a 31.5% memory reduction while maintaining strong performance.
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Avg. Bits</th>
+                                <th>MME Per.</th>
+                                <th>MME Cog.</th>
+                                <th>MM Bench</th>
+                                <th>Text VQA</th>
+                                <th>VQAv2</th>
+                                <th>GQA</th>
+                                <th>POPE</th>
+                                <th>Chart QA</th>
+                                <th>Doc QA</th>
+                                <th>Math Vista</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="info">
+                                <td colspan="12"><strong>LLaVA-1.5 7B Backbone</strong></td>
+                            </tr>
+                            <tr>
+                                <td>FP16 (Baseline)</td><td>16</td><td>1510</td><td>350</td><td>63.4</td><td>58.2</td><td>78.5</td><td>62.0</td><td>83.2</td><td>-</td><td>-</td><td>23.6</td>
+                            </tr>
+                            <tr>
+                                <td>GPTQ</td><td>4</td><td>1450</td><td>347</td><td>58.2</td><td>56.8</td><td>76.3</td><td>61.4</td><td>76.0</td><td>-</td><td>-</td><td>20.1</td>
+                            </tr>
+                            <tr>
+                                <td>AWQ</td><td>4</td><td>1456</td><td>349</td><td>59.8</td><td>56.7</td><td>76.6</td><td>61.5</td><td>76.7</td><td>-</td><td>-</td><td>20.6</td>
+                            </tr>
+                            <tr>
+                                <td>GPTQ</td><td>3</td><td>1346</td><td>273</td><td>31.2</td><td>54.1</td><td>73.5</td><td>58.8</td><td>70.5</td><td>-</td><td>-</td><td>16.4</td>
+                            </tr>
+                            <tr>
+                                <td>GPTQ*</td><td>2</td><td>0</td><td>0</td><td>0.0</td><td>0</td><td>0</td><td>0.0</td><td>0.0</td><td>-</td><td>-</td><td>0.0</td>
+                            </tr>
+                             <tr>
+                                <td>BiLLM</td><td>1.08</td><td>561</td><td>39</td><td>15.6</td><td>7.4</td><td>37.2</td><td>22.7</td><td>25.5</td><td>-</td><td>-</td><td>3.5</td>
+                            </tr>
+                            <tr>
+                                <td><b>LUQ (Ours)</b></td><td><b>2.54</b></td><td><b>1365</b></td><td><b>257</b></td><td><b>53.4</b></td><td><b>46.7</b></td><td><b>74.9</b></td><td><b>58.2</b></td><td><b>74.5</b></td><td><b>-</b></td><td><b>-</b></td><td><b>18.7</b></td>
+                            </tr>
+                            <tr class="info">
+                                <td colspan="12"><strong>Qwen 2.5 VL Backbone</strong></td>
+                            </tr>
+                            <tr>
+                                <td>FP16 (Baseline)</td><td>16</td><td>1695</td><td>640</td><td>84.9</td><td>82.6</td><td>83.5</td><td>60.5</td><td>86.1</td><td>87.3</td><td>95.7</td><td>68.2</td>
+                            </tr>
+                            <tr>
+                                <td>GPTQ</td><td>4</td><td>1638</td><td>610</td><td>84.2</td><td>80.2</td><td>82.6</td><td>60.1</td><td>84.8</td><td>84.1</td><td>93.4</td><td>44.8</td>
+                            </tr>
+                            <tr>
+                                <td>AWQ</td><td>4</td><td>1645</td><td>620</td><td>80.9</td><td>84.6</td><td>82.7</td><td>60.5</td><td>85.6</td><td>84.5</td><td>93.5</td><td>46.1</td>
+                            </tr>
+                             <tr>
+                                <td>GPTQ</td><td>3</td><td>319</td><td>131</td><td>34.7</td><td>79.5</td><td>81.5</td><td>53.4</td><td>82.9</td><td>61.0</td><td>89.2</td><td>21.0</td>
+                            </tr>
+                            <tr>
+                                <td>GPTQ*</td><td>2</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td>
+                            </tr>
+                            <tr>
+                                <td>BiLLM</td><td>1.08</td><td>638</td><td>42</td><td>9.7</td><td>26.3</td><td>39.5</td><td>4.3</td><td>70.7</td><td>3.7</td><td>20.3</td><td>15.1</td>
+                            </tr>
+                            <tr>
+                                <td><b>LUQ (Ours)</b></td><td><b>2.75</b></td><td><b>1640</b></td><td><b>600</b></td><td><b>63.7</b></td><td><b>81.9</b></td><td><b>79.7</b></td><td><b>52.9</b></td><td><b>84.7</b></td><td><b>68.6</b></td><td><b>90.5</b></td><td><b>41.7</b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <p class="text-muted text-left"><small>* indicates models with incoherent/gibberish output.</small></p>
+            </div>
+        </div>
+
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Performance vs. Memory Trade-off
+                </h3>
+                <p class="text-justify">
+                    LUQ allows for a graceful trade-off between performance and model size. By progressively quantizing more layers (starting from the lowest entropy), we can achieve different compression rates. The plots below show that LUQ consistently creates a better performance-vs-compression frontier compared to standard PTQ methods like GPTQ and AWQ, which suffer catastrophic performance collapse at sub-3-bit compression.
+                </p>
+                
+                <!-- Two graphs side-by-side -->
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        <img src="./img/llava_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for LLaVA 1.5">
+                        <p><strong>LLaVA 1.5 7B</strong></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <img src="./img/qwen_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for Qwen 2.5 VL">
+                        <p><strong>Qwen 2.5 VL 7B</strong></p>
+                    </div>
+                </div>
+                <!-- 
+                Four graphs in a 2x2 grid (COMMENTED OUT)
+                To use this, you would create four separate image files from your paper's figures.
+                
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        <img src="./img/tradeoff_llava_mme.png" width="100%" alt="Performance vs Memory Tradeoff for LLaVA 1.5 on MME">
+                        <p><small>LLaVA 1.5 on MME</small></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <img src="./img/tradeoff_llava_vqa.png" width="100%" alt="Performance vs Memory Tradeoff for LLaVA 1.5 on VQA v2">
+                        <p><small>LLaVA 1.5 on VQA v2</small></p>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-6 text-center">
+                        <img src="./img/tradeoff_qwen_docvqa.png" width="100%" alt="Performance vs Memory Tradeoff for Qwen 2.5 VL on DocQA">
+                        <p><small>Qwen 2.5 VL on DocQA</small></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <img src="./img/tradeoff_qwen_chartqa.png" width="100%" alt="Performance vs Memory Tradeoff for Qwen 2.5 VL on ChartQA">
+                        <p><small>Qwen 2.5 VL on ChartQA</small></p>
+                    </div>
+                </div>
+                -->
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Citation
+                </h3>
+                <p>If you find our work useful, please consider citing:</p>
+                <div class="form-group col-md-10 col-md-offset-1">
+                    <textarea id="bibtex" class="form-control" readonly>
+                        @misc{bhatnagar2025luqlayerwiseultralowbit,
+                            title={LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models}, 
+                            author={Shubhang Bhatnagar and Andy Xu and Kar-Han Tan and Narendra Ahuja},
+                            year={2025},
+                            eprint={2509.23729},
+                            archivePrefix={arXiv},
+                            primaryClass={cs.CV},
+                            url={https://arxiv.org/abs/2509.23729}, 
+                      }
+                    </textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <p class="text-justify text-muted"><small>
+                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
+                </small></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
