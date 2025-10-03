@@ -117,13 +117,7 @@
                 </div>
                  <br/>-->
                 <ul class="nav nav-pills nav-justified">
-                    <!--
-                    <li>
-                        <a href="Multimodal_LLM_Quantization_TMLR (7).pdf"> 
-                            <h4><i class="fa fa-file-pdf-o"></i> Paper</h4>
-                        </a>
-                    </li>
-                    -->
+                    
                     <li>
                         <a href="https://arxiv.org/abs/2509.23729"> <!-- Link to your Arxiv PDF -->
                             <h4><i class="fa fa-archive"></i> Arxiv</h4>
@@ -140,32 +134,16 @@
             </div>
         </div>
 
-        <!--
-        <div class="row section-header">
+        <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Side-by-Side Demo
-                </h3>
-                <p class="text-justify">
-                    This is a demonstration of our method compared to a baseline. The video on the left shows the baseline model's output, while the video on the right shows our LUQ-quantized model's output. Note the reduced memory footprint and comparable performance.
-                </p>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Baseline Model (4-bit)</h4>
-                        <video width="100%" autoplay loop muted controls preload="metadata">
-                          <source src="videos/baseline_demo.mp4#t=0.5" type="video/mp4" />
-                        </video>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Our LUQ Model (2.75-bit)</h4>
-                        <video width="100%" autoplay loop muted controls preload="metadata">
-                          <source src="videos/luq_demo.mp4#t=0.5" type="video/mp4" />
-                        </video>
-                    </div>
+                <video id="v0" width="100%" autoplay loop muted controls>
+                  <source src="img/LUQ_demo.mp4" type="video/mp4" />
+                </video>
+                <div class="text-center">
+                <strong> A demonstration of LUQ Qwen 2.5 VL running on a laptop, showing that it runs significantly faster than the 4-bit and 16-bit versions of the model on the same device </strong>
                 </div>
-            </div>
+			</div>
         </div>
-        -->
 
         <div class="row section-header">
             <div class="col-md-8 col-md-offset-2">
@@ -196,11 +174,30 @@
                 </div>
             </div>
         </div>
-
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Performance vs. Memory Trade-off
+                </h3>
+                <p class="text-justify">
+                    LUQ allows for a graceful trade-off between performance and model size. By progressively quantizing more layers (starting from the lowest entropy), we can achieve different compression rates. The plots below show that LUQ consistently creates a better performance-vs-compression frontier compared to standard PTQ methods like GPTQ and AWQ, which suffer catastrophic performance collapse at sub-3-bit compression.
+                </p>
+                
+                <!-- Two graphs side-by-side -->
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        <img src="./img/llava_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for LLaVA 1.5">
+                        <p><strong>LLaVA 1.5 7B</strong></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <img src="./img/qwen_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for Qwen 2.5 VL">
+                        <p><strong>Qwen 2.5 VL 7B</strong></p>
+                    </div>
+                </div>
         <div class="row section-header">
             <div class="col-md-10 col-md-offset-1">
                 <h3>
-                    Results
+                    Comparison to State-of-the-Art Methods
                 </h3>
                 <p class="text-justify">
                     We compare LUQ to state-of-the-art PTQ methods on 9 VQA benchmarks for LLaVA-1.5 7B and Qwen 2.5 VL 7B models. The table below shows that LUQ achieves a much better trade-off between performance and model size. For LLaVA-1.5, LUQ is 40% smaller than 4-bit models with comparable accuracy. For Qwen 2.5 VL, LUQ provides a 31.5% memory reduction while maintaining strong performance.
@@ -279,26 +276,7 @@
             </div>
         </div>
 
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Performance vs. Memory Trade-off
-                </h3>
-                <p class="text-justify">
-                    LUQ allows for a graceful trade-off between performance and model size. By progressively quantizing more layers (starting from the lowest entropy), we can achieve different compression rates. The plots below show that LUQ consistently creates a better performance-vs-compression frontier compared to standard PTQ methods like GPTQ and AWQ, which suffer catastrophic performance collapse at sub-3-bit compression.
-                </p>
-                
-                <!-- Two graphs side-by-side -->
-                <div class="row">
-                    <div class="col-md-6 text-center">
-                        <img src="./img/llava_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for LLaVA 1.5">
-                        <p><strong>LLaVA 1.5 7B</strong></p>
-                    </div>
-                    <div class="col-md-6 text-center">
-                        <img src="./img/qwen_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for Qwen 2.5 VL">
-                        <p><strong>Qwen 2.5 VL 7B</strong></p>
-                    </div>
-                </div>
+        
                 <!-- 
                 Four graphs in a 2x2 grid (COMMENTED OUT)
                 To use this, you would create four separate image files from your paper's figures.
@@ -332,17 +310,16 @@
                 <p>If you find our work useful, please consider citing:</p>
                 <div class="form-group col-md-10 col-md-offset-1">
                     <textarea id="bibtex" class="form-control" readonly>
-                        @misc{bhatnagar2025luqlayerwiseultralowbit,
-                            title={LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models}, 
-                            author={Shubhang Bhatnagar and Andy Xu and Kar-Han Tan and Narendra Ahuja},
-                            year={2025},
-                            eprint={2509.23729},
-                            archivePrefix={arXiv},
-                            primaryClass={cs.CV},
-                            url={https://arxiv.org/abs/2509.23729}, 
-                      }
-                    </textarea>
-                </div>
+@misc{bhatnagar2025luqlayerwiseultralowbit,
+    title={LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models}, 
+    author={Shubhang Bhatnagar and Andy Xu and Kar-Han Tan and Narendra Ahuja},
+    year={2025},
+    eprint={2509.23729},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV},
+    url={https://arxiv.org/abs/2509.23729}, 
+}
+
             </div>
         </div>
 
