@@ -224,33 +224,28 @@
               <br>
               <strong>Shubhang Bhatnagar</strong>, Renxiong Wang, Kapil Krishnakumar, Adel Ahmadyan, Zhaojiang Lin,
               Lambert Mathias, Xin Luna Dong, Babak Damavandi, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja">
-                Narendra Ahuja</a>, Seungwhan Moon
+                Narendra Ahuja</a>, <a href="https://shanemoon.com/">Seungwhan Moon</a>
               <br>
               <em><a href="https://2026.eacl.org/"> European Chapter of the Association for Computational Linguistics
                   (EACL), </a> </em> 2026 <b>(Industry, Oral) </b>
               <br>
               <a href="javascript:toggleblock('videomind_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/VideoMind">project page</a>
+              <a href="https://aclanthology.org/2026.eacl-industry.30.pdf">paper</a>
+              <a href="files/VideoMind_presentation.pdf">slides</a>
 
 
 
               <br>
 
-              <p align="justify"> <i id="videomind_abs"> Multimodal Large Language Models (MLLMs) struggle with Long
-                  Video Understanding (LVU) due to their limited context window and the distributed nature of salient
-                  information across many redundant frames. To address this, we present VideoMind, a novel training free
-                  framework for LVU designed to mimic a human reasoning process. The framework is orchestrated by an
-                  MLLM that breaks down a user's query into a series of simpler, actionable sub-queries. For each sub
-                  query, the MLLM reconfigures itself by invoking specialized `modes' that are instantiations of the
-                  same MLLM, but with appropriately tailored context for the given sub query to extract targeted
-                  evidence. After gathering this evidence, the model resumes its role as the orchestrator which
-                  evaluates the results and decides if an answer is complete or if it must refine its strategy by
-                  engaging further modes with new context. Our specialized operational modes include: 1) a Multi-Scale
-                  Temporal Search mode to identify and summarize relevant video sub-snippets at varying time scales, and
-                  2) a Single-Frame Visual Detail mode for precise spatial localization of objects. This dynamic
-                  allocation of computation yields state-of-the-art results on the Video-MME, LongVideo, and MLVU
-                  benchmarks, achieving 77.6% performance on Video MME using Qwen 2.5 72B (4.8% enhancement) while also
-                  yielding a 5% improvement on Llama 4 Scout.</i></p>
+              <p align="justify"> <i id="videomind_abs"> Multimodal Large Language Models (MLLMs) struggle with Long Video Understanding (LVU) due to their limited context window and the distributed nature of salient information across many redundant frames. 
+                To address this, we present VideoMind, a novel training free agentic framework for LVU designed to mimic a human reasoning process. The framework is orchestrated by an MLLM 
+                that breaks down a user’s query into a series of simpler, actionable sub-queries. For each sub query, the MLLM reconfigures itself by invoking specialized ‘modes’ that are 
+                instantiations of the same MLLM, but with appropriately tailored context for the given sub query to extract targeted evidence.
+                 After gathering this evidence, the model resumes its role as the orchestrator which evaluates the results and decides if an answer is complete or if it must refine its 
+                 strategy by engaging further modes with new context. Our specialized operational modes include: 1) a Multi-Scale Temporal Search mode to identify and summarize relevant 
+                 video sub-snippets at varying time scales, and 2) a Single-Frame Visual Detail mode for precise spatial localization of objects. This dynamic allocation of computation 
+                 yields state-of-the-art results on the Video-MME, LongVideo, and MLVU benchmarks, achieving 77.6% performance on Video MME using Qwen 2.5 72B (4.8% enhancement) while 
+                 also yielding a 5% improvement on Llama 4 Scout.</i></p>
 
             </td>
           </tr>
