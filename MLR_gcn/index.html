@@ -1,23 +1,28 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>Improving Multi-label Recognition using Class Co-Occurrence Probabilities</title>
+    <title>Improving Multi-label Recognition using Class Co-Occurrence Probabilities | ICPR 2024</title>
 
-    <meta name="description" content="">
+    <meta name="description"
+        content="Improving multi-label recognition by modeling class co-occurrence as conditional probabilities and enforcing them with a Graph Convolutional Network over vision-language model estimates. ICPR 2024 (Oral, Top 5%).">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
+    <link rel="canonical" href="https://shubhangb97.github.io/MLR_gcn/" />
 
     <meta property="og:type" content="website" />
-
+    <meta property="og:url" content="https://shubhangb97.github.io/MLR_gcn/" />
     <meta property="og:title" content="Improving Multi-label Recognition using Class Co-Occurrence Probabilities" />
-
+    <meta property="og:description" content="A framework that extends per-class classifiers with class co-occurrence probabilities enforced via a Graph Convolutional Network, outperforming state-of-the-art on four multi-label recognition datasets. ICPR 2024 (Oral, Top 5%)." />
+    <meta property="og:image" content="https://shubhangb97.github.io/MLR_gcn/img/MLR_gcn_snapshot.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Improving Multi-label Recognition using Class Co-Occurrence Probabilities" />
+    <meta name="twitter:description" content="Modeling class co-occurrence with a GCN over VLM estimates to improve multi-label recognition. ICPR 2024 (Oral, Top 5%)." />
+    <meta name="twitter:image" content="https://shubhangb97.github.io/MLR_gcn/img/MLR_gcn_snapshot.png" />
 
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👍</text></svg>">
@@ -36,6 +41,29 @@
     
     <script src="js/app.js"></script>
     <script src="js/video_comparison.js"></script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "headline": "Improving Multi-label Recognition using Class Co-Occurrence Probabilities",
+      "name": "Improving Multi-label Recognition using Class Co-Occurrence Probabilities",
+      "author": [
+        { "@type": "Person", "name": "Shubhang Bhatnagar", "url": "https://shubhangb97.github.io/" },
+        { "@type": "Person", "name": "Samyak Rawlekar", "url": "https://samyakr99.github.io" },
+        { "@type": "Person", "name": "Vishnuvardhan Pogunulu Srinivasulu" },
+        { "@type": "Person", "name": "Narendra Ahuja", "url": "https://n-ahuja.ece.illinois.edu/" }
+      ],
+      "datePublished": "2024",
+      "isPartOf": "International Conference on Pattern Recognition (ICPR) 2024 (Oral, Top 5%); CVPR MetaFood Workshop 2024",
+      "abstract": "Multi-label Recognition (MLR) involves the identification of multiple objects within an image. To address the additional complexity of this problem, recent works have leveraged information from vision-language models (VLMs) trained on large text-images datasets for the task. These methods learn an independent classifier for each object (class), overlooking correlations in their occurrences. Such co-occurrences can be captured from the training data as conditional probabilities between a pair of classes. We propose a framework to extend the independent classifiers by incorporating the co-occurrence information for object pairs to improve the performance of independent classifiers. We use a Graph Convolutional Network (GCN) to enforce the conditional probabilities between classes, by refining the initial estimates derived from image and text sources obtained using VLMs. We validate our method on four MLR datasets, where our approach outperforms all state-of-the-art methods.",
+      "url": "https://shubhangb97.github.io/MLR_gcn/",
+      "image": "https://shubhangb97.github.io/MLR_gcn/img/MLR_gcn_snapshot.png",
+      "sameAs": "https://arxiv.org/abs/2404.16193",
+      "identifier": "arXiv:2404.16193",
+      "keywords": "multi-label recognition, vision-language models, graph convolutional networks, class co-occurrence, CLIP"
+    }
+    </script>
 </head>
 
 <body>

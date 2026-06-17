@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>VideoMind: Thinking in Steps for Long Video Understanding</title>
+
+    <meta name="description" content="Project page for VideoMind: Thinking in Steps for Long Video Understanding">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="canonical" href="https://shubhangb97.github.io/VideoMind/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shubhangb97.github.io/VideoMind/" />
+    <meta property="og:title" content="VideoMind: Thinking in Steps for Long Video Understanding" />
+    <meta property="og:description" content="A training-free agentic framework for long video understanding: an MLLM orchestrator decomposes a query into sub-queries and invokes specialized modes, reaching state-of-the-art results on Video-MME, LongVideo, and MLVU (EACL 2026, Industry, Oral)." />
+    <meta property="og:image" content="https://shubhangb97.github.io/images/videomind_snap.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VideoMind: Thinking in Steps for Long Video Understanding" />
+    <meta name="twitter:description" content="A training-free agentic MLLM framework for long video understanding, achieving state-of-the-art results on Video-MME, LongVideo, and MLVU." />
+    <meta name="twitter:image" content="https://shubhangb97.github.io/images/videomind_snap.png" />
+
+    <!-- <link rel="icon" href="img/videomind_icon.svg"> -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+    
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    
+    <style>
+        .section-header {
+            margin-top: 40px;
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "headline": "VideoMind: Thinking in Steps for Long Video Understanding",
+      "name": "VideoMind: Thinking in Steps for Long Video Understanding",
+      "author": [
+        { "@type": "Person", "name": "Shubhang Bhatnagar", "url": "https://shubhangb97.github.io/" },
+        { "@type": "Person", "name": "Renxiong Wang" },
+        { "@type": "Person", "name": "Kapil Krishnakumar" },
+        { "@type": "Person", "name": "Adel Ahmadyan" },
+        { "@type": "Person", "name": "Zhaojiang Lin" },
+        { "@type": "Person", "name": "Lambert Mathias" },
+        { "@type": "Person", "name": "Xin Luna Dong" },
+        { "@type": "Person", "name": "Babak Damavandi" },
+        { "@type": "Person", "name": "Narendra Ahuja", "url": "https://n-ahuja.ece.illinois.edu/" },
+        { "@type": "Person", "name": "Seungwhan Moon", "url": "https://shanemoon.com/" }
+      ],
+      "datePublished": "2026",
+      "publisher": { "@type": "Organization", "name": "Association for Computational Linguistics" },
+      "isPartOf": "Proceedings of the European Chapter of the Association for Computational Linguistics (EACL) 2026, Industry Track",
+      "abstract": "Multimodal Large Language Models (MLLMs) struggle with Long Video Understanding (LVU) due to their limited context window and the distributed nature of salient information across many redundant frames. To address this, we present VideoMind, a novel training free agentic framework for LVU designed to mimic a human reasoning process. The framework is orchestrated by an MLLM that breaks down a user's query into a series of simpler, actionable sub-queries. For each sub query, the MLLM reconfigures itself by invoking specialized 'modes' that are instantiations of the same MLLM, but with appropriately tailored context for the given sub query to extract targeted evidence. After gathering this evidence, the model resumes its role as the orchestrator which evaluates the results and decides if an answer is complete or if it must refine its strategy by engaging further modes with new context. Our specialized operational modes include: 1) a Multi-Scale Temporal Search mode to identify and summarize relevant video sub-snippets at varying time scales, and 2) a Single-Frame Visual Detail mode for precise spatial localization of objects. This dynamic allocation of computation yields state-of-the-art results on the Video-MME, LongVideo, and MLVU benchmarks, achieving 77.6% performance on Video MME using Qwen 2.5 72B (4.8% enhancement) while also yielding a 5% improvement on Llama 4 Scout.",
+      "url": "https://shubhangb97.github.io/VideoMind/",
+      "image": "https://shubhangb97.github.io/images/videomind_snap.png",
+      "sameAs": "https://aclanthology.org/2026.eacl-industry.30.pdf",
+      "keywords": "long video understanding, multimodal large language models, agentic framework, video question answering, MLLM, Video-MME"
+    }
+    </script>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <h2 class="col-md-12 text-center">
+                <b>VideoMind: Thinking in Steps for Long Video Understanding</b><br/> 
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                    <li>
+                        <a href="https://shubhangb97.github.io/">
+                            <strong>Shubhang Bhatnagar<sup>1</sup></strong>
+                        </a>
+                    </li>
+                    <li>
+                        Renxiong Wang<sup>2</sup>
+                    </li>
+                    <li>
+                        Kapil Krishnakumar<sup>2</sup>
+                    </li>
+                    <li>
+                        Adel Ahmadyan<sup>2</sup>
+                    </li>
+                    <li>
+                        Zhaojiang Lin<sup>2</sup>
+                    </li>
+                    <li>
+                        Lambert Mathias<sup>2</sup>
+                    </li>
+                    <br/>
+                    <li>
+                        Xin Luna Dong<sup>2</sup>
+                    </li>
+                    <li>
+                        Babak Damavandi<sup>2</sup>
+                    </li>
+                    <li>
+                        <a href="https://n-ahuja.ece.illinois.edu/">
+                            Narendra Ahuja<sup>1</sup>
+                        </a>
+                    </li>
+                    <li>
+                        Seungwhan Moon<sup>2</sup>
+                    </li>
+                    <br/>
+                    <li>
+                        <sup>1</sup><a href="https://illinois.edu/">
+                            University of Illinois at Urbana-Champaign
+                        </a>
+                    </li>
+                    <li>
+                        <sup>2</sup><a href="https://www.meta.com/">
+                            Meta
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <em><a href="https://2026.eacl.org/">EACL 2026</a> Industry Track</em>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <ul class="nav nav-pills nav-justified">
+                    <li>
+                        <a href="#">
+                            <h4><i class="fa fa-archive"></i> Paper (Coming Soon)</h4>
+                        </a>
+                    </li>
+                    <!--
+                    <li>
+                        <a href="#">
+                            <h4><i class="fa fa-github"></i> Code (Coming Soon)</h4>
+                        </a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Placeholder for teaser image/video -->
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="text-center">
+                    <!-- TODO: Add teaser image or video here -->
+                    <img src="./img/videomind_teaser.png" width="100%" alt="VideoMind Teaser Image">
+                </div>
+			</div>
+        </div>
+
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Multimodal Large Language Models (MLLMs) struggle with Long Video Understanding (LVU) due to their limited context window and the distributed nature of salient information across many redundant frames. To address this, we present VideoMind, a novel training free framework for LVU designed to mimic a human reasoning process. The framework is orchestrated by an MLLM that breaks down a user's query into a series of simpler, actionable sub-queries. For each sub query, the MLLM reconfigures itself by invoking specialized `modes' that are instantiations of the same MLLM, but with appropriately tailored context for the given sub query to extract targeted evidence. After gathering this evidence, the model resumes its role as the orchestrator which evaluates the results and decides if an answer is complete or if it must refine its strategy by engaging further modes with new context. Our specialized operational modes include: 1) a Multi-Scale Temporal Search mode to identify and summarize relevant video sub-snippets at varying time scales, and 2) a Single-Frame Visual Detail mode for precise spatial localization of objects. This dynamic allocation of computation yields state-of-the-art results on the Video-MME, LongVideo, and MLVU benchmarks, achieving 77.6% performance on Video MME using Qwen 2.5 72B (4.8% enhancement) while also yielding a 5% improvement on Llama 4 Scout.
+                </p>
+
+                <h3>
+                    TL;DR:
+                </h3>
+                <p class="text-justify">
+                    VideoMind helps MLLMs watch videos like humans by focusing only on salient moments and details that matter, allowing them to answer long-video questions more accurately without extra training.
+                </p>
+            </div>
+        </div>
+
+        <!-- Placeholder for method overview -->
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Method Overview
+                </h3>
+                <div class="text-center">
+                    <!-- TODO: Add method overview diagram here -->
+                    <img src="./img/videomind_method.png" width="100%" alt="VideoMind Method Overview">
+                </div>
+            </div>
+        </div>
+
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Citation
+                </h3>
+                <p>If you find our work useful, please consider citing:</p>
+                <div class="form-group col-md-10 col-md-offset-1">
+                    <textarea id="bibtex" class="form-control" readonly>
+@inproceedings{bhatnagar2026videomind,
+    title={VideoMind: Thinking in Steps for Long Video Understanding},
+    author={Bhatnagar, Shubhang and Wang, Renxiong and Krishnakumar, Kapil and Ahmadyan, Adel and Lin, Zhaojiang and Mathias, Lambert and Dong, Xin Luna and Damavandi, Babak and Ahuja, Narendra and Moon, Seungwhan},
+    booktitle={Proceedings of the 2026 Conference of the European Chapter of the Association for Computational Linguistics: Industry Track},
+    year={2026}
+}
+</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <p class="text-justify text-muted"><small>
+                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
+                </small></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

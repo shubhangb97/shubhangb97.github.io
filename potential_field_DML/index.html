@@ -1,23 +1,28 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
+<head>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>Potential Field DML</title>
+    <title>Potential Field Based Deep Metric Learning | CVPR 2025</title>
 
-    <meta name="description" content="">
+    <meta name="description"
+        content="A compositional deep metric learning model inspired by electrostatic fields: each embedding induces a decaying potential field, improving robustness to large intra-class variation and label noise. CVPR 2025.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
+    <link rel="canonical" href="https://shubhangb97.github.io/potential_field_DML/" />
 
     <meta property="og:type" content="website" />
-
+    <meta property="og:url" content="https://shubhangb97.github.io/potential_field_DML/" />
     <meta property="og:title" content="Potential Field Based Deep Metric Learning" />
-
+    <meta property="og:description" content="A compositional deep metric learning model inspired by electrostatic fields, with decaying attractive/repulsive potential fields that improve robustness to intra-class variation and label noise. CVPR 2025." />
+    <meta property="og:image" content="https://shubhangb97.github.io/potential_field_DML/img/potential_field_snapshot.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Potential Field Based Deep Metric Learning" />
+    <meta name="twitter:description" content="Deep metric learning via decaying electrostatic-style potential fields; state-of-the-art on Cars-196, CUB-200-2011, and SOP. CVPR 2025." />
+    <meta name="twitter:image" content="https://shubhangb97.github.io/potential_field_DML/img/potential_field_snapshot.png" />
 
     <link rel="icon" href="img/field_fig_newest.svg">
 <!--<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👍</text></svg>">-->
@@ -36,6 +41,27 @@
     
     <script src="js/app.js"></script>
     <script src="js/video_comparison.js"></script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "headline": "Potential Field Based Deep Metric Learning",
+      "name": "Potential Field Based Deep Metric Learning",
+      "author": [
+        { "@type": "Person", "name": "Shubhang Bhatnagar", "url": "https://shubhangb97.github.io/" },
+        { "@type": "Person", "name": "Narendra Ahuja", "url": "https://n-ahuja.ece.illinois.edu/" }
+      ],
+      "datePublished": "2025",
+      "publisher": { "@type": "Organization", "name": "IEEE/CVF" },
+      "isPartOf": "Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) 2025",
+      "abstract": "Deep metric learning (DML) involves training a network to learn a semantically meaningful representation space. Many current approaches mine n-tuples of examples and model interactions within each tuplets. We present a novel, compositional DML model, inspired by electrostatic fields in physics that, instead of in tuples, represents the influence of each example (embedding) by a continuous potential field, and superposes the fields to obtain their combined global potential field. We use attractive/repulsive potential fields to represent interactions among embeddings from images of the same/different classes. Contrary to typical learning methods, where mutual influence of samples is proportional to their distance, we enforce reduction in such influence with distance, leading to a decaying field. We show that such decay helps improve performance on real world datasets with large intra-class variations and label noise. Like other proxy-based methods, we also use proxies to succinctly represent sub-populations of examples. We evaluate our method on three standard DML benchmarks- Cars-196, CUB-200-2011, and SOP datasets where it outperforms state-of-the-art baselines.",
+      "url": "https://shubhangb97.github.io/potential_field_DML/",
+      "image": "https://shubhangb97.github.io/potential_field_DML/img/potential_field_snapshot.png",
+      "sameAs": "https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html",
+      "keywords": "deep metric learning, representation learning, image retrieval, potential fields, proxy-based metric learning"
+    }
+    </script>
 </head>
 
 <body>
