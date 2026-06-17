@@ -4,58 +4,704 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-
-    <title>LUQ: Layerwise Ultra-Low Bit Quantization for MLLMs</title>
-
-    <meta name="description" content="Project page for LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <title>LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal LLMs</title>
+
+    <meta name="description"
+        content="LUQ enables extreme (sub-4-bit) compression of multimodal LLMs by selectively quantizing only the layers robust to it (low activation entropy), cutting memory 31-40% vs 4-bit while preserving vision-language performance.">
+
     <link rel="canonical" href="https://shubhangb97.github.io/LUQ/" />
+
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://shubhangb97.github.io/LUQ/" />
-    <meta property="og:title" content="LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models" />
-    <meta property="og:description" content="LUQ enables extreme (sub-4-bit) compression of multimodal LLMs by selectively quantizing only the layers robust to it (low activation entropy), cutting memory while preserving vision-language performance." />
+    <meta property="og:title" content="LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal LLMs" />
+    <meta property="og:description"
+        content="The first study on ultra-low bit (sub-4-bit) quantization for multimodal LLMs: selectively quantize low-entropy layers to cut memory 31-40% vs 4-bit with minimal accuracy loss. TMLR 2026." />
     <meta property="og:image" content="https://shubhangb97.github.io/LUQ/img/LUQ_overview_diagram.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models" />
-    <meta name="twitter:description" content="The first study on ultra-low bit (sub-4-bit) quantization for multimodal LLMs: selectively quantize low-entropy layers to cut memory 31-40% vs 4-bit with minimal accuracy loss." />
+    <meta name="twitter:title" content="LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal LLMs" />
+    <meta name="twitter:description"
+        content="Selectively quantize low-entropy layers to cut memory 31-40% vs 4-bit with minimal accuracy loss. TMLR 2026." />
     <meta name="twitter:image" content="https://shubhangb97.github.io/LUQ/img/LUQ_overview_diagram.png" />
 
-    <!--<link rel="icon" href="img/luq_icon.svg"> --> <!-- You might want to create a simple icon for LUQ -->
+    <!-- Favicon: tiny inline SVG (amber 'L') -->
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23ea580c'/%3E%3Ctext x='50' y='73' font-size='62' font-family='Arial,sans-serif' font-weight='700' fill='white' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
-    
-    <!-- Local CSS files for styling -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/app.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
-    
-    <script src="js/app.js"></script>
-    
     <style>
-        .table-responsive {
+        /* ===================== Theme tokens ===================== */
+        :root {
+            --bg: #ffffff;
+            --bg-soft: #faf7f4;
+            --bg-elev: #ffffff;
+            --text: #1a1410;
+            --text-soft: #59514a;
+            --text-faint: #9a9088;
+            --border: #efe9e2;
+            --border-strong: #ded5cb;
+            --accent: #ea580c;
+            --accent-soft: #fff1e7;
+            --accent-2: #f59e0b;
+            --good: #16a34a;
+            --bad: #dc2626;
+            --shadow: 0 1px 2px rgba(26, 20, 16, .04), 0 8px 24px rgba(26, 20, 16, .06);
+            --shadow-lg: 0 12px 40px rgba(26, 20, 16, .12);
+            --radius: 16px;
+            --maxw: 980px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #100c09;
+            --bg-soft: #181310;
+            --bg-elev: #1c1612;
+            --text: #f6efe9;
+            --text-soft: #c8bcb1;
+            --text-faint: #8c8076;
+            --border: #2c2520;
+            --border-strong: #3a322b;
+            --accent: #fb923c;
+            --accent-soft: #2a1810;
+            --accent-2: #fbbf24;
+            --good: #4ade80;
+            --bad: #f87171;
+            --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+            --shadow-lg: 0 14px 44px rgba(0, 0, 0, .5);
+        }
+
+        /* ===================== Base ===================== */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            transition: background .25s ease, color .25s ease;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 22px;
+        }
+
+        section {
+            padding: 54px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        h2.section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2.section-title::before {
+            content: "";
+            width: 9px;
+            height: 22px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            display: inline-block;
+        }
+
+        .lead {
+            color: var(--text-soft);
+            font-size: 1.02rem;
+        }
+
+        /* ===================== Nav ===================== */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 11px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: .04em;
+            font-size: 1.05rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .brand .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a {
+            color: var(--text-soft);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: 7px 11px;
+            border-radius: 9px;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        .nav-links a.nav-cta {
+            color: #fff;
+            background: var(--accent);
+        }
+
+        html[data-theme="dark"] .nav-links a.nav-cta {
+            color: #100c09;
+        }
+
+        .nav-links a.nav-cta:hover {
+            filter: brightness(1.07);
+        }
+
+        .theme-toggle {
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-grid;
+            place-items: center;
+            transition: background .15s, transform .15s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-soft);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        html[data-theme="dark"] .icon-sun {
+            display: block;
+        }
+
+        html[data-theme="dark"] .icon-moon {
+            display: none;
+        }
+
+        .icon-sun {
+            display: none;
+        }
+
+        .icon-moon {
+            display: block;
+        }
+
+        @media (max-width: 760px) {
+            .nav-links a:not(.nav-cta) {
+                display: none;
+            }
+        }
+
+        /* ===================== Hero ===================== */
+        header.hero {
+            position: relative;
+            overflow: hidden;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+
+        header.hero::before {
+            content: "";
+            position: absolute;
+            inset: -40% 0 auto 0;
+            height: 420px;
+            background: radial-gradient(60% 60% at 50% 0%, var(--accent-soft) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: .76rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            padding: 5px 12px;
+            border-radius: 999px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.9rem, 4.6vw, 2.9rem);
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            font-weight: 800;
+            margin: 0 0 10px;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2.4vw, 1.22rem);
+            color: var(--text-soft);
+            font-weight: 500;
+            max-width: 780px;
+            margin: 0 auto 26px;
+        }
+
+        .authors {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 4px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px 20px;
+            font-size: 1.05rem;
+        }
+
+        .authors li {
+            font-weight: 500;
+        }
+
+        .authors sup {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .affil {
+            color: var(--text-soft);
+            font-size: .96rem;
+            margin: 6px 0 0;
+        }
+
+        .affil .note {
+            display: block;
+            font-size: .9rem;
+            color: var(--text-faint);
+            margin-top: 2px;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 600;
+            font-size: .98rem;
+            padding: 11px 20px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        html[data-theme="dark"] .btn-primary {
+            color: #100c09;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: var(--bg-elev);
+            color: var(--text);
+            border-color: var(--border-strong);
+        }
+
+        .btn-ghost:hover {
+            transform: translateY(-2px);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        /* ===================== Figures ===================== */
+        figure {
+            margin: 0;
+        }
+
+        .fig {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .fig img,
+        .fig video {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        figcaption {
+            color: var(--text-soft);
+            font-size: .9rem;
+            line-height: 1.55;
+            margin-top: 12px;
+            text-align: left;
+        }
+
+        figcaption b {
+            color: var(--text);
+        }
+
+        .teaser-wrap {
+            margin-top: 30px;
+        }
+
+        /* two-up figure grid */
+        .fig-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 720px) {
+            .fig-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===================== TL;DR / cards ===================== */
+        .tldr {
             margin-top: 20px;
+            background: linear-gradient(180deg, var(--accent-soft), transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+            border-radius: var(--radius);
+            padding: 20px 22px;
         }
-        .table thead th {
-            vertical-align: middle;
+
+        .tldr h3 {
+            margin: 0 0 6px;
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: .02em;
+        }
+
+        .tldr p {
+            margin: 0;
+            color: var(--text);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 24px 0 4px;
+        }
+
+        @media (max-width: 640px) {
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat .num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat .lbl {
+            color: var(--text-soft);
+            font-size: .9rem;
+            margin-top: 2px;
+        }
+
+        /* method bullets */
+        .method-points {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        @media (max-width: 720px) {
+            .method-points {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mp {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .mp .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            font-weight: 500;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .mp p {
+            margin: 0;
+            font-size: .94rem;
+            color: var(--text-soft);
+        }
+
+        /* ===================== Results table ===================== */
+        .table-scroll {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-top: 8px;
+        }
+
+        table.results {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .9rem;
+            min-width: 880px;
+            background: var(--bg-elev);
+        }
+
+        table.results th,
+        table.results td {
+            padding: 9px 10px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        table.results thead th {
+            font-weight: 700;
+            color: var(--text);
+            border-bottom: 1px solid var(--border-strong);
+            font-size: .82rem;
+        }
+
+        table.results td.method,
+        table.results th.method {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table.results tbody tr {
+            border-top: 1px solid var(--border);
+        }
+
+        table.results tr.group td {
+            background: var(--bg-soft);
+            text-align: left;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: .02em;
+            font-size: .85rem;
+        }
+
+        table.results tbody tr.luq {
+            background: var(--accent-soft);
+        }
+
+        table.results tbody tr.luq td {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .tbl-note {
+            color: var(--text-faint);
+            font-size: .84rem;
+            margin-top: 10px;
+        }
+
+        /* compact deployment table */
+        table.results.deploy {
+            min-width: 560px;
+        }
+
+        table.results.deploy td,
+        table.results.deploy th {
+            font-size: .95rem;
+            padding: 12px 14px;
+        }
+
+        /* ===================== BibTeX ===================== */
+        .bibtex-box {
+            position: relative;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 8px;
+        }
+
+        .bibtex-box pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .86rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .copy-btn:hover {
+            background: var(--bg-soft);
+        }
+
+        .copy-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ===================== Footer ===================== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px 0 50px;
+            color: var(--text-faint);
+            font-size: .86rem;
             text-align: center;
         }
-        .table tbody td {
-            vertical-align: middle;
-            text-align: center;
+
+        footer a {
+            color: var(--text-soft);
         }
-        .table .info > td {
-            background-color: #d9edf7 !important;
-            font-weight: bold;
+
+        /* ===================== Reveal on scroll ===================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .6s ease, transform .6s ease;
         }
-        .section-header {
-            margin-top: 40px;
+
+        .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
         }
     </style>
 
@@ -72,310 +718,486 @@
         { "@type": "Person", "name": "Narendra Ahuja", "url": "https://n-ahuja.ece.illinois.edu/" }
       ],
       "datePublished": "2026",
-      "publisher": { "@type": "Organization", "name": "Transactions on Machine Learning Research (TMLR)" },
-      "isPartOf": "Transactions on Machine Learning Research (TMLR), 2026",
       "abstract": "Large Language Models (LLMs) with multimodal capabilities have revolutionized vision-language tasks, but their deployment often requires huge memory and computational resources. While post-training quantization (PTQ) has successfully compressed language models to as low as 1-bit precision without significant performance loss, its effectiveness for multimodal LLMs (MLLMs) remains relatively unexplored. In this paper, we present the first study on ultra-low bit (sub-4-bit) quantization for multimodal LLMs. Our analysis reveals that multimodal tokens and intermediate layer activations produced by them exhibit significantly higher statistical variance and entropy compared to text tokens, making them less tolerant to ultra-low bit quantization. However, the activation distributions of multimodal tokens varies significantly over different layers, with some layers having lower entropy activation distributions. We empirically show that such layers in these models can better tolerate ultra-low bit quantization. Building on these insights, we propose a novel strategy for MLLM quantization, LUQ: Layerwise Ultra-Low Bit Quantization, which selectively applies ultra-low bit quantization to layers that are more resilient to it. Additionally, we also show that using a mix of multimodal tokens (image and text) for PTQ boosts VQA performance in the ultra-low bit regime. We evaluate our method on LLaVA-1.5 and Qwen-2.5-VL across 9 popular VQA benchmarks. The resulting LUQ models use 40% and 31% less memory than their 4-bit counterparts, respectively, while exhibiting a performance degradation of less than 10% on the MME benchmark.",
       "url": "https://shubhangb97.github.io/LUQ/",
       "image": "https://shubhangb97.github.io/LUQ/img/LUQ_overview_diagram.png",
-      "sameAs": ["https://arxiv.org/abs/2509.23729", "https://openreview.net/forum?id=3eK6U6ZiSp"],
+      "sameAs": "https://arxiv.org/abs/2509.23729",
       "identifier": "arXiv:2509.23729",
+      "publisher": { "@type": "Organization", "name": "Transactions on Machine Learning Research (TMLR)" },
       "keywords": "multimodal large language models, post-training quantization, model compression, ultra-low bit quantization, MLLM, model efficiency"
     }
     </script>
 </head>
 
 <body>
-    <div class="container" id="main">
-        <div class="row">
-            <h2 class="col-md-12 text-center">
-                <b>LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models</b><br/> 
-                            <a href="https://openreview.net/forum?id=3eK6U6ZiSp">Transactions on Machine Learning Research (TMLR) 2026</a>
-            </h2>
+    <!-- ============ NAV ============ -->
+    <nav>
+        <div class="nav-inner">
+            <a class="brand" href="#top"><span class="dot"></span>LUQ</a>
+            <div class="nav-links">
+                <a href="#abstract">Abstract</a>
+                <a href="#method">Method</a>
+                <a href="#analysis">Why it works</a>
+                <a href="#results">Results</a>
+                <a href="#deployment">Deployment</a>
+                <a href="#bibtex">BibTeX</a>
+                <a class="nav-cta" href="https://arxiv.org/abs/2509.23729" target="_blank" rel="noopener">Paper</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul class="list-inline">
-                    <li>
-                        <a href="https://shubhangb97.github.io/">
-                            <strong>Shubhang Bhatnagar<sup>1,†</sup></strong> 
-                        </a>
-                    </li>
-                    <li>
-                         Andy Xu<sup>2,†</sup>
-                    </li>
-                    <li>
-                        <a href="https://karhan-tan.github.io/">
-                         Kar Han Tan<sup>3</sup>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://n-ahuja.ece.illinois.edu/">
-                            Narendra Ahuja<sup>1</sup>
-                        </a>
-                    </li>
-                    <br/>
-                     <i><sup>†</sup>Equal Contribution and work done as an intern at HP Inc.</small></i>
-                    <br/>
-                    <li>
-                        <sup>1</sup><a href="https://illinois.edu/">
-                            University of Illinois at Urbana-Champaign
-                        </a>
-                    </li>
-                    <li>
-                        <sup>2</sup><a href="https://www.ucla.edu/">
-                            University of California, Los Angeles
-                        </a>
-                    </li>
-                     <li>
-                        <sup>3</sup><a href="https://www.hp.com/">
-                            HP Inc.
-                        </a>
-                    </li>
-                </ul>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="top">
+        <div class="wrap">
+            <span class="badge">TMLR 2026 · Accepted</span>
+            <h1>LUQ: <span class="grad">Layerwise Ultra-Low-Bit Quantization</span><br>for Multimodal LLMs</h1>
+            <p class="subtitle">Sub-4-bit compression of multimodal LLMs by selectively quantizing only the layers
+                robust to it — the low-entropy ones. <b>31–40% smaller</b> than 4-bit, with minimal accuracy loss.</p>
+
+            <ul class="authors">
+                <li><a href="https://shubhangb97.github.io/">Shubhang Bhatnagar</a><sup>1,&dagger;</sup></li>
+                <li>Andy Xu<sup>2,&dagger;</sup></li>
+                <li><a href="https://karhan-tan.github.io/">Kar-Han Tan</a><sup>3</sup></li>
+                <li><a href="https://n-ahuja.ece.illinois.edu/">Narendra Ahuja</a><sup>1</sup></li>
+            </ul>
+            <p class="affil">
+                <sup>1</sup>&nbsp;<a href="https://illinois.edu/">UIUC</a> &nbsp;&middot;&nbsp;
+                <sup>2</sup>&nbsp;<a href="https://www.ucla.edu/">UC Los Angeles</a> &nbsp;&middot;&nbsp;
+                <sup>3</sup>&nbsp;<a href="https://www.hp.com/">HP Inc.</a>
+                <span class="note"><sup>&dagger;</sup>&nbsp;Equal contribution · work done during an internship at HP
+                    Inc.</span>
+            </p>
+
+            <div class="btn-row">
+                <a class="btn btn-primary" href="https://arxiv.org/pdf/2509.23729" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    Paper (PDF)
+                </a>
+                <a class="btn btn-ghost" href="https://arxiv.org/abs/2509.23729" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    arXiv
+                </a>
+                <a class="btn btn-ghost" href="https://openreview.net/forum?id=3eK6U6ZiSp" target="_blank"
+                    rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    OpenReview
+                </a>
+                <a class="btn btn-ghost" href="#bibtex">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6" />
+                        <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                    BibTeX
+                </a>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 text-center">
-                <!--  <div class="row">
-                    Logos 
-                    <div class="col-xs-6 text-right">
-                         <a href="https://illinois.edu/"><image src="img/uiuc_logo.png" height="60px" alt="UIUC Logo"></a>
-                    </div>
-                    <div class="col-xs-6 text-left">
-                         <a href="https://www.hp.com/"><image src="img/hp_logo.png" height="60px" alt="HP Logo"></a>
-                    </div>
-                </div>
-                 <br/>-->
-                <ul class="nav nav-pills nav-justified">
-                    
-                    <li>
-                        <a href="https://arxiv.org/abs/2509.23729"> <!-- Link to your Arxiv PDF -->
-                            <h4><i class="fa fa-archive"></i> Arxiv</h4>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://openreview.net/forum?id=3eK6U6ZiSp">
-                            <h4><i class="fa fa-comments"></i> OpenReview</h4>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://jmlr.org/tmlr/">
-                            <image src="img/tmlr_logo.png" height="60px" alt="TMLR Logo">
-                        </a>
-                    </li>
-                    <!--
-                    <li>
-                        <a href="#"> 
-                             <h4><i class="fa fa-github"></i> Code (Coming Soon)</h4>
-                        </a>
-                    </li>
-                    -->
-                </ul>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <video id="v0" width="100%" autoplay loop muted controls>
-                  <source src="img/LUQ_demo.mp4" type="video/mp4" />
+        <!-- Video demo (LUQ runs in real time on a laptop) -->
+        <div class="wrap teaser-wrap reveal">
+            <figure class="fig">
+                <video id="v0" autoplay loop muted playsinline controls poster="./img/LUQ_overview_diagram.png">
+                    <source src="./img/LUQ_demo.mp4" type="video/mp4" />
                 </video>
-                <div class="text-center">
-                <strong> A demonstration of LUQ Qwen 2.5 VL running on a laptop, showing that it runs significantly faster than the 4-bit and 16-bit versions of the model on the same device </strong>
-                </div>
-			</div>
+                <figcaption><b>LUQ Qwen-2.5-VL running on a laptop.</b> The LUQ-quantized model generates noticeably
+                    faster than the 4-bit and 16-bit versions of the same model on the same device, while fitting in a
+                    fraction of the memory — see the <a href="#deployment">deployment numbers</a> below.</figcaption>
+            </figure>
         </div>
+    </header>
 
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Abstract
-                </h3>
-                <p class="text-justify">
-                    Large Language Models (LLMs) with multimodal capabilities have revolutionized vision-language tasks, but their deployment often requires huge memory and computational resources. While post-training quantization (PTQ) has successfully compressed language models to as low as 1-bit precision without significant performance loss, its effectiveness for multimodal LLMs (MLLMs) remains relatively unexplored. In this paper, we present the first study on ultra-low bit (&lt;4-bit) quantization for multimodal LLMs. Our analysis reveals that multimodal tokens and intermediate layer activations produced by them exhibit significantly higher statistical variance and entropy compared to text tokens, making them less tolerant to ultra-low bit quantization. However, the activation distributions of multimodal tokens varies significantly over different layers, with some layers having lower entropy activation distributions. We empirically show that such layers in these models can better tolerate ultra-low bit quantization. Building on these insights, we propose a novel strategy for MLLM quantization, LUQ: Layerwise Ultra-Low Bit Quantization, which selectively applies ultra-low bit quantization to layers that are more resilient to it. Additionally, we also show that using a mix of multimodal tokens (image and text) for PTQ boosts VQA performance in the ultra-low bit regime. We evaluate our method on LLaVA-1.5 and Qwen-2.5-VL across 9 popular VQA benchmarks. The resulting LUQ models use 40% and 31% less memory than their 4-bit counterparts, respectively, while exhibiting a performance degradation of less than 10% on the MME benchmark.
-                </p>
+    <!-- ============ ABSTRACT ============ -->
+    <section id="abstract">
+        <div class="wrap reveal">
+            <h2 class="section-title">Abstract</h2>
+            <p class="lead">Large Language Models with multimodal capabilities have revolutionized vision-language tasks,
+                but their deployment often requires huge memory and compute. While post-training quantization (PTQ) has
+                compressed language models to as low as 1-bit precision without significant loss, its effectiveness for
+                multimodal LLMs (MLLMs) remains relatively unexplored. We present the <b>first study on ultra-low bit
+                    (&lt;4-bit) quantization for multimodal LLMs</b>. Our analysis reveals that multimodal tokens and the
+                intermediate activations they produce exhibit significantly higher statistical variance and entropy than
+                text tokens, making them less tolerant to ultra-low bit quantization. However, this activation entropy
+                varies significantly across layers — and we empirically show that lower-entropy layers can better
+                tolerate ultra-low bit quantization. Building on these insights, we propose <b>LUQ: Layerwise Ultra-Low
+                    Bit Quantization</b>, which selectively applies ultra-low bit quantization to the layers most
+                resilient to it. We additionally show that using a mix of multimodal (image and text) tokens for PTQ
+                boosts VQA performance in the ultra-low bit regime. Evaluated on LLaVA-1.5 and Qwen-2.5-VL across 9
+                popular VQA benchmarks, LUQ models use <b>40% and 31% less memory</b> than their 4-bit counterparts while
+                degrading less than 10% on the MME benchmark.</p>
 
-                <h3>
-                    TL;DR:
-                </h3>
-                <p class="text-justify"> We introduce LUQ, a method for extreme (&lt;4-bit) compression of Multimodal LLMs. By selectively quantizing only the layers that are robust to it (low activation entropy), we significantly reduce memory usage while preserving performance on vision-language tasks.</p>
+            <div class="tldr">
+                <h3>TL;DR</h3>
+                <p>LUQ is a method for extreme (&lt;4-bit) compression of multimodal LLMs. By selectively quantizing only
+                    the layers that are robust to it — those with low activation entropy — it cuts memory sharply while
+                    preserving vision-language performance.</p>
             </div>
         </div>
+    </section>
 
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Method Overview
-                </h3>
-                <div class="text-center">
-                    <img src="./img/LUQ_overview_diagram.png" width="100%" alt="LUQ Method Overview Diagram">
-                </div>
-                <div class="text-center">
-                        <strong> An overview of our LUQ pipeline:</strong> (i) Generate multimodal calibration tokens. (ii) Extract layerwise activations from the MLLM. (iii) Calculate the activation entropy for each layer to identify quantization-resilient layers (lower entropy). (iv) Iteratively quantize the lowest-entropy layers to an ultra-low bit-width until a performance or memory budget is met. (v) Combine the layers, already quantized into different precision to the final compressed model.
-                </div>
-            </div>
-        </div>
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Performance vs. Memory Trade-off
-                </h3>
-                <p class="text-justify">
-                    LUQ allows for a graceful trade-off between performance and model size. By progressively quantizing more layers (starting from the lowest entropy), we can achieve different compression rates. The plots below show that LUQ consistently creates a better performance-vs-compression frontier compared to standard PTQ methods like GPTQ and AWQ, which suffer catastrophic performance collapse at sub-3-bit compression.
-                </p>
-                
-                <!-- Two graphs side-by-side -->
-                <div class="row">
-                    <div class="col-md-6 text-center">
-                        <img src="./img/llava_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for LLaVA 1.5">
-                        <p><strong>LLaVA 1.5 7B</strong></p>
-                    </div>
-                    <div class="col-md-6 text-center">
-                        <img src="./img/qwen_tradeoff.png" width="100%" alt="Performance vs Memory Tradeoff on MME for Qwen 2.5 VL">
-                        <p><strong>Qwen 2.5 VL 7B</strong></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row section-header">
-            <div class="col-md-10 col-md-offset-1">
-                <h3>
-                    Comparison to State-of-the-Art Methods
-                </h3>
-                <p class="text-justify">
-                    We compare LUQ to state-of-the-art PTQ methods on 9 VQA benchmarks for LLaVA-1.5 7B and Qwen 2.5 VL 7B models. The table below shows that LUQ achieves a much better trade-off between performance and model size. For LLaVA-1.5, LUQ is 40% smaller than 4-bit models with comparable accuracy. For Qwen 2.5 VL, LUQ provides a 31.5% memory reduction while maintaining strong performance.
-                </p>
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Method</th>
-                                <th>Avg. Bits</th>
-                                <th>MME Per.</th>
-                                <th>MME Cog.</th>
-                                <th>MM Bench</th>
-                                <th>Text VQA</th>
-                                <th>VQAv2</th>
-                                <th>GQA</th>
-                                <th>POPE</th>
-                                <th>Chart QA</th>
-                                <th>Doc QA</th>
-                                <th>Math Vista</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="info">
-                                <td colspan="12"><strong>LLaVA-1.5 7B Backbone</strong></td>
-                            </tr>
-                            <tr>
-                                <td>FP16 (Baseline)</td><td>16</td><td>1510</td><td>350</td><td>63.4</td><td>58.2</td><td>78.5</td><td>62.0</td><td>83.2</td><td>-</td><td>-</td><td>23.6</td>
-                            </tr>
-                            <tr>
-                                <td>GPTQ</td><td>4</td><td>1450</td><td>347</td><td>58.2</td><td>56.8</td><td>76.3</td><td>61.4</td><td>76.0</td><td>-</td><td>-</td><td>20.1</td>
-                            </tr>
-                            <tr>
-                                <td>AWQ</td><td>4</td><td>1456</td><td>349</td><td>59.8</td><td>56.7</td><td>76.6</td><td>61.5</td><td>76.7</td><td>-</td><td>-</td><td>20.6</td>
-                            </tr>
-                            <tr>
-                                <td>GPTQ</td><td>3</td><td>1346</td><td>273</td><td>31.2</td><td>54.1</td><td>73.5</td><td>58.8</td><td>70.5</td><td>-</td><td>-</td><td>16.4</td>
-                            </tr>
-                            <tr>
-                                <td>GPTQ*</td><td>2</td><td>0</td><td>0</td><td>0.0</td><td>0</td><td>0</td><td>0.0</td><td>0.0</td><td>-</td><td>-</td><td>0.0</td>
-                            </tr>
-                             <tr>
-                                <td>BiLLM</td><td>1.08</td><td>561</td><td>39</td><td>15.6</td><td>7.4</td><td>37.2</td><td>22.7</td><td>25.5</td><td>-</td><td>-</td><td>3.5</td>
-                            </tr>
-                            <tr>
-                                <td><b>LUQ (Ours)</b></td><td><b>2.54</b></td><td><b>1365</b></td><td><b>257</b></td><td><b>53.4</b></td><td><b>46.7</b></td><td><b>74.9</b></td><td><b>58.2</b></td><td><b>74.5</b></td><td><b>-</b></td><td><b>-</b></td><td><b>18.7</b></td>
-                            </tr>
-                            <tr class="info">
-                                <td colspan="12"><strong>Qwen 2.5 VL Backbone</strong></td>
-                            </tr>
-                            <tr>
-                                <td>FP16 (Baseline)</td><td>16</td><td>1695</td><td>640</td><td>84.9</td><td>82.6</td><td>83.5</td><td>60.5</td><td>86.1</td><td>87.3</td><td>95.7</td><td>68.2</td>
-                            </tr>
-                            <tr>
-                                <td>GPTQ</td><td>4</td><td>1638</td><td>610</td><td>84.2</td><td>80.2</td><td>82.6</td><td>60.1</td><td>84.8</td><td>84.1</td><td>93.4</td><td>44.8</td>
-                            </tr>
-                            <tr>
-                                <td>AWQ</td><td>4</td><td>1645</td><td>620</td><td>80.9</td><td>84.6</td><td>82.7</td><td>60.5</td><td>85.6</td><td>84.5</td><td>93.5</td><td>46.1</td>
-                            </tr>
-                             <tr>
-                                <td>GPTQ</td><td>3</td><td>319</td><td>131</td><td>34.7</td><td>79.5</td><td>81.5</td><td>53.4</td><td>82.9</td><td>61.0</td><td>89.2</td><td>21.0</td>
-                            </tr>
-                            <tr>
-                                <td>GPTQ*</td><td>2</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td>
-                            </tr>
-                            <tr>
-                                <td>BiLLM</td><td>1.08</td><td>638</td><td>42</td><td>9.7</td><td>26.3</td><td>39.5</td><td>4.3</td><td>70.7</td><td>3.7</td><td>20.3</td><td>15.1</td>
-                            </tr>
-                            <tr>
-                                <td><b>LUQ (Ours)</b></td><td><b>2.75</b></td><td><b>1640</b></td><td><b>600</b></td><td><b>63.7</b></td><td><b>81.9</b></td><td><b>79.7</b></td><td><b>52.9</b></td><td><b>84.7</b></td><td><b>68.6</b></td><td><b>90.5</b></td><td><b>41.7</b></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                 <p class="text-muted text-left"><small>* indicates models with incoherent/gibberish output.</small></p>
-            </div>
-        </div>
+    <!-- ============ METHOD ============ -->
+    <section id="method">
+        <div class="wrap reveal">
+            <h2 class="section-title">Method</h2>
+            <p class="lead">LUQ rests on a single observation: not all layers are equally fragile under quantization.
+                Three ideas turn that into a compression recipe.</p>
 
-        
-                <!-- 
-                Four graphs in a 2x2 grid (COMMENTED OUT)
-                To use this, you would create four separate image files from your paper's figures.
-                
-                <div class="row">
-                    <div class="col-md-6 text-center">
-                        <img src="./img/tradeoff_llava_mme.png" width="100%" alt="Performance vs Memory Tradeoff for LLaVA 1.5 on MME">
-                        <p><small>LLaVA 1.5 on MME</small></p>
-                    </div>
-                    <div class="col-md-6 text-center">
-                        <img src="./img/tradeoff_llava_vqa.png" width="100%" alt="Performance vs Memory Tradeoff for LLaVA 1.5 on VQA v2">
-                        <p><small>LLaVA 1.5 on VQA v2</small></p>
-                    </div>
+            <div class="method-points">
+                <div class="mp">
+                    <span class="tag">01 · Diagnose</span>
+                    <p>Multimodal activations carry higher entropy than text — but that entropy varies sharply by layer.
+                        We measure per-layer activation entropy from multimodal calibration tokens to find the resilient
+                        layers.</p>
                 </div>
-                <div class="row" style="margin-top: 20px;">
-                    <div class="col-md-6 text-center">
-                        <img src="./img/tradeoff_qwen_docvqa.png" width="100%" alt="Performance vs Memory Tradeoff for Qwen 2.5 VL on DocQA">
-                        <p><small>Qwen 2.5 VL on DocQA</small></p>
-                    </div>
-                    <div class="col-md-6 text-center">
-                        <img src="./img/tradeoff_qwen_chartqa.png" width="100%" alt="Performance vs Memory Tradeoff for Qwen 2.5 VL on ChartQA">
-                        <p><small>Qwen 2.5 VL on ChartQA</small></p>
-                    </div>
+                <div class="mp">
+                    <span class="tag">02 · Quantize low-entropy first</span>
+                    <p>Layers are quantized to ultra-low bit-width in ascending entropy order, iterating until a memory
+                        or performance budget is met. High-entropy layers are kept at higher precision.</p>
                 </div>
-                -->
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Citation
-                </h3>
-                <p>If you find our work useful, please consider citing:</p>
-                <div class="form-group col-md-10 col-md-offset-1">
-                    <textarea id="bibtex" class="form-control" readonly>
-@misc{bhatnagar2025luqlayerwiseultralowbit,
-    title={LUQ: Layerwise Ultra-Low Bit Quantization for Multimodal Large Language Models}, 
-    author={Shubhang Bhatnagar and Andy Xu and Kar-Han Tan and Narendra Ahuja},
-    year={2025},
-    eprint={2509.23729},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV},
-    url={https://arxiv.org/abs/2509.23729}, 
-}
-</textarea>
+                <div class="mp">
+                    <span class="tag">03 · Mixed-token calibration</span>
+                    <p>Calibrating PTQ with a mix of image and text tokens (ratio &alpha;) rather than text alone
+                        measurably boosts VQA accuracy in the ultra-low bit regime.</p>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <p class="text-justify text-muted"><small>
-                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
-                </small></p>
+            <figure class="fig reveal">
+                <img src="./img/LUQ_overview_diagram.png" loading="lazy"
+                    alt="LUQ pipeline: generate multimodal calibration tokens, extract layerwise activations, compute activation entropy, iteratively quantize the lowest-entropy layers, then combine into a mixed-precision model">
+                <figcaption><b>The LUQ pipeline.</b> (i) Generate multimodal calibration tokens. (ii) Extract layerwise
+                    activations from the MLLM. (iii) Compute each layer's activation entropy to identify
+                    quantization-resilient (low-entropy) layers. (iv) Iteratively quantize the lowest-entropy layers to
+                    ultra-low bit-width until a performance/memory budget is met. (v) Combine the layers — now at
+                    different precisions — into the final compressed model.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ============ WHY IT WORKS ============ -->
+    <section id="analysis">
+        <div class="wrap reveal">
+            <h2 class="section-title">Why it works</h2>
+            <p class="lead">The observations behind LUQ, measured on Qwen-2.5-VL-7B.</p>
+
+            <div class="fig-grid">
+                <figure class="fig reveal">
+                    <img src="./img/entropy_comparison.png" loading="lazy"
+                        alt="Line plot of activation entropy vs layer depth for multimodal vs text-only tokens; multimodal is consistently higher">
+                    <figcaption><b>Multimodal &gt; text entropy.</b> Activations produced by multimodal tokens have
+                        consistently higher entropy than purely text tokens, helping explain why MLLMs are harder to
+                        quantize than text-only LLMs.</figcaption>
+                </figure>
+                <figure class="fig reveal">
+                    <img src="./img/layer_entropy.png" loading="lazy"
+                        alt="Activation entropy plotted across 27 layers, showing large variation between layers">
+                    <figcaption><b>Entropy varies by layer.</b> Intermediate-activation entropy swings substantially with
+                        layer depth — some layers are far lower-entropy than others. This spread is exactly what LUQ
+                        exploits.</figcaption>
+                </figure>
+                <figure class="fig reveal">
+                    <img src="./img/entropy_order_ablation.png" loading="lazy"
+                        alt="TextVQA accuracy vs number of quantized layers: lowest-entropy-first stays high, highest-entropy-first collapses">
+                    <figcaption><b>Order matters.</b> Quantizing low-entropy layers first preserves TextVQA accuracy;
+                        quantizing high-entropy layers first causes a steep decline. The gap holds across the number of
+                        layers quantized — validating LUQ's selection rule.</figcaption>
+                </figure>
+                <figure class="fig reveal">
+                    <img src="./img/mix_alpha.png" loading="lazy"
+                        alt="TextVQA accuracy vs mixing ratio alpha; accuracy rises with alpha then saturates">
+                    <figcaption><b>Mix in image tokens.</b> Even a small mixing ratio &alpha;&nbsp;&gt;&nbsp;0 of
+                        multimodal calibration tokens improves TextVQA performance, with gains saturating as &alpha;
+                        grows.</figcaption>
+                </figure>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="results">
+        <div class="wrap reveal">
+            <h2 class="section-title">Results</h2>
+            <p class="lead">Across 9 VQA benchmarks, LUQ delivers a far better performance-vs-size trade-off than standard
+                PTQ, which collapses below 3 bits.</p>
+
+            <div class="stat-grid">
+                <div class="stat">
+                    <div class="num">40%</div>
+                    <div class="lbl">Less memory than 4-bit on LLaVA-1.5, at comparable accuracy</div>
+                </div>
+                <div class="stat">
+                    <div class="num">31%</div>
+                    <div class="lbl">Less memory than 4-bit on Qwen-2.5-VL</div>
+                </div>
+                <div class="stat">
+                    <div class="num">&lt;10%</div>
+                    <div class="lbl">MME degradation vs the FP16 baseline</div>
+                </div>
+            </div>
+
+            <div class="table-scroll">
+                <table class="results">
+                    <thead>
+                        <tr>
+                            <th class="method">Method</th>
+                            <th>Avg.<br>Bits</th>
+                            <th>MME<br>Per.</th>
+                            <th>MME<br>Cog.</th>
+                            <th>MM<br>Bench</th>
+                            <th>Text<br>VQA</th>
+                            <th>VQAv2</th>
+                            <th>GQA</th>
+                            <th>POPE</th>
+                            <th>Chart<br>QA</th>
+                            <th>Doc<br>QA</th>
+                            <th>Math<br>Vista</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="group">
+                            <td colspan="12">LLaVA-1.5 7B Backbone</td>
+                        </tr>
+                        <tr>
+                            <td class="method">FP16 (Baseline)</td>
+                            <td>16</td><td>1510</td><td>350</td><td>63.4</td><td>58.2</td><td>78.5</td><td>62.0</td><td>83.2</td><td>&ndash;</td><td>&ndash;</td><td>23.6</td>
+                        </tr>
+                        <tr>
+                            <td class="method">GPTQ</td>
+                            <td>4</td><td>1450</td><td>347</td><td>58.2</td><td>56.8</td><td>76.3</td><td>61.4</td><td>76.0</td><td>&ndash;</td><td>&ndash;</td><td>20.1</td>
+                        </tr>
+                        <tr>
+                            <td class="method">AWQ</td>
+                            <td>4</td><td>1456</td><td>349</td><td>59.8</td><td>56.7</td><td>76.6</td><td>61.5</td><td>76.7</td><td>&ndash;</td><td>&ndash;</td><td>20.6</td>
+                        </tr>
+                        <tr>
+                            <td class="method">GPTQ</td>
+                            <td>3</td><td>1346</td><td>273</td><td>31.2</td><td>54.1</td><td>73.5</td><td>58.8</td><td>70.5</td><td>&ndash;</td><td>&ndash;</td><td>16.4</td>
+                        </tr>
+                        <tr>
+                            <td class="method">GPTQ<sup>*</sup></td>
+                            <td>2</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>&ndash;</td><td>&ndash;</td><td>0.0</td>
+                        </tr>
+                        <tr>
+                            <td class="method">BiLLM</td>
+                            <td>1.08</td><td>561</td><td>39</td><td>7.4</td><td>15.6</td><td>37.2</td><td>22.7</td><td>25.5</td><td>&ndash;</td><td>&ndash;</td><td>3.5</td>
+                        </tr>
+                        <tr class="luq">
+                            <td class="method">LUQ 16-layer (Ours)</td>
+                            <td>2.54</td><td>1365</td><td>257</td><td>46.7</td><td>53.4</td><td>74.9</td><td>58.2</td><td>74.5</td><td>&ndash;</td><td>&ndash;</td><td>18.7</td>
+                        </tr>
+                        <tr class="group">
+                            <td colspan="12">Qwen-2.5-VL 7B Backbone</td>
+                        </tr>
+                        <tr>
+                            <td class="method">FP16 (Baseline)</td>
+                            <td>16</td><td>1695</td><td>640</td><td>82.6</td><td>84.9</td><td>83.5</td><td>60.5</td><td>86.1</td><td>87.3</td><td>95.7</td><td>68.2</td>
+                        </tr>
+                        <tr>
+                            <td class="method">GPTQ</td>
+                            <td>4</td><td>1638</td><td>610</td><td>80.2</td><td>84.2</td><td>82.6</td><td>60.1</td><td>84.8</td><td>84.1</td><td>93.4</td><td>44.8</td>
+                        </tr>
+                        <tr>
+                            <td class="method">AWQ</td>
+                            <td>4</td><td>1645</td><td>620</td><td>80.9</td><td>84.6</td><td>82.7</td><td>60.5</td><td>85.6</td><td>84.5</td><td>93.5</td><td>46.1</td>
+                        </tr>
+                        <tr>
+                            <td class="method">GPTQ</td>
+                            <td>3</td><td>319</td><td>131</td><td>34.7</td><td>79.5</td><td>81.5</td><td>53.4</td><td>82.9</td><td>61.0</td><td>89.2</td><td>21.0</td>
+                        </tr>
+                        <tr>
+                            <td class="method">GPTQ<sup>*</sup></td>
+                            <td>2</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>0.0</td>
+                        </tr>
+                        <tr>
+                            <td class="method">BiLLM</td>
+                            <td>1.08</td><td>638</td><td>42</td><td>9.7</td><td>26.3</td><td>39.5</td><td>4.3</td><td>70.7</td><td>3.7</td><td>20.3</td><td>15.1</td>
+                        </tr>
+                        <tr class="luq">
+                            <td class="method">LUQ 12-layer (Ours)</td>
+                            <td>2.75</td><td>1640</td><td>600</td><td>63.7</td><td>81.9</td><td>79.7</td><td>52.9</td><td>84.7</td><td>68.6</td><td>90.5</td><td>41.7</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="tbl-note">All scores higher-is-better. <sup>*</sup> indicates models that produced
+                incoherent/gibberish output. ChartQA and DocQA are omitted for LLaVA-1.5, whose FP16 baseline is too low
+                for a meaningful quantization comparison. LUQ values are means over 3 runs.</p>
+
+            <h3 style="margin-top:34px;font-size:1.1rem;">Performance vs. memory trade-off</h3>
+            <p class="lead" style="margin-top:4px;">Progressively quantizing more layers (lowest entropy first) traces a
+                trade-off frontier. LUQ stays close to FP16 well into the sub-3-bit regime, where GPTQ and AWQ collapse.
+            </p>
+            <div class="fig-grid">
+                <figure class="fig reveal">
+                    <img src="./img/llava_tradeoff.png" loading="lazy"
+                        alt="MME score vs average bit-width for LLaVA-1.5; LUQ degrades gracefully while GPTQ/AWQ collapse below 3 bits">
+                    <figcaption><b>LLaVA-1.5 7B.</b> MME score vs. average bit-width.</figcaption>
+                </figure>
+                <figure class="fig reveal">
+                    <img src="./img/qwen_tradeoff.png" loading="lazy"
+                        alt="MME score vs average bit-width for Qwen-2.5-VL; LUQ holds near FP16 down to low bit-widths">
+                    <figcaption><b>Qwen-2.5-VL 7B.</b> MME score vs. average bit-width.</figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ DEPLOYMENT ============ -->
+    <section id="deployment">
+        <div class="wrap reveal">
+            <h2 class="section-title">Real-world deployment</h2>
+            <p class="lead">Because LUQ uses <b>inter-layer</b> (not intra-layer) mixed precision, each layer runs with a
+                single homogeneous kernel — so existing engines like <code>llama.cpp</code> can run it directly. On
+                Qwen-2.5-VL 7B, that translates into real speedups on commodity CPUs.</p>
+
+            <div class="stat-grid">
+                <div class="stat">
+                    <div class="num">45&times;</div>
+                    <div class="lbl">Faster than FP16 on an Intel i7 laptop (9.0 vs 0.2 tok/s)</div>
+                </div>
+                <div class="stat">
+                    <div class="num">1.9&times;</div>
+                    <div class="lbl">Faster than standard 4-bit (Q4_K_M) on the same laptop</div>
+                </div>
+                <div class="stat">
+                    <div class="num">3.4 GB</div>
+                    <div class="lbl">Memory footprint — ~23% below 4-bit, ~4&times; below FP16</div>
+                </div>
+            </div>
+
+            <div class="table-scroll" style="margin-top:18px;">
+                <table class="results deploy">
+                    <thead>
+                        <tr>
+                            <th class="method">Model configuration</th>
+                            <th>Intel i7-13620H<br><span style="font-weight:400;color:var(--text-faint);">laptop, tok/s</span></th>
+                            <th>AMD Threadripper<br><span style="font-weight:400;color:var(--text-faint);">workstation, tok/s</span></th>
+                            <th>Memory</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="method">FP16 (Baseline)</td><td>0.2</td><td>4.9</td><td>14.5 GB</td>
+                        </tr>
+                        <tr>
+                            <td class="method">Q4_K_M (Standard 4-bit)</td><td>4.8</td><td>14.1</td><td>4.4 GB</td>
+                        </tr>
+                        <tr class="luq">
+                            <td class="method">LUQ (Mixed Precision)</td><td>9.0</td><td>18.7</td><td>3.4 GB</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="tbl-note">Generation throughput (tokens/sec) via <code>llama.cpp</code>, averaged over 10 runs.
+                Ultra-low-bit layers map to IQ1_M (~1.75 bpw) and high-precision layers to Q4_K_M (4-bit).</p>
+        </div>
+    </section>
+
+    <!-- ============ BIBTEX ============ -->
+    <section id="bibtex">
+        <div class="wrap reveal">
+            <h2 class="section-title">BibTeX</h2>
+            <p class="lead">If you find our work useful, please consider citing:</p>
+            <div class="bibtex-box">
+                <button class="copy-btn" id="copyBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span id="copyLabel">Copy</span>
+                </button>
+                <pre id="bibtex">@article{bhatnagar2026luq,
+    title   = {LUQ: Layerwise Ultra-Low Bit Quantization for
+               Multimodal Large Language Models},
+    author  = {Bhatnagar, Shubhang and Xu, Andy and Tan, Kar-Han
+               and Ahuja, Narendra},
+    journal = {Transactions on Machine Learning Research (TMLR)},
+    year    = {2026},
+    url     = {https://openreview.net/forum?id=3eK6U6ZiSp}
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="wrap">
+            <p>LUQ</p>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- Theme ----------
+        (function () {
+            const root = document.documentElement;
+            const saved = localStorage.getItem('luq-theme');
+            // Default to light; only honour an explicit user choice saved earlier.
+            root.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+
+            document.getElementById('themeToggle').addEventListener('click', function () {
+                const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                root.setAttribute('data-theme', next);
+                localStorage.setItem('luq-theme', next);
+            });
+        })();
+
+        // ---------- Copy BibTeX ----------
+        document.getElementById('copyBtn').addEventListener('click', function () {
+            const text = document.getElementById('bibtex').innerText;
+            const label = document.getElementById('copyLabel');
+            navigator.clipboard.writeText(text).then(function () {
+                label.textContent = 'Copied!';
+                setTimeout(function () { label.textContent = 'Copy'; }, 1600);
+            });
+        });
+
+        // ---------- Reveal on scroll ----------
+        (function () {
+            const els = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) {
+                els.forEach(function (e) { e.classList.add('in'); });
+                return;
+            }
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (en.isIntersecting) {
+                        en.target.classList.add('in');
+                        io.unobserve(en.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+            els.forEach(function (e) { io.observe(e); });
+        })();
+    </script>
 </body>
+
 </html>
-
-
