@@ -1,169 +1,1050 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-
-    <title>SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings</title>
-
-    <meta name="description" content="Project page for SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <title>SAGA: Beyond Scalar Distances — Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings</title>
+
+    <meta name="description"
+        content="SAGA replaces the single scalar of class-label metric learning with attribute-resolved supervision distilled from a frozen MLLM, training a vision encoder for fine-grained zero-shot image retrieval.">
+
+    <link rel="canonical" href="https://shubhangb97.github.io/saga/" />
+
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings" />
+    <meta property="og:url" content="https://shubhangb97.github.io/saga/" />
+    <meta property="og:title" content="SAGA: Beyond Scalar Distances" />
+    <meta property="og:description"
+        content="Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings. +3–6 Recall@1 over SOTA on fine-grained zero-shot image retrieval." />
+    <meta property="og:image" content="https://shubhangb97.github.io/saga/img/teaser.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings" />
+    <meta name="twitter:title" content="SAGA: Beyond Scalar Distances" />
+    <meta name="twitter:description"
+        content="Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings." />
+    <meta name="twitter:image" content="https://shubhangb97.github.io/saga/img/teaser.png" />
 
-    <!-- <link rel="icon" href="img/saga_icon.svg"> -->
+    <!-- Favicon: tiny inline SVG (indigo 'S') -->
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234f46e5'/%3E%3Ctext x='50' y='72' font-size='64' font-family='Arial,sans-serif' font-weight='700' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
-
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/app.css">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
-
-    <script src="js/app.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 
     <style>
-        .section-header {
-            margin-top: 40px;
+        /* ===================== Theme tokens ===================== */
+        :root {
+            --bg: #ffffff;
+            --bg-soft: #f6f7fb;
+            --bg-elev: #ffffff;
+            --text: #14161c;
+            --text-soft: #4a5160;
+            --text-faint: #8a91a1;
+            --border: #e6e8ef;
+            --border-strong: #d3d7e0;
+            --accent: #4f46e5;
+            --accent-soft: #eef0fe;
+            --accent-2: #0ea5e9;
+            --good: #16a34a;
+            --bad: #dc2626;
+            --shadow: 0 1px 2px rgba(20, 22, 28, .04), 0 8px 24px rgba(20, 22, 28, .06);
+            --shadow-lg: 0 12px 40px rgba(20, 22, 28, .12);
+            --radius: 16px;
+            --maxw: 980px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0c0d12;
+            --bg-soft: #131520;
+            --bg-elev: #161823;
+            --text: #eef0f6;
+            --text-soft: #b6bccb;
+            --text-faint: #7d8499;
+            --border: #242636;
+            --border-strong: #313347;
+            --accent: #8b8bff;
+            --accent-soft: #1c1d36;
+            --accent-2: #38bdf8;
+            --good: #4ade80;
+            --bad: #f87171;
+            --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+            --shadow-lg: 0 14px 44px rgba(0, 0, 0, .5);
+        }
+
+        /* ===================== Base ===================== */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            transition: background .25s ease, color .25s ease;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 22px;
+        }
+
+        section {
+            padding: 54px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        h2.section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2.section-title::before {
+            content: "";
+            width: 9px;
+            height: 22px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            display: inline-block;
+        }
+
+        .lead {
+            color: var(--text-soft);
+            font-size: 1.02rem;
+        }
+
+        /* ===================== Nav ===================== */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 11px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: .04em;
+            font-size: 1.05rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .brand .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a {
+            color: var(--text-soft);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: 7px 11px;
+            border-radius: 9px;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        .nav-links a.nav-cta {
+            color: #fff;
+            background: var(--accent);
+        }
+
+        html[data-theme="dark"] .nav-links a.nav-cta {
+            color: #0c0d12;
+        }
+
+        .nav-links a.nav-cta:hover {
+            filter: brightness(1.07);
+        }
+
+        .theme-toggle {
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-grid;
+            place-items: center;
+            transition: background .15s, transform .15s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-soft);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        html[data-theme="dark"] .icon-sun {
+            display: block;
+        }
+
+        html[data-theme="dark"] .icon-moon {
+            display: none;
+        }
+
+        .icon-sun {
+            display: none;
+        }
+
+        .icon-moon {
+            display: block;
+        }
+
+        @media (max-width: 720px) {
+            .nav-links a:not(.nav-cta) {
+                display: none;
+            }
+        }
+
+        /* ===================== Hero ===================== */
+        header.hero {
+            position: relative;
+            overflow: hidden;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+
+        header.hero::before {
+            content: "";
+            position: absolute;
+            inset: -40% 0 auto 0;
+            height: 420px;
+            background: radial-gradient(60% 60% at 50% 0%, var(--accent-soft) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: .76rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            padding: 5px 12px;
+            border-radius: 999px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.1rem);
+            line-height: 1.08;
+            letter-spacing: -.03em;
+            font-weight: 800;
+            margin: 0 0 10px;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2.4vw, 1.28rem);
+            color: var(--text-soft);
+            font-weight: 500;
+            max-width: 760px;
+            margin: 0 auto 26px;
+        }
+
+        .authors {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 4px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px 20px;
+            font-size: 1.05rem;
+        }
+
+        .authors li {
+            font-weight: 500;
+        }
+
+        .authors sup {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .affil {
+            color: var(--text-soft);
+            font-size: .98rem;
+            margin: 6px 0 0;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 600;
+            font-size: .98rem;
+            padding: 11px 20px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        html[data-theme="dark"] .btn-primary {
+            color: #0c0d12;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: var(--bg-elev);
+            color: var(--text);
+            border-color: var(--border-strong);
+        }
+
+        .btn-ghost:hover {
+            transform: translateY(-2px);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        /* ===================== Figures ===================== */
+        figure {
+            margin: 0;
+        }
+
+        .fig {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .fig img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        figcaption {
+            color: var(--text-soft);
+            font-size: .9rem;
+            line-height: 1.55;
+            margin-top: 12px;
+            text-align: left;
+        }
+
+        figcaption b {
+            color: var(--text);
+        }
+
+        .teaser-wrap {
+            margin-top: 30px;
+        }
+
+        /* ===================== TL;DR / cards ===================== */
+        .tldr {
+            margin-top: 20px;
+            background: linear-gradient(180deg, var(--accent-soft), transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+
+        .tldr h3 {
+            margin: 0 0 6px;
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: .02em;
+        }
+
+        .tldr p {
+            margin: 0;
+            color: var(--text);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 24px 0 4px;
+        }
+
+        @media (max-width: 640px) {
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat .num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat .lbl {
+            color: var(--text-soft);
+            font-size: .9rem;
+            margin-top: 2px;
+        }
+
+        /* method bullets */
+        .method-points {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        @media (max-width: 720px) {
+            .method-points {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mp {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .mp .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            font-weight: 500;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .mp p {
+            margin: 0;
+            font-size: .94rem;
+            color: var(--text-soft);
+        }
+
+        /* ===================== Results table ===================== */
+        .table-scroll {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-top: 8px;
+        }
+
+        table.results {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .92rem;
+            min-width: 720px;
+            background: var(--bg-elev);
+        }
+
+        table.results th,
+        table.results td {
+            padding: 10px 12px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        table.results thead th {
+            font-weight: 700;
+            color: var(--text);
+            border-bottom: 1px solid var(--border-strong);
+        }
+
+        table.results thead tr.groups th {
+            border-bottom: none;
+            color: var(--text-soft);
+            font-size: .82rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        table.results td.method,
+        table.results th.method {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table.results tbody tr {
+            border-top: 1px solid var(--border);
+        }
+
+        table.results tbody tr.saga {
+            background: var(--accent-soft);
+        }
+
+        table.results tbody tr.saga td {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        table.results .grp {
+            border-left: 1px solid var(--border);
+        }
+
+        .tbl-note {
+            color: var(--text-faint);
+            font-size: .84rem;
+            margin-top: 10px;
+        }
+
+        /* ===================== BibTeX ===================== */
+        .bibtex-box {
+            position: relative;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 8px;
+        }
+
+        .bibtex-box pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .86rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .copy-btn:hover {
+            background: var(--bg-soft);
+        }
+
+        .copy-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ===================== Footer ===================== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px 0 50px;
+            color: var(--text-faint);
+            font-size: .86rem;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--text-soft);
+        }
+
+        /* ===================== Reveal on scroll ===================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
         }
     </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "headline": "SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings",
+      "name": "SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings",
+      "author": [
+        { "@type": "Person", "name": "Shubhang Bhatnagar", "url": "https://shubhangb97.github.io/" },
+        { "@type": "Person", "name": "Dheeraj Baiju" },
+        { "@type": "Person", "name": "Narendra Ahuja", "url": "https://n-ahuja.ece.illinois.edu/" }
+      ],
+      "datePublished": "2026",
+      "abstract": "Vision encoders for retrieval are typically trained with class-label supervision: each training pair reduces to a scalar that uniformly pushes the embedding apart or pulls it together, as if every visual attribute either differed or matched. A multimodal large language model (MLLM), shown the same pair, can articulate those attributes and use them to predict whether the images share a class. We propose SAGA, a framework that turns this language-grounded, attribute-aware perception into a training signal for the encoder itself. Specifically, we use Group Relative Policy Optimization (GRPO) to reward the MLLM for correct predictions on the vision encoder's tokens. Since correct predictions require those tokens to expose the specific attributes that differ or match between the pair, the gradient pushes the encoder to encode them, replacing the uniform pair-level scalar with attribute-resolved supervision. An auxiliary attention-distillation loss anchors the encoder's embedding to tokens the MLLM attended to, and a standard metric-learning loss shapes the embedding geometry for nearest-neighbour retrieval. The MLLM is frozen throughout and discarded at inference, matching the deployment cost of a metric-learning baseline. SAGA improves Recall@1 by 3 to 6 points over state-of-the-art baselines on CUB-200-2011, Cars-196, FGVC-Aircraft, and iNaturalist Aves on zero-shot image retrieval.",
+      "url": "https://shubhangb97.github.io/saga/",
+      "image": "https://shubhangb97.github.io/saga/img/teaser.png",
+      "sameAs": "https://arxiv.org/abs/2606.15134",
+      "identifier": "arXiv:2606.15134",
+      "keywords": "deep metric learning, image retrieval, multimodal large language models, GRPO, representation learning, vision encoder"
+    }
+    </script>
 </head>
 
 <body>
-    <div class="container" id="main">
-        <div class="row">
-            <h2 class="col-md-12 text-center">
-                <b>SAGA: Beyond Scalar Distances</b><br/>
-                Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings<br/>
-            </h2>
+    <!-- ============ NAV ============ -->
+    <nav>
+        <div class="nav-inner">
+            <a class="brand" href="#top"><span class="dot"></span>SAGA</a>
+            <div class="nav-links">
+                <a href="#abstract">Abstract</a>
+                <a href="#method">Method</a>
+                <a href="#results">Results</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#bibtex">BibTeX</a>
+                <a class="nav-cta" href="https://arxiv.org/abs/2606.15134" target="_blank" rel="noopener">Paper</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul class="list-inline">
-                    <li>
-                        <a href="https://shubhangb97.github.io/">
-                            <strong>Shubhang Bhatnagar<sup>1</sup></strong>
-                        </a>
-                    </li>
-                    <li>
-                        Dheeraj Baiju<sup>1</sup>
-                    </li>
-                    <li>
-                        <a href="https://n-ahuja.ece.illinois.edu/">
-                            Narendra Ahuja<sup>1</sup>
-                        </a>
-                    </li>
-                    <br/>
-                    <li>
-                        <sup>1</sup><a href="https://illinois.edu/">
-                            University of Illinois at Urbana-Champaign
-                        </a>
-                    </li>
-                </ul>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="top">
+        <div class="wrap">
+            <span class="badge">Under Review · 2026</span>
+            <h1>Beyond Scalar Distances:<br><span class="grad">Semantic Attribute Gradients</span> from Frozen MLLMs</h1>
+            <p class="subtitle">Turning a frozen multimodal LLM into a training-time supervisor that teaches a vision
+                encoder the fine-grained attributes that matter for zero-shot retrieval.</p>
+
+            <ul class="authors">
+                <li><a href="https://shubhangb97.github.io/">Shubhang Bhatnagar</a><sup>1,&#42;</sup></li>
+                <li>Dheeraj Baiju<sup>1,&#42;</sup></li>
+                <li><a href="https://n-ahuja.ece.illinois.edu/">Narendra Ahuja</a><sup>1</sup></li>
+            </ul>
+            <p class="affil"><sup>1</sup>&nbsp;<a href="https://illinois.edu/">University of Illinois at
+                    Urbana-Champaign</a> &nbsp;&middot;&nbsp; <sup>&#42;</sup>&nbsp;Equal contribution</p>
+
+            <div class="btn-row">
+                <a class="btn btn-primary" href="https://arxiv.org/pdf/2606.15134" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    Paper (PDF)
+                </a>
+                <a class="btn btn-ghost" href="https://arxiv.org/abs/2606.15134" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    arXiv
+                </a>
+                <a class="btn btn-ghost" href="#bibtex">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6" />
+                        <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                    BibTeX
+                </a>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <em>Under Review</em>
+        <!-- Teaser -->
+        <div class="wrap teaser-wrap reveal">
+            <figure class="fig">
+                <img src="./img/teaser.png" alt="SAGA teaser: class-label scalar supervision vs MLLM attribute-resolved supervision for an Indigo Bunting and a Blue Grosbeak">
+                <figcaption><b>Class labels reduce supervision to a scalar; an MLLM resolves it into attributes.</b>
+                    An Indigo Bunting and a Blue Grosbeak share deep-blue plumage and gray legs and differ only in their
+                    wing pattern. A class-label loss collapses this to a single "different," pushing every embedding
+                    dimension apart. A frozen MLLM instead names which attributes match and which differ before reaching
+                    its verdict — and SAGA turns that into a learning signal for the encoder.</figcaption>
+            </figure>
+        </div>
+    </header>
+
+    <!-- ============ ABSTRACT ============ -->
+    <section id="abstract">
+        <div class="wrap reveal">
+            <h2 class="section-title">Abstract</h2>
+            <p class="lead">Vision encoders for retrieval are typically trained with class-label supervision: each
+                training pair reduces to a scalar that uniformly pushes the embedding apart or pulls it together, as if
+                every visual attribute either differed or matched. A multimodal large language model (MLLM), shown the
+                same pair, can articulate those attributes and use them to predict whether the images share a class. We
+                propose <b>SAGA</b>, a framework that turns this language-grounded, attribute-aware perception into a
+                training signal for the encoder itself. Specifically, we use Group Relative Policy Optimization (GRPO) to
+                reward the MLLM for correct predictions on the vision encoder's tokens. Since correct predictions require
+                those tokens to expose the specific attributes that differ or match between the pair, the gradient
+                pushes the encoder to encode them, replacing the uniform pair-level scalar with attribute-resolved
+                supervision. An auxiliary attention-distillation loss anchors the encoder's embedding to tokens the MLLM
+                attended to, and a standard metric-learning loss shapes the embedding geometry for nearest-neighbour
+                retrieval. The MLLM is frozen throughout and discarded at inference, matching the deployment cost of a
+                metric-learning baseline. SAGA improves Recall@1 by 3 to 6 points over state-of-the-art baselines on
+                CUB-200-2011, Cars-196, FGVC-Aircraft, and iNaturalist Aves on zero-shot image retrieval.</p>
+
+            <div class="tldr">
+                <h3>TL;DR</h3>
+                <p>SAGA replaces the single scalar of class-label metric learning with attribute-resolved supervision
+                    distilled from a frozen MLLM, training a vision encoder whose embeddings capture the fine-grained
+                    attributes that matter for zero-shot retrieval. The MLLM is discarded at inference, so deployment
+                    costs nothing extra.</p>
             </div>
         </div>
+    </section>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2 text-center">
-                <ul class="nav nav-pills nav-justified">
-                    <li>
-                        <a href="https://arxiv.org/abs/2606.15134">
-                            <h4><i class="fa fa-archive"></i> Paper</h4>
-                        </a>
-                    </li>
-                    <!--
-                    <li>
-                        <a href="#">
-                            <h4><i class="fa fa-github"></i> Code (Coming Soon)</h4>
-                        </a>
-                    </li>
-                    -->
-                </ul>
-            </div>
-        </div>
+    <!-- ============ METHOD ============ -->
+    <section id="method">
+        <div class="wrap reveal">
+            <h2 class="section-title">Method</h2>
+            <p class="lead">The vision encoder emits patch tokens that a <b>frozen</b> MLLM compares pairwise,
+                describing attributes and judging same/different class. Three signals shape the encoder and pooler:</p>
 
-        <!-- Placeholder for teaser image/video -->
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="text-center">
-                    <!-- TODO: Add teaser image or video here -->
-                    <img src="./img/saga_teaser.png" width="100%" alt="SAGA Teaser Image">
+            <div class="method-points">
+                <div class="mp">
+                    <span class="tag">&#8466;_GRPO</span>
+                    <p>Correct same/different verdicts are rewarded via GRPO. The policy gradient flows back through the
+                        frozen backbone, pushing the encoder to expose the discriminative attributes the MLLM relied on.
+                    </p>
                 </div>
-			</div>
-        </div>
-
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Abstract
-                </h3>
-                <p class="text-justify">
-                    Vision encoders for retrieval are typically trained with class-label supervision: each training pair reduces to a scalar that uniformly pushes the embedding apart or pulls it together, as if every visual attribute either differed or matched. A multimodal large language model (MLLM), shown the same pair, can articulate those attributes and use them to predict whether the images share a class. We propose <b>SAGA</b>, a framework that turns this language-grounded, attribute-aware perception into a training signal for the encoder itself. Specifically, we use Group Relative Policy Optimization (GRPO) to reward the MLLM for correct predictions on the vision encoder's tokens. Since correct predictions require those tokens to expose the specific attributes that differ or match between the pair, the gradient pushes the encoder to encode them, replacing the uniform pair-level scalar with attribute-resolved supervision. An auxiliary attention-distillation loss anchors the encoder's embedding to tokens the MLLM attended to, and a standard metric-learning loss shapes the embedding geometry for nearest-neighbour retrieval. The MLLM is frozen throughout and discarded at inference, matching the deployment cost of a metric-learning baseline. SAGA improves Recall@1 by 3 to 6 points over state-of-the-art baselines on CUB-200-2011, Cars-196, FGVC-Aircraft, and iNaturalist Aves on zero-shot image retrieval.
-                </p>
-
-                <h3>
-                    TL;DR:
-                </h3>
-                <p class="text-justify">
-                    SAGA replaces the single scalar of class-label metric learning with attribute-resolved supervision distilled from a frozen MLLM, training a vision encoder whose embeddings capture the fine-grained attributes that matter for zero-shot retrieval. The MLLM is discarded at inference, so deployment costs nothing extra.
-                </p>
-            </div>
-        </div>
-
-        <!-- Placeholder for method overview -->
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Method Overview
-                </h3>
-                <div class="text-center">
-                    <!-- TODO: Add method overview diagram here -->
-                    <img src="./img/saga_method.png" width="100%" alt="SAGA Method Overview">
+                <div class="mp">
+                    <span class="tag">&#8466;_KL</span>
+                    <p>An attention-alignment loss distills the MLLM's spatial attention into a lightweight pooler, so it
+                        weights attribute-relevant regions rather than spurious cues.</p>
+                </div>
+                <div class="mp">
+                    <span class="tag">&#8466;_DML</span>
+                    <p>A standard deep-metric-learning loss shapes the pooled embedding geometry for nearest-neighbour
+                        retrieval.</p>
                 </div>
             </div>
-        </div>
 
-        <div class="row section-header">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Citation
-                </h3>
-                <p>If you find our work useful, please consider citing:</p>
-                <div class="form-group col-md-10 col-md-offset-1">
-                    <textarea id="bibtex" class="form-control" readonly>
-@article{bhatnagar2026saga,
-    title={Beyond Scalar Distances: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings},
-    author={Bhatnagar, Shubhang and Baiju, Dheeraj and Ahuja, Narendra},
-    journal={arXiv preprint arXiv:2606.15134},
-    year={2026}
-}
-</textarea>
+            <figure class="fig reveal">
+                <img src="./img/method_training.png" loading="lazy"
+                    alt="SAGA training pipeline: vision encoder tokens fed to a frozen MLLM, rewarded with GRPO, with attention alignment and deep metric learning losses">
+                <figcaption><b>Training.</b> Image pairs are encoded into patch tokens and handed to the frozen MLLM,
+                    which describes attributes and outputs a verdict. Correct verdicts (r = 1) earn positive advantage
+                    under GRPO; the gradient reinforces the encoder directions that carry the deciding attributes. In
+                    parallel, the MLLM's attention supervises the retrieval pooler (&#8466;<sub>KL</sub>) and a metric
+                    loss (&#8466;<sub>DML</sub>) organizes the embedding space.</figcaption>
+            </figure>
+
+            <figure class="fig reveal" style="margin-top:18px;">
+                <img src="./img/inference.png" loading="lazy"
+                    alt="SAGA inference pipeline: image to vision encoder to pooler to embedding, then cosine similarity for top-K retrieval">
+                <figcaption><b>Inference.</b> The MLLM is discarded. Only the trained vision encoder and pooler remain —
+                    an image maps to a single embedding and retrieval is plain cosine nearest-neighbour search, matching
+                    the deployment cost of any standard metric-learning pipeline.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="results">
+        <div class="wrap reveal">
+            <h2 class="section-title">Results</h2>
+            <p class="lead">Zero-shot image retrieval on four fine-grained benchmarks. All methods share the same
+                Qwen3-VL-8B vision tower; baselines use mean pooling. <b>SAGA improves Recall@1 by 3–6 points</b> over
+                the strongest prior baselines.</p>
+
+            <div class="stat-grid">
+                <div class="stat">
+                    <div class="num">+6.3</div>
+                    <div class="lbl">Recall@1 on CUB-200 over the best baseline</div>
+                </div>
+                <div class="stat">
+                    <div class="num">87.9%</div>
+                    <div class="lbl">Recall@1 on CUB-200 (97.0% on Cars-196)</div>
+                </div>
+                <div class="stat">
+                    <div class="num">0&times;</div>
+                    <div class="lbl">Extra inference cost — the MLLM is discarded</div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <p class="text-justify text-muted"><small>
-                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
-                </small></p>
+            <div class="table-scroll">
+                <table class="results">
+                    <thead>
+                        <tr class="groups">
+                            <th class="method" rowspan="2">Method</th>
+                            <th class="grp" colspan="3">CUB-200</th>
+                            <th class="grp" colspan="3">Cars-196</th>
+                            <th class="grp" colspan="3">Aircraft</th>
+                            <th class="grp" colspan="3">iNat-Aves</th>
+                        </tr>
+                        <tr>
+                            <th class="grp">R@1</th><th>R@4</th><th>NMI</th>
+                            <th class="grp">R@1</th><th>R@4</th><th>NMI</th>
+                            <th class="grp">R@1</th><th>R@4</th><th>NMI</th>
+                            <th class="grp">R@1</th><th>R@4</th><th>NMI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="method">Pre-trained backbone</td>
+                            <td class="grp">75.6</td><td>91.8</td><td>0.77</td>
+                            <td class="grp">70.7</td><td>88.5</td><td>0.49</td>
+                            <td class="grp">53.1</td><td>76.1</td><td>0.43</td>
+                            <td class="grp">42.2</td><td>64.8</td><td>0.65</td>
+                        </tr>
+                        <tr>
+                            <td class="method">Proxy Anchor</td>
+                            <td class="grp">79.5</td><td>92.0</td><td>0.79</td>
+                            <td class="grp">93.4</td><td>97.3</td><td>0.84</td>
+                            <td class="grp">73.1</td><td>92.8</td><td>0.68</td>
+                            <td class="grp">54.1</td><td>73.1</td><td>0.72</td>
+                        </tr>
+                        <tr>
+                            <td class="method">Potential Field</td>
+                            <td class="grp">81.6</td><td>92.9</td><td>0.81</td>
+                            <td class="grp">93.7</td><td>97.8</td><td>0.86</td>
+                            <td class="grp">77.4</td><td>93.2</td><td>0.72</td>
+                            <td class="grp">55.6</td><td>75.0</td><td>0.73</td>
+                        </tr>
+                        <tr class="saga">
+                            <td class="method">SAGA (ours)</td>
+                            <td class="grp">87.9</td><td>96.3</td><td>0.83</td>
+                            <td class="grp">97.0</td><td>98.6</td><td>0.89</td>
+                            <td class="grp">83.5</td><td>93.9</td><td>0.77</td>
+                            <td class="grp">60.1</td><td>77.1</td><td>0.80</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="tbl-note">Recall@1, Recall@4 (%) and Normalized Mutual Information (NMI, ∈ [0,1]). iNat-Aves is our
+                bird subset of iNaturalist-2021. SAGA values are means over 3 seeds. Best per column in the highlighted
+                row.</p>
+        </div>
+    </section>
+
+    <!-- ============ GALLERY ============ -->
+    <section id="gallery">
+        <div class="wrap reveal">
+            <h2 class="section-title">Qualitative results</h2>
+
+            <figure class="fig">
+                <img src="./img/gallery.png" loading="lazy"
+                    alt="Retrieval gallery: query images and their five nearest neighbours across CUB-200, Cars-196, FGVC-Aircraft and iNat-Aves; green borders are correct, red borders are incorrect">
+                <figcaption><b>Nearest-neighbour retrieval.</b> For a query (left), the five nearest neighbours in SAGA's
+                    embedding space across all four benchmarks. <span style="color:var(--good);font-weight:600;">Green</span>
+                    borders mark same-class (correct) retrievals, <span
+                        style="color:var(--bad);font-weight:600;">red</span> mark errors. SAGA separates classes that
+                    differ in only a few fine-grained attributes.</figcaption>
+            </figure>
+
+            <figure class="fig" style="margin-top:18px;">
+                <img src="./img/attention.png" loading="lazy"
+                    alt="Per-attribute attention maps over an Indigo Bunting and a Blue Grosbeak: bill shape, wing pattern, breast colour, head pattern, leg colour">
+                <figcaption><b>What the MLLM attends to.</b> Attention maps for the attributes the MLLM names while
+                    judging the pair — bill shape, wing pattern, breast colour, head pattern, leg colour — localize on
+                    the corresponding regions. This is the signal SAGA distills into the pooler so retrieval embeddings
+                    focus on attribute-relevant parts.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ============ BIBTEX ============ -->
+    <section id="bibtex">
+        <div class="wrap reveal">
+            <h2 class="section-title">BibTeX</h2>
+            <p class="lead">If you find our work useful, please consider citing:</p>
+            <div class="bibtex-box">
+                <button class="copy-btn" id="copyBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span id="copyLabel">Copy</span>
+                </button>
+                <pre id="bibtex">@article{bhatnagar2026saga,
+    title   = {Beyond Scalar Distances: Semantic Attribute Gradients
+               from Frozen MLLMs for Visual Embeddings},
+    author  = {Bhatnagar, Shubhang and Baiju, Dheeraj and Ahuja, Narendra},
+    journal = {arXiv preprint arXiv:2606.15134},
+    year    = {2026}
+}</pre>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="wrap">
+            <p>SAGA &middot; University of Illinois at Urbana-Champaign</p>
+            <p style="margin-top:6px;">Page design adapted for SAGA. Original template inspiration from
+                <a href="http://mgharbi.com/">Michaël Gharbi</a> &amp;
+                <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- Theme ----------
+        (function () {
+            const root = document.documentElement;
+            const saved = localStorage.getItem('saga-theme');
+            // Default to light; only honour an explicit user choice saved earlier.
+            root.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+
+            document.getElementById('themeToggle').addEventListener('click', function () {
+                const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                root.setAttribute('data-theme', next);
+                localStorage.setItem('saga-theme', next);
+            });
+        })();
+
+        // ---------- Copy BibTeX ----------
+        document.getElementById('copyBtn').addEventListener('click', function () {
+            const text = document.getElementById('bibtex').innerText;
+            const label = document.getElementById('copyLabel');
+            navigator.clipboard.writeText(text).then(function () {
+                label.textContent = 'Copied!';
+                setTimeout(function () { label.textContent = 'Copy'; }, 1600);
+            });
+        });
+
+        // ---------- Reveal on scroll ----------
+        (function () {
+            const els = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) {
+                els.forEach(function (e) { e.classList.add('in'); });
+                return;
+            }
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (en.isIntersecting) {
+                        en.target.classList.add('in');
+                        io.unobserve(en.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+            els.forEach(function (e) { io.observe(e); });
+        })();
+    </script>
 </body>
+
 </html>
