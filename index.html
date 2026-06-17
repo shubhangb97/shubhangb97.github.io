@@ -215,6 +215,90 @@
 
           <tr>
             <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
+              <a href="https://shubhangb97.github.io/saga"><img src="images/saga_snap.png" alt="project image"
+                  style="width:auto; height:auto; max-width:100%;" /> </a>
+            </td>
+            <td style="padding:2.5%;width:60%;vertical-align:top">
+              <h3>SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings</h3>
+
+              <br>
+              <strong>Shubhang Bhatnagar</strong>, Dheeraj Baiju, <a
+                href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
+              <br>
+              <em>Under Review</em>
+              <br>
+              <a href="javascript:toggleblock('saga_abs')">abstract</a> /
+              <a href="https://shubhangb97.github.io/saga">project page</a> /
+              <a href="https://arxiv.org/abs/2606.15134">paper</a>
+
+
+
+              <br>
+
+              <p align="justify"> <i id="saga_abs">Vision encoders for retrieval are typically trained with class-label
+                  supervision: each training pair reduces to a scalar that uniformly pushes the embedding apart or pulls
+                  it together, as if every visual attribute either differed or matched. A multimodal large language model
+                  (MLLM), shown the same pair, can articulate those attributes and use them to predict whether the images
+                  share a class. We propose SAGA, a framework that turns this language-grounded, attribute-aware
+                  perception into a training signal for the encoder itself. Specifically, we use Group Relative Policy
+                  Optimization (GRPO) to reward the MLLM for correct predictions on the vision encoder's tokens. Since
+                  correct predictions require those tokens to expose the specific attributes that differ or match between
+                  the pair, the gradient pushes the encoder to encode them, replacing the uniform pair-level scalar with
+                  attribute-resolved supervision. An auxiliary attention-distillation loss anchors the encoder's
+                  embedding to tokens the MLLM attended to, and a standard metric-learning loss shapes the embedding
+                  geometry for nearest-neighbour retrieval. The MLLM is frozen throughout and discarded at inference,
+                  matching the deployment cost of a metric-learning baseline. SAGA improves Recall@1 by 3 to 6 points
+                  over state-of-the-art baselines on CUB-200-2011, Cars-196, FGVC-Aircraft, and iNaturalist Aves on
+                  zero-shot image retrieval.</i></p>
+
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
+              <a href="https://shubhangb97.github.io/LUQ"><img src="images/LUQ_tradeoff.png" alt="project image"
+                  style="width:auto; height:auto; max-width:100%;" /> </a>
+            </td>
+            <td style="padding:2.5%;width:60%;vertical-align:top">
+              <h3>LUQ: Layerwise Ultra-Low Bit Quantization for MLLMs</h3>
+
+              <br>
+              <strong>Shubhang Bhatnagar</strong>, Andy Xu, <a href="https://karhan-tan.github.io/"> Kar Han Tan</a>, <a
+                href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
+              <br>
+              <em><a href="https://openreview.net/forum?id=3eK6U6ZiSp"> Transactions on Machine Learning Research (TMLR), </a> </em> 2026
+              <br>
+              <a href="javascript:toggleblock('LUQ_abs')">abstract</a> /
+              <a href="https://shubhangb97.github.io/LUQ">project page</a> /
+              <a href="https://arxiv.org/abs/2509.23729">paper</a>
+
+
+
+              <br>
+
+              <p align="justify"> <i id="LUQ_abs">Large Language Models (LLMs) with multimodal capabilities have
+                  revolutionized vision-language tasks, but their deployment often requires huge memory and
+                  computational resources. While post-training quantization (PTQ) has successfully compressed language
+                  models to as low as 1-bit precision without significant performance loss, its effectiveness for
+                  multimodal LLMs (MLLMs) remains relatively unexplored. In this paper, we present the first study on
+                  ultra-low bit (&lt 4-bit) quantization for multimodal LLMs. Our analysis reveals that multimodal
+                  tokens and intermediate layer activations produced by them exhibit significantly higher statistical
+                  variance and entropy compared to text tokens, making them less tolerant to ultra-low bit quantization.
+                  However, the activation distributions of multimodal tokens varies significantly over different layers,
+                  with some layers having lower entropy activation distributions. We empirically show that such layers
+                  in these models can better tolerate ultra-low bit quantization. Building on these insights, we propose
+                  a novel strategy for MLLM quantization, LUQ: Layerwise Ultra-Low Bit Quantization, which selectively
+                  applies ultra-low bit quantization to layers that are more resilient to it. Additionally, we also show
+                  that using a mix of multimodal tokens (image and text) for PTQ boosts VQA performance in the ultra-low
+                  bit regime. We evaluate our method on LLaVA-1.5 and Qwen-2.5-VL across 9 popular VQA benchmarks. The
+                  resulting LUQ models use 40% and 31% less memory than their 4-bit counterparts, respectively, while
+                  exhibiting a performance degradation of less than 10% on the MME benchmark.</i></p>
+
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
               <a href="https://shubhangb97.github.io/VideoMind"><img src="images/videomind_snap.png" alt="project image"
                   style="width:auto; height:auto; max-width:100%;" /> </a>
             </td>
@@ -246,49 +330,6 @@
                  video sub-snippets at varying time scales, and 2) a Single-Frame Visual Detail mode for precise spatial localization of objects. This dynamic allocation of computation 
                  yields state-of-the-art results on the Video-MME, LongVideo, and MLVU benchmarks, achieving 77.6% performance on Video MME using Qwen 2.5 72B (4.8% enhancement) while 
                  also yielding a 5% improvement on Llama 4 Scout.</i></p>
-
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:2.5%;width:40%;vertical-align:top;min-width:120px">
-              <a href="https://shubhangb97.github.io/LUQ"><img src="images/LUQ_tradeoff.png" alt="project image"
-                  style="width:auto; height:auto; max-width:100%;" /> </a>
-            </td>
-            <td style="padding:2.5%;width:60%;vertical-align:top">
-              <h3>LUQ: Layerwise Ultra-Low Bit Quantization for MLLMs</h3>
-
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, Andy Xu, <a href="https://karhan-tan.github.io/"> Kar Han Tan</a>, <a
-                href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
-              <br>
-              <em>Under Review</em>
-              <br>
-              <a href="javascript:toggleblock('LUQ_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/LUQ">project page</a> /
-              <a href="https://arxiv.org/abs/2509.23729">paper</a>
-
-
-
-              <br>
-
-              <p align="justify"> <i id="LUQ_abs">Large Language Models (LLMs) with multimodal capabilities have
-                  revolutionized vision-language tasks, but their deployment often requires huge memory and
-                  computational resources. While post-training quantization (PTQ) has successfully compressed language
-                  models to as low as 1-bit precision without significant performance loss, its effectiveness for
-                  multimodal LLMs (MLLMs) remains relatively unexplored. In this paper, we present the first study on
-                  ultra-low bit (&lt 4-bit) quantization for multimodal LLMs. Our analysis reveals that multimodal
-                  tokens and intermediate layer activations produced by them exhibit significantly higher statistical
-                  variance and entropy compared to text tokens, making them less tolerant to ultra-low bit quantization.
-                  However, the activation distributions of multimodal tokens varies significantly over different layers,
-                  with some layers having lower entropy activation distributions. We empirically show that such layers
-                  in these models can better tolerate ultra-low bit quantization. Building on these insights, we propose
-                  a novel strategy for MLLM quantization, LUQ: Layerwise Ultra-Low Bit Quantization, which selectively
-                  applies ultra-low bit quantization to layers that are more resilient to it. Additionally, we also show
-                  that using a mix of multimodal tokens (image and text) for PTQ boosts VQA performance in the ultra-low
-                  bit regime. We evaluate our method on LLaVA-1.5 and Qwen-2.5-VL across 9 popular VQA benchmarks. The
-                  resulting LUQ models use 40% and 31% less memory than their 4-bit counterparts, respectively, while
-                  exhibiting a performance degradation of less than 10% on the MME benchmark.</i></p>
 
             </td>
           </tr>
@@ -756,6 +797,9 @@ Annotations</h3>
       </td>
     </tr>
   </table>
+  <script xml:space="preserve" language="JavaScript">
+    hideblock('saga_abs');
+  </script>
   <script xml:space="preserve" language="JavaScript">
     hideblock('videomind_abs');
   </script>

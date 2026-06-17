@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings</title>
+
+    <meta name="description" content="Project page for SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings" />
+
+    <!-- <link rel="icon" href="img/saga_icon.svg"> -->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
+
+    <script src="js/app.js"></script>
+
+    <style>
+        .section-header {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row">
+            <h2 class="col-md-12 text-center">
+                <b>SAGA: Beyond Scalar Distances</b><br/>
+                Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings<br/>
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <ul class="list-inline">
+                    <li>
+                        <a href="https://shubhangb97.github.io/">
+                            <strong>Shubhang Bhatnagar<sup>1</sup></strong>
+                        </a>
+                    </li>
+                    <li>
+                        Dheeraj Baiju<sup>1</sup>
+                    </li>
+                    <li>
+                        <a href="https://n-ahuja.ece.illinois.edu/">
+                            Narendra Ahuja<sup>1</sup>
+                        </a>
+                    </li>
+                    <br/>
+                    <li>
+                        <sup>1</sup><a href="https://illinois.edu/">
+                            University of Illinois at Urbana-Champaign
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <em>Under Review</em>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+                <ul class="nav nav-pills nav-justified">
+                    <li>
+                        <a href="https://arxiv.org/abs/2606.15134">
+                            <h4><i class="fa fa-archive"></i> Paper</h4>
+                        </a>
+                    </li>
+                    <!--
+                    <li>
+                        <a href="#">
+                            <h4><i class="fa fa-github"></i> Code (Coming Soon)</h4>
+                        </a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Placeholder for teaser image/video -->
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="text-center">
+                    <!-- TODO: Add teaser image or video here -->
+                    <img src="./img/saga_teaser.png" width="100%" alt="SAGA Teaser Image">
+                </div>
+			</div>
+        </div>
+
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Abstract
+                </h3>
+                <p class="text-justify">
+                    Vision encoders for retrieval are typically trained with class-label supervision: each training pair reduces to a scalar that uniformly pushes the embedding apart or pulls it together, as if every visual attribute either differed or matched. A multimodal large language model (MLLM), shown the same pair, can articulate those attributes and use them to predict whether the images share a class. We propose <b>SAGA</b>, a framework that turns this language-grounded, attribute-aware perception into a training signal for the encoder itself. Specifically, we use Group Relative Policy Optimization (GRPO) to reward the MLLM for correct predictions on the vision encoder's tokens. Since correct predictions require those tokens to expose the specific attributes that differ or match between the pair, the gradient pushes the encoder to encode them, replacing the uniform pair-level scalar with attribute-resolved supervision. An auxiliary attention-distillation loss anchors the encoder's embedding to tokens the MLLM attended to, and a standard metric-learning loss shapes the embedding geometry for nearest-neighbour retrieval. The MLLM is frozen throughout and discarded at inference, matching the deployment cost of a metric-learning baseline. SAGA improves Recall@1 by 3 to 6 points over state-of-the-art baselines on CUB-200-2011, Cars-196, FGVC-Aircraft, and iNaturalist Aves on zero-shot image retrieval.
+                </p>
+
+                <h3>
+                    TL;DR:
+                </h3>
+                <p class="text-justify">
+                    SAGA replaces the single scalar of class-label metric learning with attribute-resolved supervision distilled from a frozen MLLM, training a vision encoder whose embeddings capture the fine-grained attributes that matter for zero-shot retrieval. The MLLM is discarded at inference, so deployment costs nothing extra.
+                </p>
+            </div>
+        </div>
+
+        <!-- Placeholder for method overview -->
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Method Overview
+                </h3>
+                <div class="text-center">
+                    <!-- TODO: Add method overview diagram here -->
+                    <img src="./img/saga_method.png" width="100%" alt="SAGA Method Overview">
+                </div>
+            </div>
+        </div>
+
+        <div class="row section-header">
+            <div class="col-md-8 col-md-offset-2">
+                <h3>
+                    Citation
+                </h3>
+                <p>If you find our work useful, please consider citing:</p>
+                <div class="form-group col-md-10 col-md-offset-1">
+                    <textarea id="bibtex" class="form-control" readonly>
+@article{bhatnagar2026saga,
+    title={Beyond Scalar Distances: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings},
+    author={Bhatnagar, Shubhang and Baiju, Dheeraj and Ahuja, Narendra},
+    journal={arXiv preprint arXiv:2606.15134},
+    year={2026}
+}
+</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <p class="text-justify text-muted"><small>
+                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
+                </small></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
