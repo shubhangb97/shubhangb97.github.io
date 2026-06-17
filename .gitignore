@@ -9,3 +9,6 @@ Gemfile.lock
 node_modules
 package.json
 favicon.ico
+
+# Local-only project (not published)
+VideoMind/
