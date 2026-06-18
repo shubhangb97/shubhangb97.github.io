@@ -158,11 +158,119 @@
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
+
+  <!-- ── Modern typography & layout polish (scoped; loaded after stylesheet.css so it
+       overrides the shared Lato styles without editing that file) ───────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style type="text/css">
+    body, td, th, tr, p, a, strong, h1, h2, h3, .name {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body { color: #1b1b1f; }
+    body, td, th, tr, p, a { font-size: 15.5px; line-height: 1.65; }
+
+    /* Name + intro spacing */
+    .name { font-size: 40px; font-weight: 700; letter-spacing: -0.5px; padding-top: 24px; }
+    p { margin: 0 0 14px 0; }
+
+    /* Section heading ("Research") */
+    h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
+
+    /* Paper titles */
+    h3 { font-size: 18px; font-weight: 600; line-height: 1.35; margin: 0 0 4px 0; }
+
+    /* Publication entry: consistent hierarchy & spacing */
+    .pub-authors { margin: 0 0 3px 0; color: #2b2b30; }
+    .pub-venue { margin: 0 0 8px 0; color: #5a5a63; font-size: 14.5px; line-height: 1.5; }
+    .pub-venue > div { margin: 1px 0; }
+    .pub-venue a { color: #5a5a63; }
+    .pub-venue a:hover { color: #1772d0; }
+    .pub-extra { margin-top: 1px; }
+    .pub-links { margin: 0; font-size: 14px; }
+    /* Honor / award marker: red outline tag */
+    .oral {
+      display: inline-block;
+      margin-left: 5px;
+      padding: 0 8px;
+      border: 1px solid #d23b3b;
+      border-radius: 999px;
+      color: #d23b3b;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      line-height: 1.6;
+      vertical-align: 1px;
+      white-space: nowrap;
+    }
+
+    /* Profile photo: soft rounded card */
+    img[alt="profile photo"] {
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12);
+    }
+
+    /* Uniform, clean thumbnail cards — every figure stays fully visible (contain) */
+    img[alt="project image"] {
+      width: 100% !important;
+      max-width: 100% !important;
+      aspect-ratio: 16 / 10;
+      height: auto !important;
+      object-fit: contain;
+      background: #fbfbfc;
+      border: 1px solid #e7e7ea;
+      border-radius: 12px;
+      padding: 10px;
+      box-sizing: border-box;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      display: block;
+    }
+    img[alt="project image"]:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.13);
+      border-color: #c9c9d0;
+    }
+
+    /* Social links: inline text with a small icon */
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px 20px;
+      margin-top: 20px;
+    }
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #1772d0;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .social-links a:hover { color: #f09228; }
+    .social-links svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    @media only screen and (max-width: 768px) {
+      .name { font-size: 30px; }
+      img[alt="project image"] { aspect-ratio: 16 / 9; }
+    }
+  </style>
 </head>
 
 <body>
   <table
-    style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    style="width:100%;max-width:1000px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
     <tr style="padding:0px">
       <td style="padding:0px">
         <table
@@ -194,18 +302,17 @@
 
 
 
-              <p style="text-align:center">
-                <a target="_blank" href="mailto:shubhangb97@gmail.com">E-mail</a> &nbsp;/&nbsp;
-                <a target="_blank" href="https://shubhangb97.github.io/files/Resume_Shubhang.pdf">Resume</a>
-                &nbsp;/&nbsp;
-                <a href="https://github.com/shubhangb97">GitHub</a> &nbsp;/&nbsp;
-                <a href="https://scholar.google.com/citations?user=x_6C2vEAAAAJ&hl=en">Google Scholar</a> &nbsp;/&nbsp;
-                <a href="https://www.linkedin.com/in/shubhang-bhatnagar-b78b24186"> LinkedIn </a> &nbsp;/&nbsp;
-                <a href="https://twitter.com/s_bhatnagar_tw">Twitter</a>
+              <p class="social-links">
+                <a target="_blank" href="mailto:shubhangb97@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Email</a>
+                <a target="_blank" href="https://shubhangb97.github.io/files/Resume_Shubhang.pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>Resume</a>
+                <a href="https://github.com/shubhangb97"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub</a>
+                <a href="https://scholar.google.com/citations?user=x_6C2vEAAAAJ&hl=en"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>Google Scholar</a>
+                <a href="https://www.linkedin.com/in/shubhang-bhatnagar-b78b24186"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a>
+                <a href="https://twitter.com/s_bhatnagar_tw"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>Twitter</a>
               </p>
             </td>
             <td style="padding:2.5%;width:40%;max-width:40%">
-              <img style="width:100%;max-width:100%" alt="profile photo" src="images/Web_img1.jpg">
+              <img style="width:100%;max-width:100%" alt="profile photo" src="images/img_cropped.jpg">
             </td>
           </tr>
         </table>
@@ -235,20 +342,16 @@
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>SAGA: Semantic Attribute Gradients from Frozen MLLMs for Visual Embeddings</h3>
-
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, Dheeraj Baiju, <a
-                href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
-              <br>
-              <em>Under Review</em>
-              <br>
-              <a href="javascript:toggleblock('saga_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/saga">project page</a> /
-              <a href="https://arxiv.org/abs/2606.15134">paper</a>
-
-
-
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar</strong>, Dheeraj Baiju, <a
+                href="https://en.wikipedia.org/wiki/Narendra_Ahuja">Narendra Ahuja</a></p>
+              <div class="pub-venue">
+                <div>Under Review</div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('saga_abs')">abstract</a> &middot;
+                <a href="https://shubhangb97.github.io/saga">project page</a> &middot;
+                <a href="https://arxiv.org/abs/2606.15134">paper</a>
+              </p>
 
               <p align="justify"> <i id="saga_abs">Vision encoders for retrieval are typically trained with class-label
                   supervision: each training pair reduces to a scalar that uniformly pushes the embedding apart or pulls
@@ -276,20 +379,16 @@
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>LUQ: Layerwise Ultra-Low Bit Quantization for MLLMs</h3>
-
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, Andy Xu, <a href="https://karhan-tan.github.io/"> Kar Han Tan</a>, <a
-                href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
-              <br>
-              <em><a href="https://openreview.net/forum?id=3eK6U6ZiSp"> Transactions on Machine Learning Research (TMLR), </a> </em> 2026
-              <br>
-              <a href="javascript:toggleblock('LUQ_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/LUQ">project page</a> /
-              <a href="https://arxiv.org/abs/2509.23729">paper</a>
-
-
-
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar</strong>, Andy Xu, <a href="https://karhan-tan.github.io/">Kar Han Tan</a>, <a
+                href="https://en.wikipedia.org/wiki/Narendra_Ahuja">Narendra Ahuja</a></p>
+              <div class="pub-venue">
+                <div><a href="https://openreview.net/forum?id=3eK6U6ZiSp">Transactions on Machine Learning Research (<strong>TMLR</strong>)</a>, 2026</div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('LUQ_abs')">abstract</a> &middot;
+                <a href="https://shubhangb97.github.io/LUQ">project page</a> &middot;
+                <a href="https://arxiv.org/abs/2509.23729">paper</a>
+              </p>
 
               <p align="justify"> <i id="LUQ_abs">Large Language Models (LLMs) with multimodal capabilities have
                   revolutionized vision-language tasks, but their deployment often requires huge memory and
@@ -319,22 +418,17 @@
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>VideoMind: Thinking in Steps for Long Video Understanding</h3>
-
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, Renxiong Wang, Kapil Krishnakumar, Adel Ahmadyan, Zhaojiang Lin,
-              Lambert Mathias, Xin Luna Dong, Babak Damavandi, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja">
-                Narendra Ahuja</a>, <a href="https://shanemoon.com/">Seungwhan Moon</a>
-              <br>
-              <em><a href="https://2026.eacl.org/"> European Chapter of the Association for Computational Linguistics
-                  (EACL), </a> </em> 2026 <b>(Industry, Oral) </b>
-              <br>
-              <a href="javascript:toggleblock('videomind_abs')">abstract</a> /
-              <a href="https://aclanthology.org/2026.eacl-industry.30.pdf">paper</a> /
-              <a href="files/VideoMind_presentation.pdf">slides</a>
-
-
-
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar</strong>, Renxiong Wang, Kapil Krishnakumar, Adel Ahmadyan, Zhaojiang Lin,
+              Lambert Mathias, Xin Luna Dong, Babak Damavandi, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja">Narendra Ahuja</a>, <a href="https://shanemoon.com/">Seungwhan Moon</a></p>
+              <div class="pub-venue">
+                <div><a href="https://2026.eacl.org/">European Chapter of the Association for Computational Linguistics (<strong>EACL</strong>)</a>, 2026</div>
+                <div class="pub-extra">Industry Track <span class="oral">Oral</span></div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('videomind_abs')">abstract</a> &middot;
+                <a href="https://aclanthology.org/2026.eacl-industry.30.pdf">paper</a> &middot;
+                <a href="files/VideoMind_presentation.pdf">slides</a>
+              </p>
 
               <p align="justify"> <i id="videomind_abs"> Multimodal Large Language Models (MLLMs) struggle with Long Video Understanding (LVU) due to their limited context window and the distributed nature of salient information across many redundant frames. 
                 To address this, we present VideoMind, a novel training free agentic framework for LVU designed to mimic a human reasoning process. The framework is orchestrated by an MLLM 
@@ -357,21 +451,16 @@
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>Potential Field Based Deep Metric Learning</h3>
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra
-                Ahuja </a>
-              <br>
-              <em><a href="https://cvpr.thecvf.com/"> Computer Vision and Pattern Recognition Conference (CVPR), </a>
-              </em> 2025
-              <br>
-              <a href="javascript:toggleblock('potential_field_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/potential_field_DML">project page</a> /
-              <a
-                href="https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html">paper</a>
-
-
-
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar</strong>, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja">Narendra Ahuja</a></p>
+              <div class="pub-venue">
+                <div><a href="https://cvpr.thecvf.com/">Computer Vision and Pattern Recognition Conference (<strong>CVPR</strong>)</a>, 2025</div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('potential_field_abs')">abstract</a> &middot;
+                <a href="https://shubhangb97.github.io/potential_field_DML">project page</a> &middot;
+                <a
+                  href="https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html">paper</a>
+              </p>
 
               <p align="justify"> <i id="potential_field_abs">Deep metric learning (DML) involves training a network to
                   learn a semantically meaningful representation space.
@@ -400,22 +489,16 @@
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>PositiveCoOp: Rethinking Prompting Strategies for Multi-Label Recognition with Partial Annotations
               </h3>
-              <br>
-              <a href="https://samyakr99.github.io">Samyak Rawlekar</a>,<strong>Shubhang Bhatnagar</strong>, <a
-                href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja </a>
-
-              <br>
-              <em> <a href="https://wacv2025.thecvf.com/"> Winter Conference on Applications of Computer Vision (WACV),
-                </a></em> 2025
-              <br>
-
-              <a href="javascript:toggleblock('MLR2_abs')">abstract</a> /
-              <a href="https://samyakr99.github.io/PositiveCoOp/">project page</a> /
-              <a href="https://arxiv.org/pdf/2409.08381">paper</a>
-
-              <!-- <a href="coming soon">video</a> / 
-             -->
-              <br>
+              <p class="pub-authors"><a href="https://samyakr99.github.io">Samyak Rawlekar</a>, <strong>Shubhang Bhatnagar</strong>, <a
+                href="https://en.wikipedia.org/wiki/Narendra_Ahuja">Narendra Ahuja</a></p>
+              <div class="pub-venue">
+                <div><a href="https://wacv2025.thecvf.com/">Winter Conference on Applications of Computer Vision (<strong>WACV</strong>)</a>, 2025</div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('MLR2_abs')">abstract</a> &middot;
+                <a href="https://samyakr99.github.io/PositiveCoOp/">project page</a> &middot;
+                <a href="https://arxiv.org/pdf/2409.08381">paper</a>
+              </p>
 
               <p align="justify"> <i id="MLR2_abs"> Vision-language models (VLMs) like CLIP have been adapted for
                   Multi-Label Recognition (MLR) with partial annotations by leveraging prompt-learning, where positive
@@ -443,23 +526,18 @@
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>Improving Multi-label Recognition using Class Co-Occurrence Probabilities</h3>
-              <br>
-              <strong>Shubhang Bhatnagar*</strong>, <a href="https://samyakr99.github.io">Samyak Rawlekar* </a>,
-              Vishnuvardhan Pogunulu Srinivasulu, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja"> Narendra Ahuja
-              </a>
-
-              <br>
-              <em> <a href="https://sites.google.com/view/cvpr-metafood-2024">CVPRw </a></em> 2024,<em> <a
-                  href="https://icpr2024.org/">ICPR </a> 2024 (Oral Top-5%)</em>
-              <br>
-
-              <a href="javascript:toggleblock('MLR1_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/MLR_gcn">project page</a> /
-              <a href="https://arxiv.org/abs/2404.16193">paper</a>
-
-              <!-- <a href="coming soon">video</a> / 
-             -->
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar*</strong>, <a href="https://samyakr99.github.io">Samyak Rawlekar*</a>,
+              Vishnuvardhan Pogunulu Srinivasulu, <a href="https://en.wikipedia.org/wiki/Narendra_Ahuja">Narendra Ahuja</a></p>
+              <div class="pub-venue">
+                <div><a href="https://sites.google.com/view/cvpr-metafood-2024">Computer Vision and Pattern Recognition Workshop (<strong>CVPRw</strong>)</a>, 2024</div>
+                <div><a href="https://icpr2024.org/">International Conference on Pattern Recognition (<strong>ICPR</strong>)</a>, 2024</div>
+                <div class="pub-extra"><span class="oral">Oral &middot; Top-5%</span></div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('MLR1_abs')">abstract</a> &middot;
+                <a href="https://shubhangb97.github.io/MLR_gcn">project page</a> &middot;
+                <a href="https://arxiv.org/abs/2404.16193">paper</a>
+              </p>
 
               <p align="justify"> <i id="MLR1_abs">Multi-label Recognition (MLR) involves the identification of multiple
                   objects within an image.
@@ -485,23 +563,17 @@
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>Piecewise-Linear Manifolds for Deep Metric Learning</h3>
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, <a href="https://vision.ai.illinois.edu/narendra-ahuja/"> Narendra
-                Ahuja </a>
-
-              <br>
-              <em> <a href="https://proceedings.mlr.press/v234/">In Proceedings of Machine Learning Research (PMLR) Vol.
-                  234, </a></em>
-              & in <br>
-              <em> <a href="https://cpal.cc/">Conference on Parsimony and Learning (CPAL) </a></em>, 2024 <b>(Oral) </b>
-              <br>
-              <a href="javascript:toggleblock('PL_UDML_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/PL_manifold_UDML">project page</a> /
-              <a href="https://proceedings.mlr.press/v234/bhatnagar24a.html">paper</a>
-
-              <!-- <a href="coming soon">video</a> / 
-             -->
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar</strong>, <a href="https://vision.ai.illinois.edu/narendra-ahuja/">Narendra Ahuja</a></p>
+              <div class="pub-venue">
+                <div><a href="https://cpal.cc/">Conference on Parsimony and Learning (<strong>CPAL</strong>)</a>, 2024</div>
+                <div><a href="https://proceedings.mlr.press/v234/">Proceedings of Machine Learning Research (<strong>PMLR</strong>)</a>, Vol. 234</div>
+                <div class="pub-extra"><span class="oral">Oral</span></div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('PL_UDML_abs')">abstract</a> &middot;
+                <a href="https://shubhangb97.github.io/PL_manifold_UDML">project page</a> &middot;
+                <a href="https://proceedings.mlr.press/v234/bhatnagar24a.html">paper</a>
+              </p>
 
               <p align="justify"> <i id="PL_UDML_abs"> Unsupervised deep metric learning (UDML) focuses on learning a
                   semantic representation space
@@ -564,21 +636,17 @@ Annotations</h3>
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>Long-Distance Gesture Recognition using Dynamic Neural Networks</h3>
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, <a href="https://www.linkedin.com/in/sharathkumargopal"> Sharath
-                Gopal </a>, <a href="https://vision.ai.illinois.edu/narendra-ahuja/"> Narendra Ahuja </a>, <a
-                href="https://sites.google.com/site/liurenshomepage/">Liu Ren</a>
-
-              <br>
-              <em>International Conference on Intelligent Robots and Systems (IROS) </em>, 2023
-              <br>
-              <a href="javascript:toggleblock('ldgest_abs')">abstract</a> /
-              <a href="https://shubhangb97.github.io/LD_GR_dynamic_nn">project page</a> /
-              <a href="https://ieeexplore.ieee.org/document/10342147">paper</a> /
-              <a href="https://arxiv.org/abs/2308.04643">arxiv</a>
-              <!-- <a href="coming soon">video</a> / 
-               -->
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar</strong>, <a href="https://www.linkedin.com/in/sharathkumargopal">Sharath Gopal</a>, <a href="https://vision.ai.illinois.edu/narendra-ahuja/">Narendra Ahuja</a>, <a
+                href="https://sites.google.com/site/liurenshomepage/">Liu Ren</a></p>
+              <div class="pub-venue">
+                <div>International Conference on Intelligent Robots and Systems (<strong>IROS</strong>), 2023</div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('ldgest_abs')">abstract</a> &middot;
+                <a href="https://shubhangb97.github.io/LD_GR_dynamic_nn">project page</a> &middot;
+                <a href="https://ieeexplore.ieee.org/document/10342147">paper</a> &middot;
+                <a href="https://arxiv.org/abs/2308.04643">arXiv</a>
+              </p>
 
               <p align="justify"> <i id="ldgest_abs">Gestures form an important medium of communication between humans
                   and machines. An overwhelming
@@ -615,17 +683,16 @@ Annotations</h3>
             </td>
             <td style="padding:2.5%;width:60%;vertical-align:top">
               <h3>PAL: Pretext based Active Learning</h3>
-              <br>
-              <strong>Shubhang Bhatnagar</strong>, <a href="https://saching007.github.io/">Sachin Goyal</a>, Darshan
-              Tank, <a href="https://www.ee.iitb.ac.in/~asethi/">Amit Sethi</a>
-              <br><strong>British Machine Vision Conference (BMVC), 2021</strong>
-              <br>
-
-              <a href="javascript:toggleblock('pal_abs')">abstract</a> /
-              <a href="https://www.bmvc2021-virtualconference.com/conference/papers/paper_1061.html">project page</a> /
-              <a href="https://www.bmvc2021-virtualconference.com/assets/papers/1061.pdf">paper</a> /
-              <a href="https://github.com/shubhangb97/PAL_pretext_based_active_learning">code</a>
-              <br>
+              <p class="pub-authors"><strong>Shubhang Bhatnagar</strong>, <a href="https://saching007.github.io/">Sachin Goyal</a>, Darshan Tank, <a href="https://www.ee.iitb.ac.in/~asethi/">Amit Sethi</a></p>
+              <div class="pub-venue">
+                <div>British Machine Vision Conference (<strong>BMVC</strong>), 2021</div>
+              </div>
+              <p class="pub-links">
+                <a href="javascript:toggleblock('pal_abs')">abstract</a> &middot;
+                <a href="https://www.bmvc2021-virtualconference.com/conference/papers/paper_1061.html">project page</a> &middot;
+                <a href="https://www.bmvc2021-virtualconference.com/assets/papers/1061.pdf">paper</a> &middot;
+                <a href="https://github.com/shubhangb97/PAL_pretext_based_active_learning">code</a>
+              </p>
 
               <p align="justify"> <i id="pal_abs">The goal of pool-based active learning is to judiciously select a
                   fixed-sized subset of
@@ -659,15 +726,16 @@ Annotations</h3>
             <h3>Analyzing Cross Validation in Compressed Sensing with Mixed Gaussian and Impulse Measurement Noise with
               L1 Errors</h3>
             <br>
-            <strong>Shubhang Bhatnagar</strong><sup>*</sup>, Chinmay Gurjarpadhye<sup>*</sup>, <a
-              href="https://www.cse.iitb.ac.in/~ajitvr/">Ajit Rajwade </a>
-            <br><strong>European Signal Processing Conference (EUSIPCO),</strong>
-            <br>
-            <a href="javascript:toggleblock('l1_cv_abs')">abstract</a> /
-            <a href="https://ieeexplore.ieee.org/document/9615951">paper</a> /
-            <a href="https://arxiv.org/abs/2102.10165">extended arxiv</a>
-
-            <br>
+            <p class="pub-authors"><strong>Shubhang Bhatnagar</strong><sup>*</sup>, Chinmay Gurjarpadhye<sup>*</sup>, <a
+              href="https://www.cse.iitb.ac.in/~ajitvr/">Ajit Rajwade</a></p>
+            <div class="pub-venue">
+              <div>European Signal Processing Conference (<strong>EUSIPCO</strong>), 2021</div>
+            </div>
+            <p class="pub-links">
+              <a href="javascript:toggleblock('l1_cv_abs')">abstract</a> &middot;
+              <a href="https://ieeexplore.ieee.org/document/9615951">paper</a> &middot;
+              <a href="https://arxiv.org/abs/2102.10165">extended arXiv</a>
+            </p>
 
             <p align="justify"> <i id="l1_cv_abs">Compressed sensing (CS) involves sampling
                 signals at rates less than their Nyquist rates and attempting to reconstruct them after sample
@@ -699,14 +767,15 @@ Annotations</h3>
     <td style="padding:2.5%;width:60%;vertical-align:top">
       <h3>Insights on coding gain and its properties for principal component filter banks</h3>
       <br>
-      Prasad Chaphekar, Aniket Bhatia,<strong>Shubhang Bhatnagar</strong>, Abhiraj Kanse, Ashish V Vanmali, <a
-        href="https://www.ee.iitb.ac.in/wiki/faculty/vmgadre">Vikram M Gadre </a>
-      <br><strong> Sādhanā</strong> , Journal of the Indian Academy of Sciences, 2023
-      <br>
-      <a href="javascript:toggleblock('pcfb_abs')">abstract</a> /
-      <a href="https://rdcu.be/dbulY">paper</a>
-
-      <br>
+      <p class="pub-authors">Prasad Chaphekar, Aniket Bhatia, <strong>Shubhang Bhatnagar</strong>, Abhiraj Kanse, Ashish V Vanmali, <a
+        href="https://www.ee.iitb.ac.in/wiki/faculty/vmgadre">Vikram M Gadre</a></p>
+      <div class="pub-venue">
+        <div>Sādhanā &mdash; Journal of the Indian Academy of Sciences, 2023</div>
+      </div>
+      <p class="pub-links">
+        <a href="javascript:toggleblock('pcfb_abs')">abstract</a> &middot;
+        <a href="https://rdcu.be/dbulY">paper</a>
+      </p>
 
       <p align="justify"> <i id="pcfb_abs">Principal Component Filter Bank (PCFB) is considered optimal in terms of
           coding gain for speciﬁcconditions.
@@ -728,13 +797,14 @@ Annotations</h3>
     <td style="padding:2.5%;width:60%;vertical-align:top">
       <h3>QR Code Denoising using Parallel Hopfield Networks</h3>
       <br>
-      <strong>Shubhang Bhatnagar</strong><sup>*</sup>, Ishan Bhatnagar<sup>*</sup>
-      <br><strong>Arxiv</strong> , 2018
-      <br>
-      <a href="javascript:toggleblock('qr_abs')">abstract</a> /
-      <a href="https://arxiv.org/abs/1812.01065">arxiv</a>
-
-      <br>
+      <p class="pub-authors"><strong>Shubhang Bhatnagar</strong><sup>*</sup>, Ishan Bhatnagar<sup>*</sup></p>
+      <div class="pub-venue">
+        <div>arXiv, 2018</div>
+      </div>
+      <p class="pub-links">
+        <a href="javascript:toggleblock('qr_abs')">abstract</a> &middot;
+        <a href="https://arxiv.org/abs/1812.01065">arXiv</a>
+      </p>
 
       <p align="justify"> <i id="qr_abs">We propose a novel algorithm for using Hopfield
           networks to denoise QR codes. Hopfield networks have mostly been
@@ -766,14 +836,15 @@ Annotations</h3>
     <td style="padding:2.5%;width:60%;vertical-align:top">
       <h3>Memory Efficient Adaptive Attention For Multiple Domain Learning</h3>
       <br>
-      Himanshu Pradeep Aswani, Abhiraj Sunil Kanse, <strong>Shubhang Bhatnagar</strong>, <a
-        href="https://www.ee.iitb.ac.in/~asethi/">Amit Sethi</a>
-      <br><strong>Arxiv</strong> , 2021
-      <br>
-      <a href="javascript:toggleblock('adapter_abs')">abstract</a> /
-      <a href="https://arxiv.org/abs/2110.10969">arxiv</a>
-
-      <br>
+      <p class="pub-authors">Himanshu Pradeep Aswani, Abhiraj Sunil Kanse, <strong>Shubhang Bhatnagar</strong>, <a
+        href="https://www.ee.iitb.ac.in/~asethi/">Amit Sethi</a></p>
+      <div class="pub-venue">
+        <div>arXiv, 2021</div>
+      </div>
+      <p class="pub-links">
+        <a href="javascript:toggleblock('adapter_abs')">abstract</a> &middot;
+        <a href="https://arxiv.org/abs/2110.10969">arXiv</a>
+      </p>
 
       <p align="justify"> <i id="adapter_abs">Training CNNs from scratch on new domains typically demands large
           numbers of labeled images and computations, which is not suitable for low-power hardware. One way to reduce
