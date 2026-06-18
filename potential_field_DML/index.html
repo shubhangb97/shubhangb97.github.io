@@ -916,9 +916,13 @@
             <figure class="fig fig-side">
                 <div class="side-media"><img src="./img/charge_animation_web.gif"
                         alt="Animation of the class potential field for two classes, with the field for the blue class visualized; blue attraction wells pull same-class embeddings together while red regions repel other-class embeddings"></div>
-                <figcaption>A toy problem with embeddings from 2 classes. Similar embeddings move together and
-                    dissimilar ones apart under the influence of our potential field (the field for the blue class is
-                    visualized).</figcaption>
+                <figcaption>Each image is represented as a point (an embedding); shown here are two classes, blue and
+                    red, in a 2-D toy space. Borrowing from electrostatics, PFML has every point create a field that
+                    attracts points of its own class and repels other classes, with the influence weakening over
+                    distance. The coloured surface is the combined field felt by the blue class (blue wells pull blue
+                    points together, red regions push the other class away); following it, blue points gather with nearby
+                    blue neighbours and separate from red, which is how PFML learns a space where similar images sit close
+                    together.</figcaption>
             </figure>
         </div>
     </header>
@@ -961,9 +965,14 @@
             <figure class="fig reveal" style="margin-top:24px;">
                 <img src="./img/field_fig_paper.png" loading="lazy"
                     alt="An example of the class potential fields Psi-1 and Psi-2, created by superposing the fields of individual embeddings of two classes, with arrows denoting the gradient (net force) on samples and proxies">
-                <figcaption>Example class potential fields &Psi;<sub>1</sub> and &Psi;<sub>2</sub> for a 2-class toy
-                    problem, each formed by superposing the fields of individual embeddings. Every embedding is drawn to
-                    the nearest same-class points and pushed away from other classes; arrows show the net force.</figcaption>
+                <figcaption>The same idea for both classes: &Psi;<sub>1</sub> and &Psi;<sub>2</sub> are the combined
+                    fields for the blue and red classes, each obtained by superposing the attraction and repulsion of
+                    every individual point. Arrows are the gradient of the field, i.e. the net force that moves a point.
+                    Because the influence decays with distance, a point is drawn only to its nearest same-class
+                    neighbours (and kept a small margin &delta; from the other class), not to far-away same-class points.
+                    That decay is the key design choice: a distant outlier or a mislabeled image is treated as a
+                    different variety instead of being dragged in, which gives PFML its robustness to large intra-class
+                    variation and label noise.</figcaption>
             </figure>
         </div>
     </section>
@@ -1137,7 +1146,7 @@
             </figure>
 
             <h3 class="sub">Zero-shot retrieval</h3>
-            <figure class="fig" style="margin-top:12px;">
+            <figure class="fig" style="margin-top:12px; max-width:560px; margin-left:auto; margin-right:auto;">
                 <img src="./img/Retrieval_example.png" loading="lazy"
                     alt="Retrieval examples: query images and their nearest neighbours for Cars-196, CUB-200-2011 and SOP, with green borders for correct and red for incorrect retrievals">
                 <figcaption>Example images retrieved by our method for query images from (a) Cars-196, (b) CUB-200-2011
