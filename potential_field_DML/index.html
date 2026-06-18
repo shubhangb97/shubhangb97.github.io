@@ -674,6 +674,18 @@
             color: var(--text);
         }
 
+        table.results thead tr.groups th {
+            border-bottom: none;
+            color: var(--text-soft);
+            font-size: .82rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        table.results .grp {
+            border-left: 1px solid var(--border);
+        }
+
         .tbl-note {
             color: var(--text-faint);
             font-size: .84rem;
@@ -1046,28 +1058,67 @@
             <div class="table-scroll">
                 <table class="results">
                     <thead>
+                        <tr class="groups">
+                            <th class="method" rowspan="2">Method</th>
+                            <th class="grp" colspan="2">CUB-200-2011</th>
+                            <th class="grp" colspan="2">Cars-196</th>
+                        </tr>
                         <tr>
-                            <th class="method">Method (R@1 under 20% label noise)</th>
-                            <th>CUB-200</th>
-                            <th>Cars-196</th>
+                            <th class="grp">R@1</th>
+                            <th>R@2</th>
+                            <th class="grp">R@1</th>
+                            <th>R@2</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
+                            <td class="method">Triplet</td>
+                            <td class="grp">55.1</td>
+                            <td>68.7</td>
+                            <td class="grp">67.5</td>
+                            <td>77.9</td>
+                        </tr>
+                        <tr>
+                            <td class="method">Multi-Similarity</td>
+                            <td class="grp">58.9</td>
+                            <td>71.8</td>
+                            <td class="grp">70.4</td>
+                            <td>79.8</td>
+                        </tr>
+                        <tr>
+                            <td class="method">Proxy NCA</td>
+                            <td class="grp">60.1</td>
+                            <td>74.7</td>
+                            <td class="grp">74.3</td>
+                            <td>82.4</td>
+                        </tr>
+                        <tr>
                             <td class="method">Proxy Anchor <span style="color:var(--text-faint)">(2nd best)</span></td>
-                            <td>60.7</td>
-                            <td>76.9</td>
+                            <td class="grp">60.7</td>
+                            <td>75.1</td>
+                            <td class="grp">76.9</td>
+                            <td>83.1</td>
+                        </tr>
+                        <tr>
+                            <td class="method">HIST</td>
+                            <td class="grp">59.7</td>
+                            <td>74.6</td>
+                            <td class="grp">72.9</td>
+                            <td>81.8</td>
                         </tr>
                         <tr class="ours">
                             <td class="method">Potential Field (Ours)</td>
-                            <td>66.7</td>
-                            <td>84.5</td>
+                            <td class="grp">66.7</td>
+                            <td>76.9</td>
+                            <td class="grp">84.5</td>
+                            <td>88.6</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <p class="tbl-note">Recall@1 (%) under 20% random label noise, ResNet-50 backbone (512-dim), averaged over 5
-                runs.</p>
+            <p class="tbl-note">Recall@1 and Recall@2 (%) under 20% random label noise, ResNet-50 backbone (512-dim),
+                averaged over 5 runs. PFML is the least affected, beating the next-best method (Proxy Anchor) by +6.0 and
+                +7.6 R@1 on CUB-200-2011 and Cars-196.</p>
         </div>
     </section>
 
