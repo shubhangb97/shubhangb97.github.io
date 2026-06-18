@@ -338,6 +338,52 @@
             margin: 6px 0 0;
         }
 
+        /* UIUC logo card */
+        .venue-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .venue {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            padding: 8px 18px 8px 10px;
+            background: var(--bg-elev);
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .venue.logo-only {
+            padding: 8px 12px;
+        }
+
+        .venue.logo-only img {
+            height: 50px;
+            padding: 6px 12px;
+        }
+
+        .venue:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+
+        .venue img {
+            height: 52px;
+            width: auto;
+            display: block;
+            background: #fff;
+            padding: 7px 9px;
+            border-radius: 8px;
+        }
+
         /* Buttons */
         .btn-row {
             display: flex;
@@ -745,6 +791,13 @@
             </ul>
             <p class="affil"><sup>1</sup>&nbsp;<a href="https://illinois.edu/">University of Illinois at
                     Urbana-Champaign</a> &nbsp;&middot;&nbsp; <sup>&#42;</sup>&nbsp;Equal contribution</p>
+
+            <div class="venue-row">
+                <a class="venue logo-only" href="https://illinois.edu/" target="_blank" rel="noopener"
+                    title="University of Illinois Urbana-Champaign">
+                    <img src="./img/uiuc_logo_trim.png" alt="University of Illinois Urbana-Champaign logo">
+                </a>
+            </div>
 
             <div class="btn-row">
                 <a class="btn btn-primary" href="https://arxiv.org/pdf/2606.15134" target="_blank" rel="noopener">
