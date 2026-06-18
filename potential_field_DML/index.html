@@ -1,46 +1,768 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Potential Field Based Deep Metric Learning | CVPR 2025</title>
+    <title>Potential Field Based Deep Metric Learning (PFML) | Representation &amp; Latent Space Learning | CVPR 2025</title>
 
     <meta name="description"
-        content="A compositional deep metric learning model inspired by electrostatic fields: each embedding induces a decaying potential field, improving robustness to large intra-class variation and label noise. CVPR 2025.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+        content="Potential Field based Metric Learning (PFML), CVPR 2025: a compositional approach to representation and latent space learning that models each embedding as a decaying, electrostatic-style potential field instead of mining tuples. Improves deep metric learning and zero-shot image retrieval, with robustness to large intra-class variation and label noise on Cars-196, CUB-200-2011, and SOP.">
+    <meta name="author" content="Shubhang Bhatnagar, Narendra Ahuja">
+    <meta name="keywords"
+        content="representation learning, latent space learning, latent representation learning, embedding learning, embedding space, deep metric learning, metric learning, image retrieval, zero-shot image retrieval, similarity learning, contrastive learning, proxy-based metric learning, potential fields, nearest neighbor retrieval, feature learning, PFML, CVPR 2025">
 
     <link rel="canonical" href="https://shubhangb97.github.io/potential_field_DML/" />
 
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://shubhangb97.github.io/potential_field_DML/" />
-    <meta property="og:title" content="Potential Field Based Deep Metric Learning" />
-    <meta property="og:description" content="A compositional deep metric learning model inspired by electrostatic fields, with decaying attractive/repulsive potential fields that improve robustness to intra-class variation and label noise. CVPR 2025." />
+    <meta property="og:title" content="Potential Field Based Deep Metric Learning (PFML) | Representation &amp; Latent Space Learning" />
+    <meta property="og:description"
+        content="CVPR 2025: a compositional approach to representation and latent space learning that models each embedding as a decaying, electrostatic-style potential field. Improves deep metric learning and zero-shot image retrieval, with robustness to intra-class variation and label noise." />
     <meta property="og:image" content="https://shubhangb97.github.io/potential_field_DML/img/potential_field_snapshot.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Potential Field Based Deep Metric Learning" />
-    <meta name="twitter:description" content="Deep metric learning via decaying electrostatic-style potential fields; state-of-the-art on Cars-196, CUB-200-2011, and SOP. CVPR 2025." />
+    <meta name="twitter:title" content="Potential Field Based Deep Metric Learning (PFML) | CVPR 2025" />
+    <meta name="twitter:description"
+        content="A compositional approach to representation and latent space learning: model each embedding as a decaying potential field. State-of-the-art deep metric learning and image retrieval on Cars-196, CUB-200-2011, and SOP." />
     <meta name="twitter:image" content="https://shubhangb97.github.io/potential_field_DML/img/potential_field_snapshot.png" />
 
+    <!-- Favicon -->
     <link rel="icon" href="img/field_fig_newest.svg">
-<!--<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👍</text></svg>">-->
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
-    <link rel="stylesheet" href="css/app.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+        /* ===================== Theme tokens (blue<->red diverging field) ===================== */
+        :root {
+            --bg: #ffffff;
+            --bg-soft: #f5f7fb;
+            --bg-elev: #ffffff;
+            --text: #141a22;
+            --text-soft: #4a5364;
+            --text-faint: #8a93a3;
+            --border: #e5e9f1;
+            --border-strong: #d2d8e4;
+            --accent: #2563eb;
+            --accent-soft: #eaf0fe;
+            --accent-2: #e0413c;
+            --good: #16a34a;
+            --bad: #dc2626;
+            --shadow: 0 1px 2px rgba(20, 26, 34, .04), 0 8px 24px rgba(20, 26, 34, .06);
+            --shadow-lg: 0 12px 40px rgba(20, 26, 34, .12);
+            --radius: 16px;
+            --maxw: 980px;
+        }
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
-    
-    <script src="js/app.js"></script>
-    <script src="js/video_comparison.js"></script>
+        html[data-theme="dark"] {
+            --bg: #0b0d12;
+            --bg-soft: #12151d;
+            --bg-elev: #161a23;
+            --text: #eef1f7;
+            --text-soft: #b3bccd;
+            --text-faint: #7c8597;
+            --border: #232838;
+            --border-strong: #313850;
+            --accent: #6f9bff;
+            --accent-soft: #16203a;
+            --accent-2: #ff6b66;
+            --good: #4ade80;
+            --bad: #f87171;
+            --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+            --shadow-lg: 0 14px 44px rgba(0, 0, 0, .5);
+        }
+
+        /* ===================== Base ===================== */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            transition: background .25s ease, color .25s ease;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 22px;
+        }
+
+        section {
+            padding: 54px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        h2.section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2.section-title::before {
+            content: "";
+            width: 9px;
+            height: 22px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            display: inline-block;
+        }
+
+        h3.sub {
+            font-size: 1.08rem;
+            font-weight: 700;
+            margin: 30px 0 4px;
+        }
+
+        .lead {
+            color: var(--text-soft);
+            font-size: 1.02rem;
+        }
+
+        /* ===================== Nav ===================== */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 11px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: .04em;
+            font-size: 1.05rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .brand .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a {
+            color: var(--text-soft);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: 7px 11px;
+            border-radius: 9px;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        .nav-links a.nav-cta {
+            color: #fff;
+            background: var(--accent);
+        }
+
+        html[data-theme="dark"] .nav-links a.nav-cta {
+            color: #0b0d12;
+        }
+
+        .nav-links a.nav-cta:hover {
+            filter: brightness(1.07);
+        }
+
+        .theme-toggle {
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-grid;
+            place-items: center;
+            transition: background .15s, transform .15s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-soft);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        html[data-theme="dark"] .icon-sun {
+            display: block;
+        }
+
+        html[data-theme="dark"] .icon-moon {
+            display: none;
+        }
+
+        .icon-sun {
+            display: none;
+        }
+
+        .icon-moon {
+            display: block;
+        }
+
+        @media (max-width: 760px) {
+            .nav-links a:not(.nav-cta) {
+                display: none;
+            }
+        }
+
+        /* ===================== Hero ===================== */
+        header.hero {
+            position: relative;
+            overflow: hidden;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+
+        header.hero::before {
+            content: "";
+            position: absolute;
+            inset: -40% 0 auto 0;
+            height: 460px;
+            background: radial-gradient(55% 60% at 28% 0%, var(--accent-soft) 0%, transparent 70%),
+                radial-gradient(55% 60% at 75% 0%, color-mix(in srgb, var(--accent-2) 16%, transparent) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: .76rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            padding: 5px 12px;
+            border-radius: 999px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.1rem);
+            line-height: 1.08;
+            letter-spacing: -.03em;
+            font-weight: 800;
+            margin: 0 0 10px;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2.4vw, 1.22rem);
+            color: var(--text-soft);
+            font-weight: 500;
+            max-width: 780px;
+            margin: 0 auto 26px;
+        }
+
+        .authors {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 4px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px 20px;
+            font-size: 1.05rem;
+        }
+
+        .authors li {
+            font-weight: 500;
+        }
+
+        .affil {
+            color: var(--text-soft);
+            font-size: .98rem;
+            margin: 6px 0 0;
+        }
+
+        /* venue + affiliation logo cards (LUQ-style) */
+        .venue-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        .venue {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            padding: 8px 18px 8px 10px;
+            background: var(--bg-elev);
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .venue.logo-only {
+            padding: 8px 12px;
+        }
+
+        .venue.logo-only img {
+            height: 50px;
+            padding: 6px 12px;
+        }
+
+        .venue:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+
+        .venue img {
+            height: 52px;
+            width: auto;
+            display: block;
+            background: #fff;
+            padding: 7px 9px;
+            border-radius: 8px;
+        }
+
+        .venue .v-text {
+            text-align: left;
+            line-height: 1.3;
+        }
+
+        .venue .v-text b {
+            color: var(--text);
+            font-size: 1rem;
+            display: block;
+        }
+
+        .venue .v-text span {
+            color: var(--text-soft);
+            font-size: .85rem;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 600;
+            font-size: .98rem;
+            padding: 11px 20px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        html[data-theme="dark"] .btn-primary {
+            color: #0b0d12;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: var(--bg-elev);
+            color: var(--text);
+            border-color: var(--border-strong);
+        }
+
+        .btn-ghost:hover {
+            transform: translateY(-2px);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        /* ===================== Figures ===================== */
+        figure {
+            margin: 0;
+        }
+
+        .fig {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .fig img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            background: #fff;
+            /* keeps transparent SVG diagrams legible in dark mode */
+        }
+
+        figcaption {
+            color: var(--text-soft);
+            font-size: .9rem;
+            line-height: 1.55;
+            margin-top: 12px;
+            text-align: left;
+        }
+
+        figcaption b {
+            color: var(--text);
+        }
+
+        .teaser-wrap {
+            margin-top: 30px;
+        }
+
+        .fig-narrow {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* image + caption side by side (used for the narrow animation) */
+        .fig-side {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+            text-align: left;
+        }
+
+        .fig-side .side-media {
+            flex: 0 0 360px;
+            max-width: 100%;
+        }
+
+        .fig-side figcaption {
+            flex: 1 1 320px;
+            margin-top: 0;
+            font-size: .95rem;
+        }
+
+        @media (max-width: 680px) {
+            .fig-side .side-media {
+                flex-basis: 100%;
+            }
+        }
+
+        /* ===================== TL;DR / cards ===================== */
+        .tldr {
+            margin-top: 20px;
+            background: linear-gradient(180deg, var(--accent-soft), transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+
+        .tldr h3 {
+            margin: 0 0 6px;
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: .02em;
+        }
+
+        .tldr p {
+            margin: 0;
+            color: var(--text);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 24px 0 4px;
+        }
+
+        @media (max-width: 640px) {
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat .num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat .lbl {
+            color: var(--text-soft);
+            font-size: .9rem;
+            margin-top: 2px;
+        }
+
+        /* method bullets */
+        .method-points {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        @media (max-width: 720px) {
+            .method-points {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mp {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .mp .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            font-weight: 500;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .mp p {
+            margin: 0;
+            font-size: .94rem;
+            color: var(--text-soft);
+        }
+
+        .mp p+p {
+            margin-top: 8px;
+        }
+
+        /* ===================== Results table ===================== */
+        .table-scroll {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-top: 8px;
+        }
+
+        table.results {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .94rem;
+            background: var(--bg-elev);
+        }
+
+        table.results th,
+        table.results td {
+            padding: 11px 16px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        table.results thead th {
+            font-weight: 700;
+            color: var(--text);
+            border-bottom: 1px solid var(--border-strong);
+        }
+
+        table.results td.method,
+        table.results th.method {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table.results tbody tr {
+            border-top: 1px solid var(--border);
+        }
+
+        table.results tbody tr.ours {
+            background: var(--accent-soft);
+        }
+
+        table.results tbody tr.ours td {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .tbl-note {
+            color: var(--text-faint);
+            font-size: .84rem;
+            margin-top: 10px;
+        }
+
+        /* ===================== BibTeX ===================== */
+        .bibtex-box {
+            position: relative;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 8px;
+        }
+
+        .bibtex-box pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .86rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .copy-btn:hover {
+            background: var(--bg-soft);
+        }
+
+        .copy-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ===================== Footer ===================== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px 0 50px;
+            color: var(--text-faint);
+            font-size: .86rem;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--text-soft);
+        }
+
+        /* ===================== Reveal on scroll ===================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+    </style>
 
     <script type="application/ld+json">
     {
@@ -59,331 +781,399 @@
       "url": "https://shubhangb97.github.io/potential_field_DML/",
       "image": "https://shubhangb97.github.io/potential_field_DML/img/potential_field_snapshot.png",
       "sameAs": "https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html",
-      "keywords": "deep metric learning, representation learning, image retrieval, potential fields, proxy-based metric learning"
+      "keywords": "representation learning, latent space learning, latent representation learning, embedding space learning, deep metric learning, metric learning, image retrieval, zero-shot image retrieval, similarity learning, contrastive learning, proxy-based metric learning, potential fields, nearest neighbor retrieval, feature learning"
     }
     </script>
 </head>
 
 <body>
-    <div class="container" id="main">
-        <div class="row">
-            <h2 class="col-md-12 text-center">
-                <b>Potential Field Based Deep Metric Learning</b></br> 
-                Computer Vision and Pattern Recognition Conference (CVPR) 2025
-                
-                
-            </h2>
+    <!-- ============ NAV ============ -->
+    <nav>
+        <div class="nav-inner">
+            <a class="brand" href="#top"><span class="dot"></span>PFML</a>
+            <div class="nav-links">
+                <a href="#abstract">Abstract</a>
+                <a href="#intuition">Intuition</a>
+                <a href="#method">Method</a>
+                <a href="#results">Results</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#bibtex">BibTeX</a>
+                <a class="nav-cta"
+                    href="https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html"
+                    target="_blank" rel="noopener">Paper</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul class="list-inline">
-                    <li>
-                        <a href="https://shubhangb97.github.io/">
-                            <strong> Shubhang Bhatnagar</strong> 
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="https://ece.illinois.edu/about/directory/faculty/n-ahuja">
-                            Narendra Ahuja 
-                        </a>
-                    </li>
-                    
-                   
-                    </br>
-                    <li>
-                        <a href="https://illinois.edu/">
-                            University of Illinois at Urbana-Champaign
-                        </a>
-                    </li>
-                    
-                </ul>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="top">
+        <div class="wrap">
+            <h1>Potential Field Based<br><span class="grad">Deep Metric Learning</span></h1>
+            <p class="subtitle">Instead of mining tuples, represent every embedding as a decaying,
+                electrostatic-style potential field and superpose them, giving a compositional model that is more robust
+                to large intra-class variation and label noise.</p>
+
+            <ul class="authors">
+                <li><a href="https://shubhangb97.github.io/">Shubhang Bhatnagar</a></li>
+                <li><a href="https://n-ahuja.ece.illinois.edu/">Narendra Ahuja</a></li>
+            </ul>
+            <div class="venue-row">
+                <a class="venue"
+                    href="https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html"
+                    target="_blank" rel="noopener" title="View the paper at CVPR 2025">
+                    <img src="./img/CVPR_Nashville_FinalLogo.jpg" alt="CVPR 2025 (Nashville) logo">
+                    <span class="v-text">
+                        <b>Published at CVPR 2025</b>
+                        <span>Computer Vision and Pattern Recognition</span>
+                    </span>
+                </a>
+                <a class="venue logo-only" href="https://illinois.edu/" target="_blank" rel="noopener"
+                    title="University of Illinois Urbana-Champaign">
+                    <img src="./img/uiuc_logo_trim.png" alt="University of Illinois Urbana-Champaign logo">
+                </a>
+            </div>
+
+            <div class="btn-row">
+                <a class="btn btn-primary"
+                    href="https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html"
+                    target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    Paper (CVF)
+                </a>
+                <a class="btn btn-ghost" href="https://arxiv.org/abs/2405.18560" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    arXiv
+                </a>
+                <a class="btn btn-ghost" href="img/cvpr25_poster_PFML_final.pdf" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <path d="M3 9h18M9 21V9" />
+                    </svg>
+                    Poster
+                </a>
+                <a class="btn btn-ghost" href="img/PFML_short_online.pdf" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                    Slides
+                </a>
+                <a class="btn btn-ghost" href="#bibtex">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6" />
+                        <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                    BibTeX
+                </a>
             </div>
         </div>
 
+        <!-- Teaser: the potential-field animation (caption beside it, since it is narrow) -->
+        <div class="wrap teaser-wrap reveal">
+            <figure class="fig fig-side">
+                <div class="side-media"><img src="./img/charge_animation_web.gif"
+                        alt="Animation of the class potential field for two classes, with the field for the blue class visualized; blue attraction wells pull same-class embeddings together while red regions repel other-class embeddings"></div>
+                <figcaption>A toy problem with embeddings from 2 classes. Similar embeddings move together and
+                    dissimilar ones apart under the influence of our potential field (the field for the blue class is
+                    visualized).</figcaption>
+            </figure>
+        </div>
+    </header>
 
-        <div class="row">
-                <div class="col-md-4 col-md-offset-2 text-center">
-                    <ul class="nav nav-pills nav-justified">
-                        <li>
-                            <a href="https://illinois.edu/">
-                           <image src="img/uiuc_logo.png" height="60px">
-                                
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html">
-                            <image src="img/potential_field_snapshot.png" height="60px">
-                                <h4><strong> Paper</strong></h4>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://openaccess.thecvf.com/content/CVPR2025/html/Bhatnagar_Potential_Field_Based_Deep_Metric_Learning_CVPR_2025_paper.html">
-                            <image src="img/potential_field_snapshot.png" height="60px">
-                                <h4><strong> Paper</strong></h4>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://arxiv.org/abs/2405.18560">
-                            <image src="img/potential_field_snapshot.png" height="60px">
-                                <h4><strong> Arxiv</strong></h4>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="img/cvpr25_poster_PFML_final.pdf">
-                            <image src="img/PFML_Poster_thumbnail.png" height="60px">
-                                <h4><strong>Poster</strong></h4>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="img/PFML_short_online.pdf">
-                            <image src="img/PFML_slides_thumbnail.png" height="60px">
-                                <h4><strong>Slides</strong></h4>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://cvpr.thecvf.com/">
-                           <image src="img/CVPR_Nashville_FinalLogo.jpg" height="60px">
-                                
-                            </a>
-                        </li>
-                        <!-- <li>
-                            <a href="img/LongDistanceGestureRecognition_IROS_final.pdf">
-                            <image src="img/slides_snapshot.PNG" height="60px">
-                                <h4><strong>Slides</strong></h4>
-                            </a>
-                        </li> -->
-                    </ul>
+    <!-- ============ ABSTRACT ============ -->
+    <section id="abstract">
+        <div class="wrap reveal">
+            <h2 class="section-title">Abstract</h2>
+            <p class="lead">Deep metric learning (DML) involves training a network to learn a semantically meaningful
+                representation space. Many current approaches mine n-tuples of examples and model interactions within
+                each tuplets. We present <b>Potential Field based metric learning (PFML)</b>, a novel compositional DML
+                model, inspired by electrostatic fields in physics that, instead of in tuples, represents the influence
+                of each example (embedding) by a continuous potential field, and superposes the fields to obtain their
+                combined global potential field. We use attractive/repulsive potential fields to represent interactions
+                among embeddings from images of the same/different classes. Contrary to typical learning methods, where
+                mutual influence of samples is proportional to their distance, we enforce reduction in such influence
+                with distance, leading to a decaying field. We show that such decay helps improve performance on real
+                world datasets with large intra-class variations and label noise. Like other proxy-based methods, we also
+                use proxies to succinctly represent sub-populations of examples. We evaluate our method on three standard
+                DML benchmarks: Cars-196, CUB-200-2011, and SOP datasets where it outperforms state-of-the-art
+                baselines.</p>
+
+            <div class="tldr">
+                <h3>TL;DR</h3>
+                <p>Use a continuous potential field to represent interactions between a set of example embeddings,
+                    instead of using subsets of examples (triplets/tuplets) or proxies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ INTUITION ============ -->
+    <section id="intuition">
+        <div class="wrap reveal">
+            <h2 class="section-title">Intuition</h2>
+            <p class="lead">With our potential field representation, embeddings need to be driven towards other nearby
+                embeddings belonging to the same class, while also being driven away from embeddings of other classes.
+                This is reminiscent of the behavior of an isolated system of electric charges, where dissimilar charges
+                are drawn together while similar ones are repelled.</p>
+
+            <figure class="fig reveal" style="margin-top:24px;">
+                <img src="./img/field_fig_paper.png" loading="lazy"
+                    alt="An example of the class potential fields Psi-1 and Psi-2, created by superposing the fields of individual embeddings of two classes, with arrows denoting the gradient (net force) on samples and proxies">
+                <figcaption>Example class potential fields &Psi;<sub>1</sub> and &Psi;<sub>2</sub> for a 2-class toy
+                    problem, each formed by superposing the fields of individual embeddings. Every embedding is drawn to
+                    the nearest same-class points and pushed away from other classes; arrows show the net force.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ============ WHY / ADVANTAGES ============ -->
+    <section id="why">
+        <div class="wrap reveal">
+            <h2 class="section-title">Advantages of PFML vs previous DML approaches</h2>
+
+            <div class="method-points">
+                <div class="mp">
+                    <span class="tag">Advantage #1</span>
+                    <p><b>No complex mining needed.</b> A continuous field models all interactions directly, avoiding the
+                        high-complexity O(N&sup3;) tuple mining that pair-based losses rely on.</p>
                 </div>
-        </div>
-
-
-         <!--
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <video id="v0" width="100%" autoplay loop muted controls>
-                  <source src="img/demo_final_noaudio.mp4" type="video/mp4" />
-                </video>
-                <div class="text-center">
-                <strong>A demonstration of our method used to control a mobile Robot</strong>
-            </div>
-						</div>
-        </div>
-        -->
-
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Abstract
-                </h3>
-                <p class="text-justify">
-                    Deep metric learning (DML) involves training a network to learn a semantically meaningful representation space. 
-                    Many current approaches mine n-tuples of examples and model interactions within each tuplets. 
-                    We present Potential Field based metric learning (PFML), a novel compositional DML model, inspired by electrostatic fields in physics that, instead of in tuples, 
-                    represents the influence of each example (embedding) by a continuous potential field, and superposes the fields to 
-                    obtain their combined global potential field. We use attractive/repulsive potential fields to represent interactions 
-                    among embeddings from images of the same/different classes. Contrary to typical learning methods, where mutual 
-                    influence of samples is proportional to their distance, we enforce reduction in such influence with distance, 
-                    leading to a decaying field. We show that such decay helps improve performance on real world datasets with large 
-                    intra-class variations and label noise. Like other proxy-based methods, we also use proxies to succinctly represent 
-                    sub-populations of examples. We evaluate our method on three standard DML benchmarks- Cars-196, CUB-200-2011, and SOP datasets where it outperforms state-of-the-art baselines.
-                </p>
-
-                <h3>
-                    TL;DR:
-                </h3>
-                <p class="text-justify"> Use a continous potential field to represent interactions between a set of example embeddings instead of using subsets of examples (triplets/tuplets) or proxies</p>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Intuition
-                </h3>
-                <div class="text-center">
-                    <img src="./img/charge_animation.gif" width="70%">
+                <div class="mp">
+                    <span class="tag">Advantage #2</span>
+                    <p><b>Better features.</b> All sample interactions are modeled at once, not just a small subset,
+                        improving the quality of the learned representation.</p>
                 </div>
-
-                <div class="text-center">
-                        <strong> An example of PFML on a toy problem with embeddings from 2 classes shown. PFML creates a potential field (visualized)
-                             by superposing attractive and repulsive fields generated by individual embeddings. It draws embeddings towards other nearby embeddings belonging to the same class, 
-                            while also being driven away from embeddings of other classes which is a mirror image of the behavior of an isolated system of electric charges. 
-                            Such a potential field is defined for each embeddings of each class, with the field for the blue embeddings being visualized in the animation . The movement shown in the animation is a result of the net effect of all potentials (blue and red). </strong>
+                <div class="mp">
+                    <span class="tag">Advantage #3</span>
+                    <p><b>Label-noise resilience.</b> Interaction strength decays with distance, so distant mislabeled
+                        samples are de-emphasized and intra-class features are preserved.</p>
                 </div>
-                
-                <br><br>
-                
-
-            </div>
-        </div>
-        <br><br>
-        
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Advantages of PFML vs Previous DML Approaches
-                </h3>
-
-                <div class="text-justify">
-                <ol>   
-                    <li> <strong>Models all Interactions:</strong>Potential field based representation enables modelling interactions between <strong>all</strong> sample embeddings, 
-                        as opposed to modeling those between small subsets done in all previous methods using
-                         e.g. point-tuplets based (e.g., contrastive, triplet, N-tuplet ) loss and Proxy-based losses (e.g., Proxy NCA, Proxy Anchor). </li>
-                    <li>  <strong>Improved Feature Robustness:</strong> Modeling interactions of all points, made possible by the use of potentials helps: 
-                    <ul> 
-                        <li>improve the quality of features learned while also </li>
-                        <li>increasing robustness to noise since the effect of noise on interactions among a smaller number of
-                            samples will have a larger variance. </li>
-                    </ul>
-                    </li>
-                    
-                    <li>  <strong>Decaying Strength of Interaction:</strong> A major difference of our potential field based approach compared to previous approaches 
-                        is in the variation of <strong>strength of interaction</strong> between two points
-                         as the distance between them increases: instead of remaining constant or even becoming stronger, 
-                         as is the case with most existing methods,
-                         in our model it becomes <strong>weaker with distance</strong>.
-                        This decay in interaction strength is helpful in several ways:
-                        <ul> 
-                            <li> <strong>Improved performance for datasets with large intra-class variance:</strong> As PFML ensures the intuitive expectation that two distant positive samples are too different to be
-                        considered as variants of each other, helping treat them as different varieties (e.g., associated with
-                        different proxies).</li>
-                            <li> <strong>Improved performance for datasets with label noise:</strong> The decay improves performance when noise affects labels, e.g., due to annotation errors common in real-world datasets
-                        .</li> 
-                            <li> <strong>Improves effectiveness of proxies:</strong> Learned proxies remain closer to (at smaller W2 distance) the embeddings they represent than current methods
-                        where interactions strengthen with distance.</li>
-                        </ul>
-                    </li> 
-                    
-                    
-                    </ol>  
-                Further details can be found in our  <a href="https://arxiv.org/abs/2405.18560">paper</a>.
-                
-                
-			    </div>
-            
-
-                
-			</div>
-
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Method
-                </h3>
-                <div class="text-justify">
-                    For each class, PFML defines a class potential field Ψ that affects embeddings of only the selected class. This class potential field brings together embeddings of the class while pushing them away from embeddings of other classes.
-                    The class potential field is formed from a superposition of potentials belonging to individual embeddings from all classes. The potential field exerted by indivdual embeddings
-                    is designed based on both, the principles from electrostatics and observations from DML literature. More details and exact definitions of the potential field can be found in Section 3 of our  <a href="https://arxiv.org/abs/2405.18560">paper</a>.
-                    <br><br>
-                    <div class="text-justify">
-                        <div class="text-center">
-                            <img src="./img/new_flow_diagram.svg" width="70%">
-                        </div>
-                        Our Potential-field based
-                        DML pipeline includes (1) Computing attraction and repulsion fields generated
-                        by each embedding and proxy, (2) Computing
-                        the class potential fields by superposition of individual fields (3) Evaluating total potential energy
-                        by summing up the potentials of embeddings and
-                        proxies under the class potential field and (4) Updating locations of sample embeddings (through
-                        network parameters) and proxies to minimize total potential energy through backprop.
-                        <br><br>
-                        
-                        
-                    </div>                    
-                </div>
-
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Performance on DML Benchmarks
-                </h3>
-            
-                <div class="text-justify">
-                    As is common, we evaluate the metric learnt by our method using its performance for zero-shot image retrieval on 3 standard benchmarks: (1) Cars-196 (2) CUB200-2011 and (3) SOP dataset.
-                    We also train 4 different backbone networks: ResNet50 , BN Inception, ViT and DINO with our method to enable a fair comparison with other methods using these.
-                    The Table summarizes the performance of our method and other state-of-the-art methods on these datasets.
-                    <br><br>
-                    <div class="text-center">
-                        <img src="./img/perf_table.png" width="70%">
-                    </div>
-                    <br><br>
-                </div>
-
-                <div class="text-justify">
-                    As seen in the table, our method outperforms all other methods in terms of Recall@1 on all three datasets.
-                    <br><br>
-                </div>
-            </div>
-
-            
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Visual Resuts  
-                </h3>
-                <h4>t-SNE Visual of Embedding Space </h4> 
-            <div class="text-justify">
-                The figure below shows a t-sne visualization of the embedding space learnt by our method on the CUB200-2011 dataset. it can be seen that images closer together share more semantic characteristics than
-                those that are far apart.
-                <br><br>
-                <div class="text-center">
-                    <img src="./img/example_tSNE_cub_potential.png" width="70%">
-                </div>
-                <h4>Zero-shot Retrieval Examples </h4> 
-                <div class="text-justify">
-                    Example image retrieved by our method for query images from (a) Cars-196 (b) CUB-200-
-2011 and (c) SOP test datasets, in increasing order of distance from the query. Correct retrievals have
-a green border, while incorrect ones have a red one. Despite large intra-class variation (pose, color) in the datasets, our method is able
-to effectively retrieve similar images.
-                    <br><br>
-                    <div class="text-center">
-                        <img src="./img/Retrieval_example.png" width="70%">
-                    </div>
-                   
-
-            </div>
-        </div>
-        </div>
-       
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Citation
-                </h3>
-                <div class="form-group col-md-10 col-md-offset-1">
-                    <textarea id="bibtex" class="form-control" readonly>
-                        @misc{bhatnagar2024potentialfieldbaseddeep,
-                            title={Potential Field Based Deep Metric Learning}, 
-                            author={Shubhang Bhatnagar and Narendra Ahuja},
-                            year={2024},
-                            eprint={2405.18560},
-                            archivePrefix={arXiv},
-                            primaryClass={cs.CV},
-                            url={https://arxiv.org/abs/2405.18560}, 
-                      }
-                    </textarea>
+                <div class="mp">
+                    <span class="tag">Advantage #4</span>
+                    <p><b>Better use of proxies.</b> The decaying interaction keeps learned proxies closer (smaller
+                        W&#8322;) to the data distribution they represent.</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="row">
-            
-                <p class="text-justify">
-                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
-                </p>
-            
+    <!-- ============ METHOD ============ -->
+    <section id="method">
+        <div class="wrap reveal">
+            <h2 class="section-title">Method</h2>
+            <p class="lead">For each class, PFML defines a class potential field &Psi; that affects embeddings of only
+                the selected class. This class potential field brings together embeddings of the class while pushing them
+                away from embeddings of other classes. The class potential field is formed from a superposition of
+                potentials belonging to individual embeddings from all classes. The potential field exerted by individual
+                embeddings is designed based on both the principles from electrostatics and observations from DML
+                literature. More details and exact definitions of the potential field can be found in Section 3 of our
+                <a href="https://arxiv.org/abs/2405.18560">paper</a>.</p>
+
+            <figure class="fig reveal" style="margin-top:24px;">
+                <img src="./img/new_flow_diagram.svg" loading="lazy"
+                    alt="Overview of the Potential-field based DML pipeline: compute attraction and repulsion fields per embedding and proxy, superpose into class potential fields, evaluate total potential energy, and backprop to minimize it">
+                <figcaption>Our Potential-field based DML pipeline includes (1) Computing attraction and repulsion fields
+                    generated by each embedding and proxy, (2) Computing the class potential fields by superposition of
+                    individual fields, (3) Evaluating total potential energy by summing up the potentials of embeddings
+                    and proxies under the class potential field and (4) Updating locations of sample embeddings (through
+                    network parameters) and proxies to minimize total potential energy through backprop.</figcaption>
+            </figure>
         </div>
-    </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="results">
+        <div class="wrap reveal">
+            <h2 class="section-title">Results</h2>
+            <p class="lead">We evaluate our method on zero-shot image retrieval over 3 standard benchmarks (Cars-196,
+                CUB-200-2011 and SOP), training 4 different backbones (ResNet50, BN-Inception, ViT and DINO) for a fair
+                comparison with prior work.</p>
+
+            <div class="stat-grid">
+                <div class="stat">
+                    <div class="num">SOTA</div>
+                    <div class="lbl">zero-shot retrieval on all 3 datasets and all 4 backbones</div>
+                </div>
+                <div class="stat">
+                    <div class="num">2&times;</div>
+                    <div class="lbl">the R@1 gain the previous SOTA (HIST) made over the method before it</div>
+                </div>
+                <div class="stat">
+                    <div class="num">+7.6</div>
+                    <div class="lbl">R@1 on Cars-196 under 20% label noise vs. the next-best method</div>
+                </div>
+            </div>
+
+            <figure class="fig reveal" style="margin-top:24px;">
+                <img src="./img/perf_table.png" loading="lazy"
+                    alt="Full benchmark table: Recall@K across CUB-200-2011, Cars-196 and SOP for ResNet-50, BN-Inception, ViT and DINO backbones">
+                <figcaption>Recall@K across CUB-200-2011, Cars-196 and SOP for four backbones; PFML is state-of-the-art
+                    on all three datasets.</figcaption>
+            </figure>
+
+            <h3 class="sub">Robustness to label noise</h3>
+            <p class="lead">Real-world labels are noisy. Under 20% random label corruption PFML degrades the least,
+                beating the next-best method (Proxy Anchor) by +6.0 and +7.6 in Recall@1.</p>
+            <div class="table-scroll">
+                <table class="results">
+                    <thead>
+                        <tr>
+                            <th class="method">Method (R@1 under 20% label noise)</th>
+                            <th>CUB-200</th>
+                            <th>Cars-196</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="method">Proxy Anchor <span style="color:var(--text-faint)">(2nd best)</span></td>
+                            <td>60.7</td>
+                            <td>76.9</td>
+                        </tr>
+                        <tr class="ours">
+                            <td class="method">Potential Field (Ours)</td>
+                            <td>66.7</td>
+                            <td>84.5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="tbl-note">Recall@1 (%) under 20% random label noise, ResNet-50 backbone (512-dim), averaged over 5
+                runs.</p>
+        </div>
+    </section>
+
+    <!-- ============ GALLERY ============ -->
+    <section id="gallery">
+        <div class="wrap reveal">
+            <h2 class="section-title">Visual results</h2>
+
+            <h3 class="sub">t-SNE of the learned space</h3>
+            <figure class="fig">
+                <img src="./img/tsne_cub_web.jpg" loading="lazy"
+                    alt="t-SNE visualization of the embedding space learned on CUB-200-2011, with semantically similar bird images clustered together">
+                <figcaption>The figure shows a t-SNE visualization of the embedding space learnt by our method on the
+                    CUB-200-2011 dataset. It can be seen that images closer together share more semantic characteristics
+                    than those that are far apart.</figcaption>
+            </figure>
+
+            <h3 class="sub">Zero-shot retrieval</h3>
+            <figure class="fig" style="margin-top:12px;">
+                <img src="./img/Retrieval_example.png" loading="lazy"
+                    alt="Retrieval examples: query images and their nearest neighbours for Cars-196, CUB-200-2011 and SOP, with green borders for correct and red for incorrect retrievals">
+                <figcaption>Example images retrieved by our method for query images from (a) Cars-196, (b) CUB-200-2011
+                    and (c) SOP test datasets, in increasing order of distance from the query. Correct retrievals have a
+                    <span style="color:var(--good);font-weight:600;">green</span> border, while incorrect ones have a
+                    <span style="color:var(--bad);font-weight:600;">red</span> one. Despite large intra-class variation
+                    (pose, color) in the datasets, our method is able to effectively retrieve similar images.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ============ BIBTEX ============ -->
+    <section id="bibtex">
+        <div class="wrap reveal">
+            <h2 class="section-title">BibTeX</h2>
+            <p class="lead">If you find our work useful, please consider citing:</p>
+            <div class="bibtex-box">
+                <button class="copy-btn" id="copyBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span id="copyLabel">Copy</span>
+                </button>
+                <pre id="bibtex">@InProceedings{Bhatnagar_2025_CVPR,
+    author    = {Bhatnagar, Shubhang and Ahuja, Narendra},
+    title     = {Potential Field Based Deep Metric Learning},
+    booktitle = {Proceedings of the IEEE/CVF Conference on
+                 Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2025}
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="wrap">
+            <p>Potential Field Based Deep Metric Learning &middot; CVPR 2025 &middot;
+                <a href="https://illinois.edu/">University of Illinois at Urbana-Champaign</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- Theme ----------
+        (function () {
+            const root = document.documentElement;
+            // Always default to light mode on load (never persist dark).
+            root.setAttribute('data-theme', 'light');
+
+            document.getElementById('themeToggle').addEventListener('click', function () {
+                const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                root.setAttribute('data-theme', next);
+            });
+        })();
+
+        // ---------- Copy BibTeX ----------
+        document.getElementById('copyBtn').addEventListener('click', function () {
+            const text = document.getElementById('bibtex').innerText;
+            const label = document.getElementById('copyLabel');
+            navigator.clipboard.writeText(text).then(function () {
+                label.textContent = 'Copied!';
+                setTimeout(function () { label.textContent = 'Copy'; }, 1600);
+            });
+        });
+
+        // ---------- Reveal on scroll ----------
+        (function () {
+            const els = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) {
+                els.forEach(function (e) { e.classList.add('in'); });
+                return;
+            }
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (en.isIntersecting) {
+                        en.target.classList.add('in');
+                        io.unobserve(en.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+            els.forEach(function (e) { io.observe(e); });
+        })();
+    </script>
 </body>
+
 </html>
