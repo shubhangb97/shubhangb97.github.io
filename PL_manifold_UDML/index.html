@@ -1,55 +1,715 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
-<head lang="en">
+<head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GLG5GQ8E08"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GLG5GQ8E08"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-GLG5GQ8E08');
+    </script>
 
-  gtag('config', 'G-GLG5GQ8E08');
-</script>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Piecewise-Linear Manifolds for Deep Metric Learning | CPAL 2024</title>
+    <title>Piecewise-Linear Manifolds for Deep Metric Learning | Unsupervised Representation Learning | CPAL 2024 (Oral)</title>
 
     <meta name="description"
-        content="Unsupervised deep metric learning that models the data manifold with a piecewise-linear approximation to estimate similarities, outperforming prior UDML methods on zero-shot image retrieval. CPAL 2024 (Oral).">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+        content="Piecewise-Linear Manifolds for Deep Metric Learning (CPAL 2024, Oral): unsupervised deep metric learning that models the data manifold with a piecewise-linear approximation to estimate similarity between unlabeled points, outperforming prior UDML methods on zero-shot image retrieval over CUB-200-2011, Cars-196 and SOP.">
+    <meta name="author" content="Shubhang Bhatnagar, Narendra Ahuja">
+    <meta name="keywords"
+        content="unsupervised deep metric learning, UDML, representation learning, latent space learning, image retrieval, zero-shot image retrieval, manifold learning, piecewise-linear approximation, similarity learning, proxy-based metric learning, CPAL 2024">
 
     <link rel="canonical" href="https://shubhangb97.github.io/PL_manifold_UDML/" />
 
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://shubhangb97.github.io/PL_manifold_UDML/" />
     <meta property="og:title" content="Piecewise-Linear Manifolds for Deep Metric Learning" />
-    <meta property="og:description" content="An unsupervised deep metric learning method that approximates the data manifold with local linear pieces for better similarity estimation, outperforming existing UDML approaches on zero-shot image retrieval. CPAL 2024 (Oral)." />
+    <meta property="og:description"
+        content="CPAL 2024 (Oral): unsupervised deep metric learning that approximates the data manifold with local linear pieces for better similarity estimation, outperforming existing UDML approaches on zero-shot image retrieval." />
     <meta property="og:image" content="https://shubhangb97.github.io/PL_manifold_UDML/img/PL_manifold_snapshot.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Piecewise-Linear Manifolds for Deep Metric Learning" />
-    <meta name="twitter:description" content="Modeling the data manifold with piecewise-linear pieces for unsupervised deep metric learning; state-of-the-art on zero-shot image retrieval. CPAL 2024 (Oral)." />
+    <meta name="twitter:title" content="Piecewise-Linear Manifolds for Deep Metric Learning | CPAL 2024 (Oral)" />
+    <meta name="twitter:description"
+        content="Modeling the data manifold with piecewise-linear pieces for unsupervised deep metric learning; state-of-the-art on zero-shot image retrieval." />
     <meta name="twitter:image" content="https://shubhangb97.github.io/PL_manifold_UDML/img/PL_manifold_snapshot.png" />
 
-    <!-- TODO add manifold image 
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👍</text></svg>">
--->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.css">
-    <link rel="stylesheet" href="css/app.css">
+    <!-- Favicon -->
+    <link rel="icon" href="img/CPAL_logo.svg">
 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.8.0/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.3/clipboard.min.js"></script>
-    
-    <script src="js/app.js"></script>
-    <script src="js/video_comparison.js"></script>
+    <style>
+        /* ===================== Theme tokens (UIUC Illini orange) ===================== */
+        :root {
+            --bg: #ffffff;
+            --bg-soft: #fdf6f1;
+            --bg-elev: #ffffff;
+            --text: #1a1410;
+            --text-soft: #5a5048;
+            --text-faint: #978a7e;
+            --border: #efe6dd;
+            --border-strong: #e0d2c5;
+            --accent: #ea580c;
+            --accent-soft: #fdeee2;
+            --accent-2: #f59e0b;
+            --good: #16a34a;
+            --bad: #dc2626;
+            --shadow: 0 1px 2px rgba(26, 20, 16, .04), 0 8px 24px rgba(26, 20, 16, .06);
+            --shadow-lg: 0 12px 40px rgba(26, 20, 16, .12);
+            --radius: 16px;
+            --maxw: 980px;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #120d09;
+            --bg-soft: #1b140e;
+            --bg-elev: #211810;
+            --text: #f7efe8;
+            --text-soft: #cbbcad;
+            --text-faint: #948576;
+            --border: #2e2419;
+            --border-strong: #41331f;
+            --accent: #fb923c;
+            --accent-soft: #2a1c0d;
+            --accent-2: #fbbf24;
+            --good: #4ade80;
+            --bad: #f87171;
+            --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+            --shadow-lg: 0 14px 44px rgba(0, 0, 0, .5);
+        }
+
+        /* ===================== Base ===================== */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            transition: background .25s ease, color .25s ease;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 22px;
+        }
+
+        section {
+            padding: 54px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        h2.section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2.section-title::before {
+            content: "";
+            width: 9px;
+            height: 22px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            display: inline-block;
+        }
+
+        h3.sub {
+            font-size: 1.08rem;
+            font-weight: 700;
+            margin: 30px 0 4px;
+        }
+
+        .lead {
+            color: var(--text-soft);
+            font-size: 1.02rem;
+        }
+
+        /* ===================== Nav ===================== */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 11px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: .04em;
+            font-size: 1.05rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .brand .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a {
+            color: var(--text-soft);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: 7px 11px;
+            border-radius: 9px;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        .nav-links a.nav-cta {
+            color: #fff;
+            background: var(--accent);
+        }
+
+        html[data-theme="dark"] .nav-links a.nav-cta {
+            color: #120d09;
+        }
+
+        .nav-links a.nav-cta:hover {
+            filter: brightness(1.07);
+        }
+
+        .theme-toggle {
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-grid;
+            place-items: center;
+            transition: background .15s, transform .15s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-soft);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        html[data-theme="dark"] .icon-sun {
+            display: block;
+        }
+
+        html[data-theme="dark"] .icon-moon {
+            display: none;
+        }
+
+        .icon-sun {
+            display: none;
+        }
+
+        .icon-moon {
+            display: block;
+        }
+
+        @media (max-width: 760px) {
+            .nav-links a:not(.nav-cta) {
+                display: none;
+            }
+        }
+
+        /* ===================== Hero ===================== */
+        header.hero {
+            position: relative;
+            overflow: hidden;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+
+        header.hero::before {
+            content: "";
+            position: absolute;
+            inset: -40% 0 auto 0;
+            height: 460px;
+            background: radial-gradient(55% 60% at 28% 0%, var(--accent-soft) 0%, transparent 70%),
+                radial-gradient(55% 60% at 75% 0%, color-mix(in srgb, var(--accent-2) 16%, transparent) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.1rem);
+            line-height: 1.08;
+            letter-spacing: -.03em;
+            font-weight: 800;
+            margin: 0 0 10px;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2.4vw, 1.22rem);
+            color: var(--text-soft);
+            font-weight: 500;
+            max-width: 780px;
+            margin: 0 auto 26px;
+        }
+
+        .authors {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 4px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px 20px;
+            font-size: 1.05rem;
+        }
+
+        .authors li {
+            font-weight: 500;
+        }
+
+        .affil {
+            color: var(--text-soft);
+            font-size: .98rem;
+            margin: 6px 0 0;
+        }
+
+        /* venue + affiliation logo cards */
+        .venue-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        .venue {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            padding: 8px 18px 8px 10px;
+            background: var(--bg-elev);
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .venue.logo-only {
+            padding: 8px 12px;
+        }
+
+        .venue.logo-only img {
+            height: 50px;
+            padding: 6px 12px;
+        }
+
+        .venue:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+
+        .venue img {
+            height: 52px;
+            width: auto;
+            display: block;
+            background: #fff;
+            padding: 7px 9px;
+            border-radius: 8px;
+        }
+
+        .venue .v-text {
+            text-align: left;
+            line-height: 1.3;
+        }
+
+        .venue .v-text b {
+            color: var(--text);
+            font-size: 1rem;
+            display: block;
+        }
+
+        .venue .v-text span {
+            color: var(--text-soft);
+            font-size: .85rem;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 600;
+            font-size: .98rem;
+            padding: 11px 20px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        html[data-theme="dark"] .btn-primary {
+            color: #120d09;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+
+        .btn-ghost {
+            background: var(--bg-elev);
+            color: var(--text);
+            border-color: var(--border-strong);
+        }
+
+        .btn-ghost:hover {
+            transform: translateY(-2px);
+            background: var(--bg-soft);
+            text-decoration: none;
+        }
+
+        /* ===================== Figures ===================== */
+        figure {
+            margin: 0;
+        }
+
+        .fig {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .fig img,
+        .fig video {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            background: #fff;
+            /* keeps transparent diagrams legible in dark mode */
+        }
+
+        figcaption {
+            color: var(--text-soft);
+            font-size: .9rem;
+            line-height: 1.55;
+            margin-top: 12px;
+            text-align: left;
+        }
+
+        figcaption b {
+            color: var(--text);
+        }
+
+        .teaser-wrap {
+            margin-top: 30px;
+        }
+
+        .fig-narrow {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* image + caption side by side (used for the narrow animation) */
+        .fig-side {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+            text-align: left;
+        }
+
+        .fig-side .side-media {
+            flex: 0 0 480px;
+            max-width: 100%;
+        }
+
+        .fig-side figcaption {
+            flex: 1 1 320px;
+            margin-top: 0;
+            font-size: .95rem;
+        }
+
+        @media (max-width: 680px) {
+            .fig-side .side-media {
+                flex-basis: 100%;
+            }
+        }
+
+        /* ===================== TL;DR / cards ===================== */
+        .tldr {
+            margin-top: 20px;
+            background: linear-gradient(180deg, var(--accent-soft), transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+
+        .tldr h3 {
+            margin: 0 0 6px;
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: .02em;
+        }
+
+        .tldr p {
+            margin: 0;
+            color: var(--text);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 24px 0 4px;
+        }
+
+        @media (max-width: 640px) {
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat .num {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat .lbl {
+            color: var(--text-soft);
+            font-size: .9rem;
+            margin-top: 2px;
+        }
+
+        /* method / step bullets */
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+            margin: 22px 0 0;
+            display: grid;
+            gap: 14px;
+        }
+
+        .steps li {
+            position: relative;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px 16px 56px;
+            color: var(--text-soft);
+            font-size: .96rem;
+        }
+
+        .steps li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            font-size: .9rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        }
+
+        html[data-theme="dark"] .steps li::before {
+            color: #120d09;
+        }
+
+        .steps li b {
+            color: var(--text);
+        }
+
+        /* ===================== BibTeX ===================== */
+        .bibtex-box {
+            position: relative;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 8px;
+        }
+
+        .bibtex-box pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .86rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .copy-btn:hover {
+            background: var(--bg-soft);
+        }
+
+        .copy-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* ===================== Footer ===================== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px 0 50px;
+            color: var(--text-faint);
+            font-size: .86rem;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--text-soft);
+        }
+
+        /* ===================== Reveal on scroll ===================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+    </style>
 
     <script type="application/ld+json">
     {
@@ -74,245 +734,319 @@
 </head>
 
 <body>
-    <div class="container" id="main">
-        <div class="row">
-            <h2 class="col-md-12 text-center">
-                <b>Piecewise-Linear Manifolds for Deep Metric Learning</b></br> 
-                
-                Conference on Parsimony and Learning (CPAL) 2024 , <b>Oral</b> 
-                
-            </h2>
+    <!-- ============ NAV ============ -->
+    <nav>
+        <div class="nav-inner">
+            <a class="brand" href="#top"><span class="dot"></span>PL-Manifold</a>
+            <div class="nav-links">
+                <a href="#abstract">Abstract</a>
+                <a href="#intuition">Intuition</a>
+                <a href="#method">Method</a>
+                <a href="#results">Results</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#bibtex">BibTeX</a>
+                <a class="nav-cta" href="https://proceedings.mlr.press/v234/bhatnagar24a.html" target="_blank"
+                    rel="noopener">Paper</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul class="list-inline">
-                    <li>
-                        <a href="https://shubhangb97.github.io/">
-                            <strong> Shubhang Bhatnagar</strong> 
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://ece.illinois.edu/about/directory/faculty/n-ahuja">
-                            Narendra Ahuja 
-                        </a>
-                    </li>
-                    </br>
-                    <li>
-                        <a href="https://illinois.edu/">
-                            University of Illinois at Urbana-Champaign
-                        </a>
-                    </li>
-                    
-                </ul>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="top">
+        <div class="wrap">
+            <h1>Piecewise-Linear Manifolds for<br><span class="grad">Deep Metric Learning</span></h1>
+            <p class="subtitle">Approximate the unlabeled data manifold with many small linear pieces, use those local
+                neighborhoods to estimate which points are similar, and train an embedding for zero-shot image
+                retrieval, without any labels.</p>
+
+            <ul class="authors">
+                <li><a href="https://shubhangb97.github.io/">Shubhang Bhatnagar</a></li>
+                <li><a href="https://n-ahuja.ece.illinois.edu/">Narendra Ahuja</a></li>
+            </ul>
+            <div class="venue-row">
+                <a class="venue" href="https://proceedings.mlr.press/v234/bhatnagar24a.html" target="_blank"
+                    rel="noopener" title="View the paper in PMLR (CPAL 2024)">
+                    <img src="./img/CPAL_logo.svg" alt="Conference on Parsimony and Learning (CPAL) logo">
+                    <span class="v-text">
+                        <b>Published at CPAL 2024 &middot; Oral</b>
+                        <span>Conference on Parsimony and Learning</span>
+                    </span>
+                </a>
+                <a class="venue logo-only" href="https://proceedings.mlr.press/" target="_blank" rel="noopener"
+                    title="Proceedings of Machine Learning Research (PMLR)">
+                    <img src="./img/pmlr_logo.svg" alt="Proceedings of Machine Learning Research (PMLR) logo">
+                </a>
+                <a class="venue logo-only" href="https://illinois.edu/" target="_blank" rel="noopener"
+                    title="University of Illinois Urbana-Champaign">
+                    <img src="./img/uiuc_logo_trim.png" alt="University of Illinois Urbana-Champaign logo">
+                </a>
+            </div>
+
+            <div class="btn-row">
+                <a class="btn btn-primary" href="https://proceedings.mlr.press/v234/bhatnagar24a.html" target="_blank"
+                    rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    Paper (PMLR)
+                </a>
+                <a class="btn btn-ghost"
+                    href="img/37_Piecewise-Linear Manifold for Deep Metric Learning_CPAL_presentation.pdf"
+                    target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                    Slides
+                </a>
+                <a class="btn btn-ghost" href="#bibtex">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6" />
+                        <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                    BibTeX
+                </a>
             </div>
         </div>
 
-
-        <div class="row">
-                <div class="col-md-4 col-md-offset-3 text-center">
-                    <ul class="nav nav-pills nav-justified">
-                        <li>
-                            <a href="https://illinois.edu/">
-                           <image src="img/uiuc_logo.png" height="60px">
-                                
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://proceedings.mlr.press/v234/bhatnagar24a.html">
-                           <image src="img/PL_manifold_snapshot.png" height="60px">
-                                <h4><strong>Paper</strong></h4>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="img/37_Piecewise-Linear Manifold for Deep Metric Learning_CPAL_presentation.pdf">
-                            <image src="img/PL_manifold_slides_snapshot.png" height="60px">
-                                <h4><strong>Slides</strong></h4>
-                            </a>
-                        </li> 
-                        <li>
-                            <a href="https://cpal.cc/">
-                           <image src="img/CPAL_logo.svg" height="60px">
-                                
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://proceedings.mlr.press/">
-                           <image src="img/pmlr_logo.svg" height="60px">
-                                
-                            </a>
-                        </li>
-                        <!--  <li>
-                          <a href="https://arxiv.org/abs/2308.04643">
-                            <image src="img/LD_gr_dnn_snapshot.PNG" height="60px">
-                                <h4><strong>arxiv</strong></h4>
-                            </a>
-                        </li>-->
-                       <!-- <li>
-                            <a href="img/LDGR_DNN_poster_final.pdf">
-                            <image src="img/poster_snapshot.PNG" height="60px">
-                                <h4><strong>Poster</strong></h4>
-                            </a>
-                        </li> -->
-                       
-                    </ul>
+        <!-- Teaser: the toy-example animation (caption beside it, since it is narrow) -->
+        <div class="wrap teaser-wrap reveal">
+            <figure class="fig fig-side">
+                <div class="side-media">
+                    <video id="v0" autoplay loop muted playsinline controls
+                        aria-label="A toy example animation showing how our method reshapes a 2D embedding so that points lying on the same low-dimensional piece of the manifold are pulled together while points on different pieces are pushed apart">
+                        <source src="img/Toy_example_animation.mp4" type="video/mp4" />
+                    </video>
                 </div>
+                <figcaption><b>A toy example showing the effect of our method on a 2D embedding.</b> Each point is an
+                    image embedding. We approximate the data manifold locally with small linear pieces, and treat points
+                    sharing a low-dimensional neighborhood as similar. Training then pulls points on the same piece (or
+                    the same low-dimensional subspace) closer together and pushes points on different pieces apart,
+                    shaping a representation space suited to retrieval, all without labels.</figcaption>
+            </figure>
         </div>
+    </header>
 
+    <!-- ============ ABSTRACT ============ -->
+    <section id="abstract">
+        <div class="wrap reveal">
+            <h2 class="section-title">Abstract</h2>
+            <p class="lead">Unsupervised deep metric learning (UDML) focuses on learning a semantic representation space
+                using only unlabeled data. This challenging problem requires accurately estimating the similarity between
+                data points, which is used to supervise a deep network. For this purpose, we propose to model the
+                high-dimensional data manifold using a piecewise-linear approximation, with each low-dimensional
+                linear piece approximating the data manifold in a small neighborhood of a point. These neighborhoods are
+                used to estimate similarity between data points. We empirically show that this similarity estimate
+                correlates better with the ground truth than the similarity estimates of current state-of-the-art
+                techniques. We also show that proxies, commonly used in supervised metric learning, can be used to model
+                the piecewise-linear manifold in an unsupervised setting, helping improve performance. Our method
+                outperforms existing unsupervised metric learning approaches on standard zero-shot image retrieval
+                benchmarks.</p>
 
-
-       
-
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Abstract
-                </h3>
-                <p class="text-justify">
-                    Unsupervised deep metric learning (UDML) focuses on learning a semantic representation
-                    space using only unlabeled data. This challenging problem requires accurately estimating
-                    the similarity between data points, which is used to supervise a deep network. For this
-                    purpose, we propose to model the high-dimensional data manifold using a piecewise-linear
-                    approximation, with each low-dimensional linear piece approximating the data manifold
-                    in a small neighborhood of a point. These neighborhoods are used to estimate similarity
-                    between data points. We empirically show that this similarity estimate correlates better with
-                    the ground truth than the similarity estimates of current state-of-the-art techniques. We also
-                    show that proxies, commonly used in supervised metric learning, can be used to model the
-                    piecewise-linear manifold in an unsupervised setting, helping improve performance. Our
-                    method outperforms existing unsupervised metric learning approaches on standard zeroshot
-                    image retrieval benchmarks.
-                </p>
+            <div class="tldr">
+                <h3>TL;DR</h3>
+                <p>Approximate the unlabeled data manifold with local linear pieces, use those neighborhoods to estimate
+                    similarity and supervise an embedding network, and model the pieces with proxies, giving
+                    state-of-the-art unsupervised deep metric learning.</p>
             </div>
         </div>
-<!--TODO : ADD TLDR-->
+    </section>
 
+    <!-- ============ INTUITION ============ -->
+    <section id="intuition">
+        <div class="wrap reveal">
+            <h2 class="section-title">Intuition</h2>
+            <p class="lead">We propose a framework for unsupervised metric learning having 3 steps:</p>
 
+            <ol class="steps">
+                <li><b>Approximate the manifold locally.</b> Approximate the submanifold at each point with a local
+                    linear model over a neighborhood small enough to contain a single, adequately linear submanifold;
+                    such low-dimensional subspaces hold semantically similar points.</li>
+                <li><b>Estimate similarity.</b> Estimate pairwise similarity from the projection of x1 - x2 along the
+                    linear neighborhood D versus its normal, so similarity decays faster orthogonal to the neighborhood
+                    than along it.</li>
+                <li><b>Train the embedding.</b> Train the embedding to pull together points in the same neighborhood or
+                    the same low-dimensional subspace and push apart points in different subspaces.</li>
+            </ol>
+        </div>
+    </section>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Intuition
-                </h3>
-            
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
-                        <video id="v0" width="100%" autoplay loop muted controls>
-                          <source src="img/Toy_example_animation.mp4" type="video/mp4" />
-                        </video>
-                        <div class="text-center">
-                        <strong>A toy example showing the effect of our method on a 2D embedding </strong>
+    <!-- ============ METHOD ============ -->
+    <section id="method">
+        <div class="wrap reveal">
+            <h2 class="section-title">Method</h2>
+            <p class="lead">The figure below provides an overview of our method, from neighborhood sampling and the
+                piecewise-linear approximation of the manifold to the proxy- and point-based similarities used to train
+                the embedding.</p>
+
+            <figure class="fig reveal" style="margin-top:24px;">
+                <img src="./img/flowchart.png" loading="lazy"
+                    alt="Overview of the piecewise-linear manifold pipeline: sampled points are embedded by a momentum encoder, used to build a piecewise-linear approximation of the data manifold, then point-point and proxy-point similarities modulate distances and are optimized by backpropagation">
+                <figcaption>The figure provides an overview of our method. Points are selected using the neighborhood
+                    sampling and their embeddings are calculated using a momentum encoder. Embeddings generated by the
+                    momentum encoder are used to construct a piecewise linear approximation of the data manifold. These
+                    embeddings are used to calculate point-point and proxy-point similarities which are in turn used to
+                    modulate the distance between them. Locations and neighborhoods of proxies are also updated through
+                    backpropagation. Losses colored yellow/green are calculated only using quantities with the same
+                    color.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="results">
+        <div class="wrap reveal">
+            <h2 class="section-title">Results</h2>
+            <p class="lead">Our method outperforms current unsupervised metric learning approaches on standard zero-shot
+                image retrieval benchmarks (CUB-200-2011, Cars-196 and SOP). Please refer to the paper for more detailed
+                results and ablations.</p>
+
+            <div class="stat-grid">
+                <div class="stat">
+                    <div class="num">61.7</div>
+                    <div class="lbl">Recall@1 on CUB-200-2011 (GoogleNet, 512-d), state-of-the-art among UDML methods
                     </div>
-                                </div>
-                </div><br><br>
-            <div class="text-justify">
-                We propose a framework for unsupervised metric learning having 3 steps 
-                <ol>
-                    <li>Identify and approximate the submanifold at each point (eg. Ellipses A-E) by a linear model over a neighborhood small
-                        enough to (i) not contain multiple submanifolds and (ii) the contained single submanifold is adequately linear.
-                        Such low-dimensional (1D) subspaces are assumed to contain semantically similar points. </li>
-                    <li>Estimate similarity for each pair of points (x1, x2), in terms of the lengths of projections of
-                        vector x1 − x2 on the linear neighborhood D, and on the normal to D. Similarity decays faster
-                        orthogonal to a neighborhood than along it.</li>
-                    <li>Train network embedding to bring similar points closer
-                        together and push dissimilar points apart. This brings closer together points within the same low-dimensional
-                        neighborhoods or those in different neighborhoods but the same low-dimensional (1D) space (eg. A, B, C)
-                        closer together. Points not lying in the same low dimensional space (eg. B, D, E) are pushed away from each
-                        other.</li>
-                </ol>
-            
-                
-                <br><br>
-                <div class="text-center">
-                    <img src="./img/flowchart.png" width="70%">
                 </div>
-                <br><br>
-                The figure provides an overview of our method. Points are selected using the neighborhood sampling and their embeddings are calculated using a
-                momentum encoder. Embeddings generated by the momentum encoder are used to construct
-                a piecewise linear approximation of the data manifold. 
-                <br>
-                These embeddings are used to calculate point-point and proxy-point similarities which are in turn used to modulate the
-                distance between them. Locations and neighborhoods of proxies are also updated through backpropagation. Losses colored yellow/
-                green are calculated only using quantities with the same color.                
-			</div>
-
-            </div>
-        </div>
-        <br><br>
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Example Embedding 
-                </h3>
-            
-            <div class="text-justify">
-                The figure below shows a t-sne visualization of the embedding learnt by our network for the CUB-200-2011 dataset.
-                <br><br>
-                <div class="text-center">
-                    <img src="./img/example-tSNE-cub_new.png" width="70%">
+                <div class="stat">
+                    <div class="num">+2.8</div>
+                    <div class="lbl">Recall@1 on CUB-200-2011 over the previous best unsupervised method</div>
                 </div>
-               
-
-            </div>
-        </div>
-        
-        <br><br>
-        
-        <br>
-        <br>
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Results
-                </h3>
-            
-            <div class="text-justify">
-                Our method outperforms all current methods in terms of Recall@1.  Please refer to the paper for more detailed results and ablations
-                <br><br>
-                <div class="text-center">
-                    <img src="./img/perf_table.png" width="100%">
-                </div>
-               
-
-            </div>
-        </div>
-       
-
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <h3>
-                    Citation
-                </h3>
-                <div class="form-group col-md-10 col-md-offset-1">
-                    <textarea id="bibtex" class="form-control" readonly>
-                       
-                            @InProceedings{pmlr-v234-bhatnagar24a,
-                                title = 	 {Piecewise-Linear Manifolds for Deep Metric Learning},
-                                author =       {Bhatnagar, Shubhang and Ahuja, Narendra},
-                                booktitle = 	 {Conference on Parsimony and Learning},
-                                pages = 	 {269--281},
-                                year = 	 {2024},
-                                editor = 	 {Chi, Yuejie and Dziugaite, Gintare Karolina and Qu, Qing and Wang, Atlas Wang and Zhu, Zhihui},
-                                volume = 	 {234},
-                                series = 	 {Proceedings of Machine Learning Research},
-                                month = 	 {03--06 Jan},
-                                publisher =    {PMLR},
-                                pdf = 	 {https://proceedings.mlr.press/v234/bhatnagar24a/bhatnagar24a.pdf},
-                                url = 	 {https://proceedings.mlr.press/v234/bhatnagar24a.html},
-                                abstract = 	 {Unsupervised deep metric learning (UDML) focuses on learning a semantic representation space using only unlabeled data. This challenging problem requires accurately estimating the similarity between data points, which is used to supervise a deep network. For this purpose, we propose to model the high-dimensional data manifold using a piecewise-linear approximation, with each low-dimensional linear piece approximating the data manifold in a small neighborhood of a point. These neighborhoods are used to estimate similarity between data points. We empirically show that this similarity estimate correlates better with the ground truth than the similarity estimates of current state-of-the-art techniques. We also show that proxies, commonly used in supervised metric learning, can be used to model the piecewise-linear manifold in an unsupervised setting, helping improve performance. Our method outperforms existing unsupervised metric learning approaches on standard zero-shot image retrieval benchmarks.}
-                            }
-  
-                    </textarea>
+                <div class="stat">
+                    <div class="num">66.4</div>
+                    <div class="lbl">Recall@1 on SOP (GoogleNet, 512-d), the largest of the three benchmarks</div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            
-                <p class="text-justify">
-                The website template was borrowed from <a href="http://mgharbi.com/">Michaël Gharbi</a> and <a href="https://dorverbin.github.io/refnerf">Ref-NeRF</a>.
-                </p>
-            
+            <figure class="fig reveal" style="margin-top:24px;">
+                <img src="./img/perf_table.png" loading="lazy"
+                    alt="Full benchmark table: Recall@K across CUB-200-2011, Cars-196 and SOP for GoogleNet 128-dim and 512-dim embeddings, with our method outperforming prior unsupervised deep metric learning baselines">
+                <figcaption>Recall@K on the CUB-200-2011, Cars-196 and SOP zero-shot retrieval benchmarks for 128-dim and
+                    512-dim GoogleNet embeddings; our method outperforms existing unsupervised metric learning
+                    approaches.</figcaption>
+            </figure>
         </div>
-    </div>
+    </section>
+
+    <!-- ============ GALLERY ============ -->
+    <section id="gallery">
+        <div class="wrap reveal">
+            <h2 class="section-title">Visual results</h2>
+
+            <h3 class="sub">t-SNE of the learned space</h3>
+            <figure class="fig">
+                <img src="./img/example-tSNE-cub_new.png" loading="lazy"
+                    alt="t-SNE visualization of the embedding learned by our network on CUB-200-2011, with semantically similar bird images clustered together">
+                <figcaption>The figure shows a t-SNE visualization of the embedding learnt by our network for the
+                    CUB-200-2011 dataset.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ============ BIBTEX ============ -->
+    <section id="bibtex">
+        <div class="wrap reveal">
+            <h2 class="section-title">BibTeX</h2>
+            <p class="lead">If you find our work useful, please consider citing:</p>
+            <div class="bibtex-box">
+                <button class="copy-btn" id="copyBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span id="copyLabel">Copy</span>
+                </button>
+                <pre id="bibtex">@InProceedings{pmlr-v234-bhatnagar24a,
+    title     = {Piecewise-Linear Manifolds for Deep Metric Learning},
+    author    = {Bhatnagar, Shubhang and Ahuja, Narendra},
+    booktitle = {Conference on Parsimony and Learning},
+    pages     = {269--281},
+    year      = {2024},
+    editor    = {Chi, Yuejie and Dziugaite, Gintare Karolina and Qu, Qing
+                 and Wang, Atlas Wang and Zhu, Zhihui},
+    volume    = {234},
+    series    = {Proceedings of Machine Learning Research},
+    month     = {03--06 Jan},
+    publisher = {PMLR}
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+        <div class="wrap">
+            <p>Piecewise-Linear Manifolds for Deep Metric Learning &middot; CPAL 2024 (Oral) &middot;
+                <a href="https://illinois.edu/">University of Illinois at Urbana-Champaign</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- Theme ----------
+        (function () {
+            const root = document.documentElement;
+            // Always default to light mode on load (never persist dark).
+            root.setAttribute('data-theme', 'light');
+
+            document.getElementById('themeToggle').addEventListener('click', function () {
+                const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                root.setAttribute('data-theme', next);
+            });
+        })();
+
+        // ---------- Copy BibTeX ----------
+        document.getElementById('copyBtn').addEventListener('click', function () {
+            const text = document.getElementById('bibtex').innerText;
+            const label = document.getElementById('copyLabel');
+            navigator.clipboard.writeText(text).then(function () {
+                label.textContent = 'Copied!';
+                setTimeout(function () { label.textContent = 'Copy'; }, 1600);
+            });
+        });
+
+        // ---------- Reveal on scroll ----------
+        (function () {
+            const els = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) {
+                els.forEach(function (e) { e.classList.add('in'); });
+                return;
+            }
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (en.isIntersecting) {
+                        en.target.classList.add('in');
+                        io.unobserve(en.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+            els.forEach(function (e) { io.observe(e); });
+        })();
+    </script>
 </body>
+
 </html>
