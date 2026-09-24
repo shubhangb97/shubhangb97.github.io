@@ -384,6 +384,22 @@
             border-radius: 8px;
         }
 
+        .venue .v-text {
+            text-align: left;
+            line-height: 1.3;
+        }
+
+        .venue .v-text b {
+            color: var(--text);
+            font-size: 1rem;
+            display: block;
+        }
+
+        .venue .v-text span {
+            color: var(--text-soft);
+            font-size: .85rem;
+        }
+
         /* Buttons */
         .btn-row {
             display: flex;
@@ -732,6 +748,7 @@
         { "@type": "Person", "name": "Narendra Ahuja", "url": "https://n-ahuja.ece.illinois.edu/" }
       ],
       "datePublished": "2026",
+      "isPartOf": { "@type": "PublicationEvent", "name": "Conference on Neural Information Processing Systems (NeurIPS 2026)" },
       "abstract": "Vision encoders for retrieval are typically trained with class-label supervision: each training pair reduces to a scalar that uniformly pushes the embedding apart or pulls it together, as if every visual attribute either differed or matched. A multimodal large language model (MLLM), shown the same pair, can articulate those attributes and use them to predict whether the images share a class. We propose SAGA, a framework that turns this language-grounded, attribute-aware perception into a training signal for the encoder itself. Specifically, we use Group Relative Policy Optimization (GRPO) to reward the MLLM for correct predictions on the vision encoder's tokens. Since correct predictions require those tokens to expose the specific attributes that differ or match between the pair, the gradient pushes the encoder to encode them, replacing the uniform pair-level scalar with attribute-resolved supervision. An auxiliary attention-distillation loss anchors the encoder's embedding to tokens the MLLM attended to, and a standard metric-learning loss shapes the embedding geometry for nearest-neighbour retrieval. The MLLM is frozen throughout and discarded at inference, matching the deployment cost of a metric-learning baseline. SAGA improves Recall@1 by 3 to 6 points over state-of-the-art baselines on CUB-200-2011, Cars-196, FGVC-Aircraft, and iNaturalist Aves on zero-shot image retrieval.",
       "url": "https://shubhangb97.github.io/saga/",
       "image": "https://shubhangb97.github.io/saga/img/teaser.png",
@@ -779,7 +796,7 @@
     <!-- ============ HERO ============ -->
     <header class="hero" id="top">
         <div class="wrap">
-            <span class="badge">Under Review · 2026</span>
+            <span class="badge">NeurIPS 2026</span>
             <h1>Beyond Scalar Distances:<br><span class="grad">Semantic Attribute Gradients</span> from Frozen MLLMs</h1>
             <p class="subtitle">Turning a frozen multimodal LLM into a training-time supervisor that teaches a vision
                 encoder the fine-grained attributes that matter for zero-shot retrieval.</p>
@@ -793,6 +810,14 @@
                     Urbana-Champaign</a> &nbsp;&middot;&nbsp; <sup>&#42;</sup>&nbsp;Equal contribution</p>
 
             <div class="venue-row">
+                <a class="venue" href="https://arxiv.org/abs/2606.15134" target="_blank" rel="noopener"
+                    title="NeurIPS 2026">
+                    <img src="./img/neurips_logo.png" alt="NeurIPS logo">
+                    <span class="v-text">
+                        <b>Accepted at NeurIPS 2026</b>
+                        <span>Neural Information Processing Systems</span>
+                    </span>
+                </a>
                 <a class="venue logo-only" href="https://illinois.edu/" target="_blank" rel="noopener"
                     title="University of Illinois Urbana-Champaign">
                     <img src="./img/uiuc_logo_trim.png" alt="University of Illinois Urbana-Champaign logo">
