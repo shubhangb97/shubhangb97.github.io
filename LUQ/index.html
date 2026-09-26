@@ -758,7 +758,7 @@
         { "@type": "Person", "name": "Shubhang Bhatnagar", "url": "https://shubhangb97.github.io/" },
         { "@type": "Person", "name": "Andy Xu" },
         { "@type": "Person", "name": "Kar-Han Tan", "url": "https://karhan-tan.github.io/" },
-        { "@type": "Person", "name": "Narendra Ahuja", "url": "https://n-ahuja.ece.illinois.edu/" }
+        { "@type": "Person", "name": "Narendra Ahuja", "url": "https://vision.ai.illinois.edu/narendra-ahuja/" }
       ],
       "datePublished": "2026",
       "abstract": "Large Language Models (LLMs) with multimodal capabilities have revolutionized vision-language tasks, but their deployment often requires huge memory and computational resources. Post-training quantization (PTQ) has successfully compressed language models to as low as 1-bit precision, its effectiveness for multimodal LLMs (MLLMs) remains unexplored. In this paper, we present the first method for ultra-low-bit (<4-bit) quantization of MLLMs. Our analysis reveals that multimodal tokens and intermediate layer activations produced by them exhibit significantly higher entropy compared to text tokens, indicating greater functional complexity that makes MLLMs less tolerant to ultra-low bit quantization. However, this entropy varies significantly across layers, with some layers producing lower-entropy activation distributions that we empirically show can better tolerate ultra-low bit quantization. Existing PTQ methods optimize weight quantization within each layer but apply the same target precision uniformly, ignoring this variation in complexity across layers. Building on this insight, we propose LUQ: Layerwise Ultra-Low Bit Quantization, which characterizes each transformer layer's functional complexity via its output activation entropy and selectively applies ultra-low bit quantization to layers encoding simpler, more compressible functions. We also show that multimodal calibration (image and text tokens) boosts VQA performance in the ultra-low bit regime. Evaluated on LLaVA-1.5 and Qwen2.5-VL across 9 VQA benchmarks, LUQ models use 40% and 31% less memory than their 4-bit counterparts while exhibiting less than 10% degradation on MME.",
@@ -818,7 +818,7 @@
                 <li><a href="https://shubhangb97.github.io/">Shubhang Bhatnagar</a><sup>1,&dagger;</sup></li>
                 <li>Andy Xu<sup>2,&dagger;</sup></li>
                 <li><a href="https://karhan-tan.github.io/">Kar-Han Tan</a><sup>3</sup></li>
-                <li><a href="https://n-ahuja.ece.illinois.edu/">Narendra Ahuja</a><sup>1</sup></li>
+                <li><a href="https://vision.ai.illinois.edu/narendra-ahuja/">Narendra Ahuja</a><sup>1</sup></li>
             </ul>
             <p class="affil">
                 <sup>1</sup>&nbsp;<a href="https://illinois.edu/">UIUC</a> &nbsp;&middot;&nbsp;
