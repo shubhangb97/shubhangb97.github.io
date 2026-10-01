@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ReGain: Restoring Subject Fidelity in Personalization on Synthetic Images</title>
+
+    <meta name="description"
+        content="Personalizing a diffusion model on synthetic images of a subject inflates its classifier-free guidance. ReGain is a training-free correction applied at sampling time that lowers the guidance per frequency band and denoising step, using the public base model as the reference. It needs no real photos, retraining or per-subject tuning.">
+
+    <link rel="canonical" href="https://shubhangb97.github.io/regain/" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shubhangb97.github.io/regain/" />
+    <meta property="og:title" content="ReGain: Restoring Subject Fidelity in Personalization on Synthetic Images" />
+    <meta property="og:description"
+        content="A training-free correction at sampling time for diffusion models personalized on synthetic images. It needs no real photos or retraining." />
+    <meta property="og:image" content="https://shubhangb97.github.io/images/regain_snap.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ReGain: Restoring Subject Fidelity on Synthetic Images" />
+    <meta name="twitter:description"
+        content="A training-free correction at sampling time for diffusion models personalized on synthetic images." />
+    <meta name="twitter:image" content="https://shubhangb97.github.io/images/regain_snap.jpg" />
+
+    <!-- Favicon: tiny inline SVG (teal 'R') -->
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230d9488'/%3E%3Ctext x='50' y='72' font-size='64' font-family='Arial,sans-serif' font-weight='700' fill='white' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ===================== Theme tokens ===================== */
+        :root {
+            --bg: #ffffff;
+            --bg-soft: #f6f7f9;
+            --bg-elev: #ffffff;
+            --text: #14161c;
+            --text-soft: #4a5160;
+            --text-faint: #7c8392;
+            --border: #e6e8ef;
+            --border-strong: #d3d7e0;
+            --accent: #0d9488;
+            --accent-soft: #e7f6f4;
+            --accent-2: #0891b2;
+            --shadow: 0 1px 2px rgba(20, 22, 28, .04), 0 8px 24px rgba(20, 22, 28, .06);
+            --shadow-lg: 0 12px 40px rgba(20, 22, 28, .12);
+            --radius: 16px;
+            --maxw: 980px;
+
+            /* data colors (validated: all-pairs CVD + contrast on white) */
+            --c-real: #2a78d6;
+            --c-syn: #eb6834;
+            --c-ours: #0d9488;
+            --ord-1: #f0a07a;
+            --ord-2: #eb6834;
+            --ord-3: #a8421a;
+            --neutral-1: #5f5e5a;
+            --neutral-2: #a3a29c;
+            --grid: #ececef;
+            --axis: #c9cad1;
+            --gap-fill: #eeeef1;
+            --div-neg: #1c5cab;
+            --div-mid: #f0efec;
+            --div-pos: #c8373a;
+            --st-good: #0a7d0a;
+            --st-warn: #a35f00;
+            --st-bad: #c02f2f;
+            --st-good-bg: #e8f5e8;
+            --st-warn-bg: #fdf1dd;
+            --st-bad-bg: #fbe9e9;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0c0d12;
+            --bg-soft: #131520;
+            --bg-elev: #161823;
+            --text: #eef0f6;
+            --text-soft: #b6bccb;
+            --text-faint: #858ca0;
+            --border: #242636;
+            --border-strong: #313347;
+            --accent: #2dd4bf;
+            --accent-soft: #0f2a2b;
+            --accent-2: #38bdf8;
+            --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+            --shadow-lg: 0 14px 44px rgba(0, 0, 0, .5);
+
+            --c-real: #3987e5;
+            --c-syn: #d95926;
+            --c-ours: #0f9b8e;
+            --ord-1: #a8421a;
+            --ord-2: #d95926;
+            --ord-3: #f0a07a;
+            --neutral-1: #b9b8b1;
+            --neutral-2: #6f6e69;
+            --grid: #23252f;
+            --axis: #3a3c4a;
+            --gap-fill: #232532;
+            --div-neg: #3987e5;
+            --div-mid: #2a2b33;
+            --div-pos: #e66767;
+            --st-good: #4ade80;
+            --st-warn: #fbbf24;
+            --st-bad: #f87171;
+            --st-good-bg: #11261a;
+            --st-warn-bg: #2a2110;
+            --st-bad-bg: #2c1515;
+        }
+
+        /* ===================== Base ===================== */
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            transition: background .25s ease, color .25s ease;
+        }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+
+        section { padding: 58px 0; border-top: 1px solid var(--border); }
+
+        h2.section-title {
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -.02em;
+            margin: 0 0 6px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.2;
+        }
+
+        h2.section-title::before {
+            content: "";
+            width: 9px;
+            height: 26px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            display: inline-block;
+            flex: none;
+            margin-top: .35em;
+        }
+
+        .section-claim {
+            font-size: 1.22rem;
+            font-weight: 600;
+            color: var(--text-soft);
+            line-height: 1.35;
+            margin: 2px 0 14px;
+        }
+
+        h3.sub {
+            font-size: 1.12rem;
+            font-weight: 700;
+            letter-spacing: -.01em;
+            margin: 40px 0 6px;
+        }
+
+        .kicker {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .78rem;
+            color: var(--accent);
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            margin: 0 0 4px;
+        }
+
+        .lead { color: var(--text-soft); font-size: 1.02rem; }
+
+        .m { font-style: italic; white-space: nowrap; }
+        .m sub { font-style: normal; font-size: .72em; }
+
+        /* ===================== Nav ===================== */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 82%, transparent);
+            backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 11px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: .02em;
+            font-size: 1.05rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .brand:hover { text-decoration: none; }
+
+        .brand .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+
+        .nav-links a {
+            color: var(--text-soft);
+            font-size: .92rem;
+            font-weight: 500;
+            padding: 7px 11px;
+            border-radius: 9px;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-links a:hover { color: var(--text); background: var(--bg-soft); text-decoration: none; }
+
+        .nav-links a.nav-cta { color: #fff; background: var(--accent); }
+        html[data-theme="dark"] .nav-links a.nav-cta { color: #0c0d12; }
+        .nav-links a.nav-cta:hover { color: #fff; background: var(--accent); filter: brightness(1.07); }
+
+        .nav-soon {
+            font-size: .86rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 9px;
+            color: var(--text-faint);
+            border: 1px dashed var(--border-strong);
+            white-space: nowrap;
+        }
+
+        .theme-toggle {
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-grid;
+            place-items: center;
+            transition: background .15s, transform .15s;
+        }
+
+        .theme-toggle:hover { background: var(--bg-soft); transform: translateY(-1px); }
+        .theme-toggle svg { width: 18px; height: 18px; }
+        html[data-theme="dark"] .icon-sun { display: block; }
+        html[data-theme="dark"] .icon-moon { display: none; }
+        .icon-sun { display: none; }
+        .icon-moon { display: block; }
+
+        @media (max-width: 820px) {
+            .nav-links a { display: none; }
+        }
+
+        /* ===================== Hero ===================== */
+        header.hero {
+            position: relative;
+            overflow: hidden;
+            padding: 56px 0 34px;
+            text-align: center;
+        }
+
+        header.hero::before {
+            content: "";
+            position: absolute;
+            inset: -40% 0 auto 0;
+            height: 440px;
+            background: radial-gradient(60% 60% at 50% 0%, var(--accent-soft) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: .76rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            padding: 5px 12px;
+            border-radius: 999px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.9rem, 4.6vw, 3rem);
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            font-weight: 800;
+            margin: 0 auto 12px;
+            max-width: 900px;
+        }
+
+        .hero h1 .grad {
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2.3vw, 1.22rem);
+            color: var(--text-soft);
+            font-weight: 500;
+            max-width: 760px;
+            margin: 0 auto 26px;
+        }
+
+        .authors {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 4px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px 22px;
+            font-size: 1.05rem;
+        }
+
+        .authors li { font-weight: 500; }
+        .authors sup { color: var(--accent); font-weight: 700; }
+        .affil { color: var(--text-soft); font-size: .98rem; margin: 6px 0 0; }
+
+        .venue-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .venue {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-elev);
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .venue:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+        .venue img {
+            height: 50px;
+            width: auto;
+            display: block;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 28px 0 6px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 600;
+            font-size: .98rem;
+            padding: 11px 20px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+
+        .btn svg { width: 18px; height: 18px; }
+        .btn-primary { background: var(--accent); color: #fff; box-shadow: var(--shadow); }
+        html[data-theme="dark"] .btn-primary { color: #0c0d12; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); text-decoration: none; }
+        .btn-ghost { background: var(--bg-elev); color: var(--text); border-color: var(--border-strong); }
+        .btn-ghost:hover { transform: translateY(-2px); background: var(--bg-soft); text-decoration: none; }
+
+        .btn-soon {
+            background: var(--bg-soft);
+            color: var(--text-faint);
+            border: 1px dashed var(--border-strong);
+            cursor: default;
+        }
+
+        .btn-soon small { font-weight: 500; font-size: .78rem; }
+
+        /* hero demo */
+        .hero-demo {
+            margin: 34px auto 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+            gap: 18px;
+            text-align: left;
+            align-items: stretch;
+        }
+
+        @media (max-width: 760px) {
+            .hero-demo { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px;
+        }
+
+        .hero-side { display: flex; flex-direction: column; gap: 14px; }
+
+        .hero-side .hint { margin-top: auto; }
+
+        .img-tile {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-soft);
+        }
+
+        .img-tile img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
+
+        .tag {
+            position: absolute;
+            top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .74rem;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(10, 12, 18, .62);
+            backdrop-filter: blur(4px);
+            padding: 4px 9px;
+            border-radius: 999px;
+            pointer-events: none;
+            line-height: 1.2;
+        }
+
+        .tag.l { left: 10px; }
+        .tag.r { right: 10px; }
+        .tag .kd { width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 1.5px #fff; }
+
+        .prompt-pill {
+            font-style: italic;
+            color: var(--text);
+            background: var(--bg-soft);
+            border: 1px dashed color-mix(in srgb, #7c3aed 45%, var(--border-strong));
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: .98rem;
+        }
+
+        .hint { color: var(--text-faint); font-size: .86rem; margin: 0; }
+        .hint svg { width: 14px; height: 14px; vertical-align: -2px; }
+
+        /* ===================== Compare slider ===================== */
+        .cmp {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 12px;
+            touch-action: pan-y;
+            cursor: ew-resize;
+            user-select: none;
+            -webkit-user-select: none;
+            background: var(--bg-soft);
+            --pos: 50%;
+            outline: none;
+        }
+
+        .cmp:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent); }
+        .cmp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+        .cmp .top { clip-path: inset(0 0 0 var(--pos)); }
+
+        .cmp .bar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: var(--pos);
+            width: 2px;
+            transform: translateX(-1px);
+            background: #fff;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, .15), 0 0 12px rgba(0, 0, 0, .35);
+        }
+
+        .cmp .knob {
+            position: absolute;
+            top: 50%;
+            left: var(--pos);
+            width: 38px;
+            height: 38px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: #fff;
+            color: #14161c;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+            display: grid;
+            place-items: center;
+        }
+
+        .cmp .knob svg { width: 20px; height: 20px; }
+        .cmp.animating .top { transition: clip-path .9s cubic-bezier(.6, .05, .25, 1); }
+        .cmp.animating .bar, .cmp.animating .knob { transition: left .9s cubic-bezier(.6, .05, .25, 1); }
+
+        /* ===================== Stats ===================== */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 26px 0 4px;
+            text-align: left;
+        }
+
+        @media (max-width: 860px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .stat {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat .num {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            line-height: 1.15;
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat .lbl { color: var(--text-soft); font-size: .88rem; margin-top: 4px; line-height: 1.45; }
+
+        /* ===================== Figures ===================== */
+        figure { margin: 0; }
+
+        .fig {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .fig img.diagram { width: 100%; height: auto; display: block; border-radius: 8px; background: #fff; }
+
+        figcaption, .cap {
+            color: var(--text-soft);
+            font-size: .88rem;
+            line-height: 1.55;
+            margin-top: 12px;
+            text-align: left;
+        }
+
+        figcaption b, .cap b { color: var(--text); }
+
+        .tldr {
+            margin-top: 22px;
+            background: linear-gradient(180deg, var(--accent-soft), transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+
+        .tldr h3 { margin: 0 0 6px; font-size: 1rem; color: var(--accent); letter-spacing: .02em; }
+        .tldr p { margin: 0; color: var(--text); }
+
+        /* ===================== Pipeline (Figure 1, left) ===================== */
+        .pipeline { display: grid; gap: 10px; margin-top: 4px; }
+
+        .lane {
+            display: grid;
+            grid-template-columns: 116px minmax(40px, 1fr) 76px minmax(40px, 1fr) 132px;
+            align-items: center;
+            gap: 4px;
+            padding: 14px 16px;
+            border-radius: 14px;
+        }
+
+        .lane.real { background: color-mix(in srgb, var(--c-real) 9%, var(--bg-elev)); }
+        .lane.syn { background: color-mix(in srgb, var(--c-syn) 10%, var(--bg-elev)); }
+
+        .stack { position: relative; width: 100px; height: 100px; }
+
+        .stack img {
+            position: absolute;
+            width: 76px;
+            height: 76px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid var(--bg-elev);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+        }
+
+        .stack img:nth-child(1) { left: 0; top: 0; }
+        .stack img:nth-child(2) { left: 12px; top: 12px; }
+        .stack img:nth-child(3) { left: 24px; top: 24px; }
+
+        .lane-lbl { font-size: .84rem; font-weight: 700; margin-top: 6px; }
+        .lane.real .lane-lbl { color: var(--text); }
+        .lane.syn .lane-lbl { color: var(--text); }
+
+        .arrow { position: relative; height: 32px; }
+
+        .arrow::before {
+            content: "";
+            position: absolute;
+            left: 4px;
+            right: 10px;
+            top: 21px;
+            height: 2px;
+            background: var(--text-faint);
+        }
+
+        .arrow::after {
+            content: "";
+            position: absolute;
+            right: 2px;
+            top: 16px;
+            border: 6px solid transparent;
+            border-left: 9px solid var(--text-faint);
+            border-right: 0;
+        }
+
+        .arrow > span {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            text-align: center;
+            font-size: .76rem;
+            color: var(--text-soft);
+            line-height: 1;
+        }
+
+        .model { text-align: center; }
+        .model svg { width: 64px; height: 44px; display: block; margin: 0 auto; }
+        .model .mname { font-size: 1rem; }
+
+        .out img { width: 160px; height: 160px; object-fit: cover; border-radius: 8px; display: block; box-shadow: 0 2px 8px rgba(0, 0, 0, .18); }
+
+        .gen-note {
+            font-size: .82rem;
+            color: var(--text-soft);
+            padding-left: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gen-note svg { width: 16px; height: 16px; flex: none; }
+
+        @media (max-width: 640px) {
+            .lane { grid-template-columns: 80px minmax(26px, 1fr) 54px minmax(26px, 1fr) 92px; padding: 12px 10px; }
+            .stack { width: 72px; height: 72px; }
+            .stack img { width: 54px; height: 54px; }
+            .stack img:nth-child(2) { left: 9px; top: 9px; }
+            .stack img:nth-child(3) { left: 18px; top: 18px; }
+            .model svg { width: 46px; height: 32px; }
+            .out img { width: 88px; height: 88px; }
+            .arrow > span { font-size: .64rem; }
+        }
+
+        @media (max-width: 440px) {
+            .arrow > span { display: none; }
+            .lane-lbl { font-size: .72rem; }
+        }
+
+        /* ===================== Charts ===================== */
+        .chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .tol-grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+        @media (max-width: 760px) { .chart-grid, .tol-grid { grid-template-columns: 1fr; } }
+
+        .chart-card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px 16px 12px;
+            min-width: 0;
+        }
+
+        .chart-card h4 { margin: 0; font-size: .98rem; font-weight: 700; letter-spacing: -.005em; }
+        .chart-card .sub { margin: 2px 0 8px; font-size: .84rem; color: var(--text-soft); }
+        .chart { display: block; overflow: visible; }
+        .chart text { font-family: 'Inter', sans-serif; fill: var(--text-faint); font-size: 11px; }
+        .chart text.ax { fill: var(--text-soft); font-size: 11.5px; }
+        .chart text.ink { fill: var(--text); font-weight: 600; }
+        .chart .gridline { stroke: var(--grid); stroke-width: 1; }
+        .chart .axisline { stroke: var(--axis); stroke-width: 1; }
+        .chart .refline { stroke: var(--text-faint); stroke-width: 1; opacity: .7; }
+        .chart .series { transition: opacity .2s; }
+        .chart .series.dim { opacity: .12; }
+        .chart .xhair { stroke: var(--text-faint); stroke-width: 1; }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            font-size: .82rem;
+            color: var(--text-soft);
+            margin: 4px 0 6px;
+            align-items: center;
+        }
+
+        .legend .li { display: inline-flex; align-items: center; gap: 6px; }
+        .key-line { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
+        .key-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+        .key-ring { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 2px solid var(--text-faint); flex: none; }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 4px; align-items: center; }
+        .chips .grp { font-size: .74rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .05em; margin-right: 2px; }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font: inherit;
+            font-size: .8rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            cursor: pointer;
+            transition: background .15s, border-color .15s;
+        }
+
+        .chip:hover, .chip.on { background: var(--bg-soft); border-color: var(--text-faint); }
+
+        #tip {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .12s;
+            background: var(--bg-elev);
+            color: var(--text);
+            border: 1px solid var(--border-strong);
+            box-shadow: var(--shadow-lg);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: .8rem;
+            line-height: 1.45;
+            min-width: 120px;
+            max-width: 280px;
+        }
+
+        #tip .tt { font-weight: 700; margin-bottom: 3px; }
+        #tip .tr { display: flex; align-items: center; gap: 7px; }
+        #tip .tr b { margin-left: auto; padding-left: 12px; font-variant-numeric: tabular-nums; }
+        #tip .tr .kd { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+        /* ===================== Geometry explorer ===================== */
+        .geo {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        @media (max-width: 680px) { .geo { grid-template-columns: 1fr; } }
+
+        .geo-panel { text-align: center; }
+        .geo-panel h4 { margin: 0 0 2px; font-size: 1rem; }
+        .geo-panel svg { width: 100%; max-width: 360px; height: auto; display: block; margin: 0 auto; }
+        .geo-panel svg text { font-family: 'Inter', sans-serif; font-size: 13px; fill: var(--text-soft); }
+        .geo-read { font-size: .9rem; color: var(--text-soft); font-variant-numeric: tabular-nums; }
+        .geo-read b { color: var(--text); }
+
+        .scrub {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 14px 0 4px;
+            flex-wrap: wrap;
+        }
+
+        .scrub input[type=range] { flex: 1; min-width: 160px; accent-color: var(--accent); }
+        .scrub .lab { font-size: .88rem; color: var(--text-soft); min-width: 190px; font-variant-numeric: tabular-nums; }
+        .scrub .lab b { color: var(--text); }
+
+        .play {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            flex: none;
+        }
+
+        .play:hover { background: var(--bg-soft); }
+        .play svg { width: 16px; height: 16px; }
+
+        .dbars { margin-top: 10px; display: grid; gap: 8px; }
+
+        .dbar { display: grid; grid-template-columns: 70px 1fr 64px; gap: 10px; align-items: center; font-size: .88rem; }
+        .dbar .track { height: 14px; background: var(--gap-fill); border-radius: 0 4px 4px 0; position: relative; }
+        .dbar .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; transition: width .12s linear; }
+        .dbar .v { font-variant-numeric: tabular-nums; text-align: right; color: var(--text); font-weight: 600; }
+
+        .excess {
+            margin-top: 10px;
+            font-size: .95rem;
+            color: var(--text-soft);
+        }
+
+        .excess b { color: var(--text); font-size: 1.15rem; }
+
+        .formula {
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 1.12rem;
+            text-align: center;
+            padding: 12px 10px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 14px 0 0;
+            overflow-x: auto;
+            white-space: nowrap;
+            color: var(--text);
+        }
+
+        .formula i { font-style: italic; }
+        .formula .eqn { color: var(--text-faint); font-family: 'Inter', sans-serif; font-size: .82rem; margin-left: 14px; }
+
+        /* ===================== Findings ===================== */
+        .findings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+        @media (max-width: 820px) { .findings { grid-template-columns: 1fr; } }
+
+        .finding .num {
+            display: inline-grid;
+            place-items: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 800;
+            font-size: .88rem;
+            margin-right: 8px;
+            flex: none;
+        }
+
+        .finding h4 { display: flex; align-items: flex-start; }
+        .finding p.body { font-size: .9rem; color: var(--text-soft); margin: 6px 0 8px; }
+        .finding.wide { grid-column: 1 / -1; }
+        .wide-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+        @media (max-width: 760px) { .wide-split { grid-template-columns: 1fr; } }
+
+        .noise-strip { display: grid; grid-template-columns: 1fr 28px 1fr 1fr 1fr; gap: 6px; align-items: center; margin: 10px 0 4px; }
+        .noise-strip img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+        .noise-strip .ar { text-align: center; color: var(--text-faint); font-size: 1.2rem; }
+        .noise-lbls { display: grid; grid-template-columns: 1fr 28px 3fr; gap: 6px; font-size: .76rem; color: var(--text-faint); text-align: center; }
+
+        /* ===================== Method ===================== */
+        .method-points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0; }
+        @media (max-width: 760px) { .method-points { grid-template-columns: 1fr; } }
+
+        .mp { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+        .mp .tag2 { font-family: 'JetBrains Mono', monospace; font-size: .78rem; font-weight: 500; color: var(--accent); display: block; margin-bottom: 4px; }
+        .mp p { margin: 0; font-size: .93rem; color: var(--text-soft); }
+        .mp .mini { margin-top: 8px; font-size: .82rem; color: var(--text-faint); }
+
+        .seg {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 4px;
+            border-radius: 12px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+        }
+
+        .seg button {
+            font: inherit;
+            font-size: .86rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 9px;
+            border: 0;
+            background: transparent;
+            color: var(--text-soft);
+            cursor: pointer;
+            transition: background .15s, color .15s, box-shadow .15s;
+        }
+
+        .seg button:hover { color: var(--text); }
+        .seg button[aria-pressed="true"] { background: var(--bg-elev); color: var(--text); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+
+        .eq-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 18px; align-items: start; margin-top: 12px; }
+        @media (max-width: 760px) { .eq-grid { grid-template-columns: 1fr; } }
+        .eq-note { font-size: .88rem; color: var(--text-soft); margin: 8px 0 0; min-height: 3em; }
+        .eq-note b { color: var(--text); }
+
+        /* ===================== Gap tracks ===================== */
+        .tracks { display: grid; gap: 4px; margin-top: 6px; }
+
+        .gt-row {
+            display: grid;
+            grid-template-columns: 112px minmax(0, 1fr) minmax(96px, auto);
+            gap: 12px;
+            align-items: center;
+            padding: 6px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .gt-row:first-child { border-top: 0; }
+        .gt-lab b { display: block; font-size: .95rem; }
+        .gt-lab span { font-size: .76rem; color: var(--text-faint); }
+        .gt-svg { min-width: 0; }
+        .gt-svg text { font-family: 'Inter', sans-serif; font-size: 11px; fill: var(--text-soft); font-variant-numeric: tabular-nums; }
+        .gt-svg text.mk { fill: var(--text); font-weight: 700; }
+        .gt-head { text-align: right; }
+        .gt-head .big { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; color: var(--text); }
+        .gt-head small { display: block; font-size: .74rem; color: var(--text-faint); }
+        .mv { transition: transform .9s cubic-bezier(.6, .05, .25, 1); }
+        .mv-bar { transition: width .9s cubic-bezier(.6, .05, .25, 1), x .9s cubic-bezier(.6, .05, .25, 1); }
+
+        @media (max-width: 560px) {
+            .gt-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "lab head" "svg svg"; gap: 2px 8px; }
+            .gt-lab { grid-area: lab; }
+            .gt-head { grid-area: head; }
+            .gt-svg { grid-area: svg; }
+            .gt-lab span { display: inline; margin-left: 6px; }
+            .gt-lab b { display: inline; }
+            .gt-head .big { font-size: 1.2rem; }
+            .gt-head small { display: inline; margin-left: 4px; }
+        }
+
+        .clipt {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 14px;
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: .9rem;
+            color: var(--text-soft);
+        }
+
+        .clipt b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .78rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .pill.good { color: var(--st-good); background: var(--st-good-bg); }
+        .pill.warn { color: var(--st-warn); background: var(--st-warn-bg); }
+        .pill.bad { color: var(--st-bad); background: var(--st-bad-bg); }
+        .pill.neutral { color: var(--text-soft); background: var(--bg-soft); border: 1px solid var(--border); }
+
+        /* ablation */
+        .abl-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 18px; margin-top: 14px; align-items: start; }
+        @media (max-width: 820px) { .abl-grid { grid-template-columns: 1fr; } }
+        .abl-imgs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: start; }
+        .abl-imgs .img-tile img { aspect-ratio: 1; }
+        .abl-empty {
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 16px;
+            font-size: .82rem;
+            color: var(--text-faint);
+            background: var(--bg-soft);
+            border: 1px dashed var(--border-strong);
+            border-radius: 12px;
+        }
+
+        .abl-prompt { font-size: .78rem; color: var(--text-faint); font-style: italic; margin: 4px 2px 0; grid-column: 1 / -1; }
+
+        /* ===================== Tables ===================== */
+        details.tbl { margin-top: 16px; }
+
+        details.tbl summary {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: .9rem;
+            color: var(--accent);
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        details.tbl summary::-webkit-details-marker { display: none; }
+        details.tbl summary::before { content: "+"; font-family: 'JetBrains Mono', monospace; }
+        details.tbl[open] summary::before { content: "\2212"; }
+
+        .table-scroll {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 10px;
+        }
+
+        table.results { width: 100%; border-collapse: collapse; font-size: .88rem; background: var(--bg-elev); }
+        table.results th, table.results td { padding: 8px 10px; text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        table.results thead th { font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border-strong); }
+        table.results tr.groups th { border-bottom: none; color: var(--text-soft); font-size: .8rem; font-style: italic; font-weight: 600; padding-top: 12px; }
+        table.results td.method, table.results th.method { text-align: left; font-weight: 500; }
+        table.results tbody tr { border-top: 1px solid var(--border); }
+        table.results tr.ref td { color: var(--text-faint); }
+        table.results tr.gaprow { background: var(--accent-soft); }
+        table.results tr.sep td { border-top: 1px solid var(--border-strong); }
+        table.results .grp { border-left: 1px solid var(--border); }
+        table.results.w-min { min-width: 720px; }
+        .tbl-cap { color: var(--text-soft); font-size: .86rem; margin: 12px 2px 0; line-height: 1.55; }
+
+        /* ===================== Gallery ===================== */
+        .gal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+        @media (max-width: 760px) { .gal-grid { grid-template-columns: 1fr; } }
+
+        .gcard { padding: 14px; }
+
+        .gprompt { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .gprompt span { font-style: italic; font-size: .92rem; color: var(--text); line-height: 1.35; }
+        .gprompt small { display: block; font-style: normal; font-size: .72rem; color: var(--text-faint); }
+
+        .gbody { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 10px; align-items: start; }
+        .gstack { display: flex; flex-direction: column; gap: 8px; }
+        .gbody .img-tile .tag { top: 6px; left: 6px; font-size: .68rem; padding: 3px 7px; }
+        .gbody .img-tile .tag, .abl-imgs .img-tile .tag { white-space: normal; max-width: calc(100% - 14px); line-height: 1.25; }
+        .tcap { font-size: .72rem; color: var(--text-faint); margin-top: 4px; line-height: 1.3; }
+
+        /* ===================== BibTeX ===================== */
+        .bibtex-box { position: relative; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); margin-top: 8px; }
+        .bibtex-box pre { margin: 0; padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: .86rem; line-height: 1.6; color: var(--text); }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            background: var(--bg-elev);
+            color: var(--text);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .copy-btn:hover { background: var(--bg-soft); }
+        .copy-btn svg { width: 15px; height: 15px; }
+
+        footer { border-top: 1px solid var(--border); padding: 30px 0 50px; color: var(--text-faint); font-size: .86rem; text-align: center; }
+        footer a { color: var(--text-soft); }
+
+        /* ===================== Redesign (2026-09-30): minimal-text layout ===================== */
+        /* Problem: the statement, then one box holding the setup sentence and the diagram */
+        .section-claim.problem-line { color: var(--text); margin: 6px 0 18px; }
+        .setup-line {
+            margin: 4px 4px 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.02rem;
+        }
+        /* Findings: one tinted box holding the four-properties line and the four cards */
+        .prop-box {
+            margin-top: 34px;
+            padding: 22px;
+            background: color-mix(in srgb, var(--accent-soft) 65%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+            border-radius: var(--radius);
+        }
+        .prop-box .section-claim { color: var(--text); margin: 0 0 16px; }
+        .prop-box .findings { margin-top: 0; }
+        .prop-box h3.section-claim { margin-bottom: 8px; }
+        .prop-box .gal-grid { width: auto; position: static; left: auto; transform: none; margin-top: 14px; }
+        @media (max-width: 600px) { .prop-box { padding: 16px 12px; } }
+        /* Method: the caption as three rows, one per panel of the figure */
+        .cap-rows { display: grid; gap: 3px; }
+        .cap-row { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 8px; }
+        .cap-rows .cap-k, .cap-rows .cap-sub > b { color: var(--accent); font-weight: 700; }
+        .cap-sub { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 4px; }
+
+        /* Method: the two terms of the ReGain update */
+        .formula .eq-lead.eq-title { font-size: 1.12rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+        /* Findings: notation as a side note, not a card */
+        .notation { margin-top: 14px; padding: 3px 0 3px 16px; border-left: 3px solid var(--accent); }
+        .notation .n-label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .74rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 3px;
+        }
+        .notation p { margin: 0; }
+        .notation .n-main { font-size: 1.04rem; color: var(--text); }
+        .notation .n-eq { font-family: 'Times New Roman', Georgia, serif; font-size: 1.2rem; white-space: nowrap; margin-left: 1.2em; }
+        .notation .n-def { font-size: .95rem; color: var(--text-soft); margin-top: 2px; }
+
+        .formula .op { margin: 0 .45em; }
+        .formula math { font-size: 1.05em; }
+        .formula .eq-words { font-family: 'Inter', sans-serif; font-size: .9rem; color: var(--text-soft); margin: 0 .6em 0 .9em; }
+        .formula .eq-title i { font-style: italic; padding-right: .07em; }
+        .formula .eq-tail { display: inline-block; white-space: nowrap; }
+        a.mlink.vis { color: var(--accent); }
+        .gb-target { display: inline-block; border-radius: 8px; padding: 2px 12px; }
+        .formula .eq-k { color: var(--accent); font-weight: 700; margin-right: .45em; }
+        .gb-target.flash { animation: gbflash 1.4s ease-out; }
+        @keyframes gbflash {
+            0%, 35% { background: color-mix(in srgb, var(--accent) 38%, transparent); }
+            100% { background: transparent; }
+        }
+        .eq-legend {
+            display: grid;
+            row-gap: 3px;
+            width: fit-content;
+            max-width: 100%;
+            margin: 14px auto 2px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            text-align: left;
+            white-space: normal;
+            font-family: 'Inter', sans-serif;
+            font-size: .86rem;
+            line-height: 1.5;
+            color: var(--text-soft);
+        }
+        .eq-legend > div { display: grid; grid-template-columns: 50px minmax(0, 1fr); column-gap: 10px; align-items: baseline; }
+        .eq-legend .s { font-family: 'Times New Roman', Georgia, serif; font-size: 1.02rem; color: var(--text); white-space: nowrap; line-height: 1.2; }
+        .eq-legend sub { line-height: 0; }
+        .formula .term { display: inline-flex; flex-direction: column; align-items: center; }
+        .formula .t-eq { white-space: nowrap; height: 1.7em; box-sizing: border-box; padding: 0 3px; border-bottom: 2px solid; }
+        .formula .t-tag { font-family: 'Inter', sans-serif; font-size: .68rem; font-weight: 500; line-height: 1.2; margin-top: 3px; }
+        .formula .term.in .t-eq { border-color: #2f9e62; }
+        .formula .term.in .t-tag { color: #2f9e62; }
+        .formula .term.out .t-eq { border-color: var(--text-faint); }
+        .formula .term.out .t-tag { color: var(--text-faint); }
+
+        a.mlink, a.mlink:hover { color: inherit; text-decoration: none; }
+        a.mlink:hover { color: var(--accent); }
+        .formula .eq-lead {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: .9rem;
+            color: var(--text-soft);
+            margin-bottom: 4px;
+        }
+
+        .lead.small { font-size: .96rem; }
+
+        /* chart cards whose headings differ in length keep their charts on one baseline */
+        .chart-grid.align-bottom .chart-card { display: flex; flex-direction: column; }
+        .chart-grid.align-bottom .chart-card > .legend { margin-top: auto; }
+
+        /* finding cards: text and controls on the left, the visual on the right */
+        .findings { grid-template-columns: 1fr; }
+        .f-split { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.5fr); gap: 28px; align-items: center; }
+        @media (max-width: 860px) { .f-split { grid-template-columns: 1fr; gap: 14px; } }
+        .finding h4 { font-size: 1.04rem; align-items: center; }
+        .finding p.body { font-size: .95rem; margin: 8px 0 10px; }
+        .f-split .scrub .lab { min-width: 0; }
+        .geo-panel h4 { display: block; }
+        .geo-sub { font-weight: 500; color: var(--text-faint); font-size: .82rem; }
+
+        .formula .eq-name {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        /* gallery: three compact cards per row, last row centred; on wide screens it extends past the text column */
+        .gal-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+        .gal-grid .gcard { flex: 0 0 calc((100% - 28px) / 3); min-width: 0; }
+        @media (min-width: 1180px) {
+            .gal-grid { width: min(1160px, calc(100vw - 72px)); position: relative; left: 50%; transform: translateX(-50%); }
+        }
+        @media (max-width: 900px) { .gal-grid .gcard { flex-basis: calc((100% - 14px) / 2); } }
+        @media (max-width: 620px) { .gal-grid .gcard { flex-basis: 100%; } }
+        .hero-side { justify-content: center; }
+        .gcard { padding: 10px; }
+        .gbody { gap: 8px; }
+        .gstack { gap: 6px; }
+        .gcard .gprompt {
+            display: block;
+            margin: 8px 2px 0;
+            font-style: italic;
+            font-size: .82rem;
+            line-height: 1.35;
+            color: var(--text-soft);
+        }
+        .gbody .cmp .tag { top: 6px; font-size: .66rem; padding: 3px 7px; }
+        .gbody .cmp .tag.l { left: 6px; }
+        .gbody .cmp .tag.r { right: 6px; }
+        .gbody .cmp .knob { transform: translate(-50%, -50%) scale(.8); }
+
+
+        /* review fixes */
+        @media (min-width: 641px) { .lane { grid-template-columns: 116px minmax(40px, 1fr) 76px minmax(40px, 1fr) 160px; } }
+        .phone-only { display: none; }
+        @media (max-width: 440px) { .phone-only { display: block; } }
+        .chips .brk { flex-basis: 100%; height: 0; }
+        .tol-num { font-size: 1.7rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
+        @media (max-width: 600px) {
+            .fig-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .fig-scroll img.diagram { width: 640px; max-width: none; }
+            .formula { white-space: normal; font-size: 1rem; line-height: 1.7; }
+            .bibtex-box pre { padding-top: 54px; }
+        }
+
+        /* ===================== Reveal ===================== */
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .mv, .mv-bar, .cmp.animating .top, .cmp.animating .bar, .cmp.animating .knob { transition: none; }
+        }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "headline": "ReGain: Restoring Subject Fidelity in Personalization on Synthetic Images",
+      "name": "ReGain: Restoring Subject Fidelity in Personalization on Synthetic Images",
+      "author": [
+        { "@type": "Person", "name": "Shubhang Bhatnagar", "url": "https://shubhangb97.github.io/" },
+        { "@type": "Person", "name": "Ishan Bhatnagar" },
+        { "@type": "Person", "name": "Viraj Shah", "url": "https://virajshah.com/" },
+        { "@type": "Person", "name": "Narendra Ahuja", "url": "https://vision.ai.illinois.edu/narendra-ahuja/" }
+      ],
+      "datePublished": "2026",
+      "abstract": "Text-to-image diffusion models are personalized to a subject by DreamBooth fine-tuning on a handful of its images. Increasingly, these images come from a diffusion model rather than a camera. We show that fine-tuning on such synthetic images degrades subject fidelity, producing oversaturated color and excess high-frequency detail. To isolate the cause, we fine-tune two models from the same base model with the same DreamBooth recipe, one on real photos of a subject and one on synthetic images of that subject generated by the first. We trace the degradation to classifier-free guidance (CFG). For the model personalized on synthetic images, the angle between the conditional and unconditional noise predictions, and with it the norm of their difference, is much larger than for the model personalized on real photos. This inflation grows toward high frequencies and also appears at other prompts semantically close to the subject, such as its class noun, but not at unrelated ones. We propose ReGain, a training-free correction applied at sampling time that measures how much each frequency band of the guidance is inflated relative to the base model and scales that band down accordingly. ReGain needs no real photos. On Stable Diffusion v1.5, ReGain closes 51–64% of the subject-fidelity gap to the model personalized on real photos, as measured by DINO, DINOv2 and CLIP-I. It also improves subject fidelity on SDXL and SD 3.5 and preserves text alignment on all three backbones.",
+      "url": "https://shubhangb97.github.io/regain/",
+      "image": "https://shubhangb97.github.io/images/regain_snap.jpg",
+      "keywords": "diffusion models, personalization, DreamBooth, synthetic data, classifier-free guidance, frequency analysis, training-free"
+    }
+    </script>
+</head>
+
+<body>
+    <div id="tip" role="presentation"></div>
+
+    <!-- ============ NAV ============ -->
+    <nav>
+        <div class="nav-inner">
+            <a class="brand" href="#top"><span class="dot"></span>ReGain</a>
+            <div class="nav-links">
+                <a href="#problem">Problem</a>
+                <a href="#findings">Findings</a>
+                <a href="#method">Method</a>
+                <a href="#results">Results</a>
+                <a href="#bibtex">BibTeX</a>
+                <a class="nav-cta" href="https://arxiv.org/abs/2609.38680" target="_blank" rel="noopener">Paper</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="top">
+        <div class="wrap">
+            <span class="badge">Under Review</span>
+            <h1>ReGain: <span class="grad">Restoring Subject Fidelity</span> in Personalization on Synthetic Images</h1>
+
+            <ul class="authors">
+                <li><a href="https://shubhangb97.github.io/">Shubhang Bhatnagar</a></li>
+                <li>Ishan Bhatnagar</li>
+                <li><a href="https://virajshah.com/">Viraj Shah</a></li>
+                <li><a href="https://vision.ai.illinois.edu/narendra-ahuja/">Narendra Ahuja</a></li>
+            </ul>
+            <p class="affil"><a href="https://illinois.edu/">University of Illinois at Urbana-Champaign</a></p>
+
+            <div class="venue-row">
+                <a class="venue" href="https://illinois.edu/" target="_blank" rel="noopener"
+                    title="University of Illinois Urbana-Champaign">
+                    <img src="./img/uiuc_logo_trim.png" alt="University of Illinois Urbana-Champaign logo">
+                </a>
+            </div>
+
+            <div class="btn-row">
+                <a class="btn btn-primary" href="https://arxiv.org/pdf/2609.38680" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="9" y1="15" x2="15" y2="15" />
+                    </svg>
+                    Paper (PDF)
+                </a>
+                <a class="btn btn-ghost" href="https://arxiv.org/abs/2609.38680" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    arXiv
+                </a>
+                <a class="btn btn-ghost" href="#bibtex">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6" />
+                        <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                    BibTeX
+                </a>
+            </div>
+
+            <div class="tldr" style="text-align:left;">
+                <h3>TL;DR</h3>
+                <p>DreamBooth on generated images of a subject produces oversaturated, over-textured subjects. We trace this to classifier-free guidance: the guidance term is inflated because the angle between the conditional and unconditional predictions widens. ReGain corrects it at sampling time, per frequency band and denoising step, with no real photos or retraining.</p>
+            </div>
+
+            <!-- Hero demo: before / after -->
+            <div class="hero-demo">
+                <div class="card" style="padding:12px;">
+                    <div class="cmp" id="heroCmp" data-left="img/hero_plain.webp" data-right="img/hero_ours.webp"
+                        data-alt="a photo of a [V] dog in front of the Acropolis"></div>
+                </div>
+                <div class="card hero-side">
+                    <div class="img-tile">
+                        <img src="img/ref/dog6.webp" alt="One of the real photos of the subject, a corgi puppy" width="512" height="512">
+                        <span class="tag l"><span class="kd" style="background:var(--c-real)"></span>Real photo of the subject</span>
+                    </div>
+                    <div class="prompt-pill">&ldquo;a photo of a [V] dog in front of the Acropolis&rdquo;</div>
+                </div>
+            </div>
+            <p class="cap" style="text-align:left;margin-top:12px;">Both images are sampled from the same Stable Diffusion v1.5 model, fine-tuned on synthetic images of this subject, with the same prompt and seed. Left: classifier-free guidance (CFG) alone. Right: CFG with ReGain.</p>
+
+            <div class="stat-grid">
+                <div class="stat">
+                    <div class="num">51 to 64%</div>
+                    <div class="lbl">of the lost subject fidelity recovered (SD1.5)</div>
+                </div>
+                <div class="stat">
+                    <div class="num">12 min</div>
+                    <div class="lbl">for the ReGain calibration, once per fine-tuned model (SD1.5)</div>
+                </div>
+                <div class="stat">
+                    <div class="num">&le; 0.004</div>
+                    <div class="lbl">change in prompt fidelity (CLIP-T) in every setting</div>
+                </div>
+                <div class="stat">
+                    <div class="num">1.1&times;</div>
+                    <div class="lbl">the sampling time of plain CFG (SD1.5)</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============ ABSTRACT ============ -->
+    <section id="abstract">
+        <div class="wrap reveal">
+            <h2 class="section-title">Abstract</h2>
+            <div class="abs" id="absBox">
+            <p class="lead">Text-to-image diffusion models are personalized to a subject by DreamBooth fine-tuning on a
+                handful of its images. Increasingly, these images come from a diffusion model rather than a camera. We
+                show that fine-tuning on such synthetic images degrades subject fidelity, producing oversaturated color
+                and excess high-frequency detail. To isolate the cause, we fine-tune two models from the same base model
+                with the same DreamBooth recipe, one on real photos of a subject and one on synthetic images of that
+                subject generated by the first. We trace the degradation to classifier-free guidance (CFG). For the model
+                personalized on synthetic images, the angle between the conditional and unconditional noise predictions,
+                and with it the norm of their difference, is much larger than for the model personalized on real photos.
+                This inflation grows toward high frequencies and also appears at other prompts semantically close to the
+                subject, such as its class noun, but not at unrelated ones. We propose ReGain, a training-free correction
+                applied at sampling time that measures how much each frequency band of the guidance is inflated relative
+                to the base model and scales that band down accordingly. ReGain needs no real photos. On Stable Diffusion
+                v1.5, ReGain closes 51–64% of the subject-fidelity gap to the model personalized on real photos, as
+                measured by DINO, DINOv2 and CLIP-I. It also improves subject fidelity on SDXL and SD 3.5 and preserves
+                text alignment on all three backbones.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ PROBLEM (with the setup) ============ -->
+    <section id="problem">
+        <div class="wrap reveal">
+            <h2 class="section-title">Problem</h2>
+            <p class="section-claim problem-line">Personalizing a diffusion model on synthetic images of a subject degrades its fidelity. Why?</p>
+
+            <div class="card" id="setup">
+                <p class="setup-line">To study this, we train diffusion models <span class="m">M<sub>real</sub></span> and <span class="m">M<sub>syn</sub></span> with the same recipe, the only difference being their training data: real photos and synthetic images respectively.</p>
+                <div class="pipeline">
+                    <div class="lane real">
+                        <div>
+                            <div class="stack">
+                                <img src="img/train_real0.webp" alt="Real photo of the subject" loading="lazy">
+                                <img src="img/train_real1.webp" alt="Real photo of the subject" loading="lazy">
+                                <img src="img/train_real2.webp" alt="Real photo of the subject" loading="lazy">
+                            </div>
+                            <div class="lane-lbl">Real photos of the subject</div>
+                        </div>
+                        <div class="arrow"><span>DreamBooth from <span class="m">M<sub>base</sub></span></span></div>
+                        <div class="model">
+                            <svg viewBox="0 0 64 44" aria-hidden="true">
+                                <path d="M2 2 L30 16 L30 28 L2 42 Z M62 2 L34 16 L34 28 L62 42 Z"
+                                    style="fill:color-mix(in srgb, var(--c-real) 25%, var(--bg-elev));stroke:var(--c-real);stroke-width:2;stroke-linejoin:round" />
+                                <rect x="29" y="16" width="6" height="12" style="fill:color-mix(in srgb, var(--c-real) 25%, var(--bg-elev));stroke:var(--c-real);stroke-width:2" />
+                            </svg>
+                            <span class="m mname">M<sub>real</sub></span>
+                        </div>
+                        <div class="arrow"><span>sample, same prompt and seed</span></div>
+                        <div class="out">
+                            <img src="img/hero_m0.webp" alt="Clean sample generated by the model trained on real photos" loading="lazy">
+                            <div class="lane-lbl">Generated: clean</div>
+                        </div>
+                    </div>
+
+                    <div class="gen-note">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><line x1="12" y1="6" x2="12" y2="18"/></svg>
+                        <span><span class="m">M<sub>real</sub></span> generates the five synthetic training images of the subject</span>
+                    </div>
+
+                    <div class="lane syn">
+                        <div>
+                            <div class="stack">
+                                <img src="img/train_syn0.webp" alt="Synthetic image of the subject" loading="lazy">
+                                <img src="img/train_syn1.webp" alt="Synthetic image of the subject" loading="lazy">
+                                <img src="img/train_syn2.webp" alt="Synthetic image of the subject" loading="lazy">
+                            </div>
+                            <div class="lane-lbl">Synthetic images of the subject</div>
+                        </div>
+                        <div class="arrow"><span>DreamBooth from <span class="m">M<sub>base</sub></span>, same recipe</span></div>
+                        <div class="model">
+                            <svg viewBox="0 0 64 44" aria-hidden="true">
+                                <path d="M2 2 L30 16 L30 28 L2 42 Z M62 2 L34 16 L34 28 L62 42 Z"
+                                    style="fill:color-mix(in srgb, var(--c-syn) 25%, var(--bg-elev));stroke:var(--c-syn);stroke-width:2;stroke-linejoin:round" />
+                                <rect x="29" y="16" width="6" height="12" style="fill:color-mix(in srgb, var(--c-syn) 25%, var(--bg-elev));stroke:var(--c-syn);stroke-width:2" />
+                            </svg>
+                            <span class="m mname">M<sub>syn</sub></span>
+                        </div>
+                        <div class="arrow"><span>sample, same prompt and seed</span></div>
+                        <div class="out">
+                            <img src="img/hero_plain.webp" alt="Oversaturated sample with excess texture generated by the model trained on synthetic images" loading="lazy">
+                            <div class="lane-lbl">Generated: oversaturated, excess texture</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="hint" style="margin:12px 0 0;">Prompt for both samples: <i>&ldquo;a photo of a [V] dog in front of the Acropolis&rdquo;</i>, where [V] is the identifier that DreamBooth binds to the subject.</p>
+            </div>
+            <p class="hint phone-only" style="margin-top:8px;">Both models are fine-tuned with DreamBooth from <span class="m">M<sub>base</sub></span> and sampled with the same prompt and seed.</p>
+
+        </div>
+    </section>
+
+    <!-- ============ FINDINGS ============ -->
+    <section id="findings">
+        <div class="wrap reveal">
+            <h2 class="section-title">Findings</h2>
+            <div class="notation" id="delta" aria-label="Notation: classifier-free guidance">
+                <span class="n-label">Notation</span>
+                <p class="n-main">Classifier-free guidance (CFG) with weight w:<span class="n-eq">&Delta; = <i>&epsilon;</i><sub>c</sub> &minus; <i>&epsilon;</i><sub>&empty;</sub></span><span class="n-eq"><i>&epsilon;&#770;</i> = <i>&epsilon;</i><sub>&empty;</sub> + <i>w</i> &Delta;</span></p>
+                <p class="n-def">&epsilon;<sub>c</sub> and &epsilon;<sub>&empty;</sub> are the noise predictions with and without the prompt.</p>
+            </div>
+            <div class="chart-grid align-bottom" style="margin-top:22px;">
+                <div class="chart-card">
+                    <h4>The outputs of <span class="m">M<sub>syn</sub></span> carry more power at every frequency.</h4>
+                    <p class="sub">Power spectrum of generated images in the latent space.</p>
+                    <div class="legend">
+                        <span class="li"><span class="key-line" style="background:var(--c-real)"></span><a class="m mlink" href="#setup">M<sub>real</sub></a></span>
+                        <span class="li"><span class="key-line" style="background:var(--c-syn)"></span><a class="m mlink" href="#setup">M<sub>syn</sub></a></span>
+                    </div>
+                    <div id="chartSpec"></div>
+                </div>
+                <div class="chart-card">
+                    <h4>The guidance term &Delta; of <span class="m">M<sub>syn</sub></span> is inflated throughout denoising.</h4>
+                    <div class="legend">
+                        <span class="li"><span class="key-line" style="background:var(--c-real)"></span><a class="m mlink" href="#setup">M<sub>real</sub></a></span>
+                        <span class="li"><span class="key-line" style="background:var(--c-syn)"></span><a class="m mlink" href="#setup">M<sub>syn</sub></a></span>
+                    </div>
+                    <div id="chartDnorm"></div>
+                </div>
+            </div>
+            <p class="hint" style="margin-top:10px;">The plots in Findings are for this subject on SD1.5. Step t = 0 is the noisiest. The two plots above show the mean &plusmn; s.e. over 10 seeds.</p>
+
+            <div class="prop-box">
+            <p class="section-claim">The <a class="mlink" href="#delta">&Delta;</a> inflation, the excess in <a class="mlink" href="#delta">&#8214;&Delta;&#8214;</a> of <span class="m">M<sub>syn</sub></span> over <span class="m">M<sub>real</sub></span>, has four properties.</p>
+
+            <div class="findings">
+                <div class="chart-card finding wide">
+                    <div class="f-split">
+                        <div>
+                            <h4><span class="num">1</span><span>Angle-driven.</span></h4>
+                            <p class="body">The norms of &epsilon;<sub>c</sub> and &epsilon;<sub>&empty;</sub> do not grow. The angle
+                                &theta; between them is wider for <span class="m">M<sub>syn</sub></span> at every step, so <a class="mlink" href="#delta">&Delta;</a> inflates.</p>
+                            <div class="scrub">
+                                <button class="play" id="geoPlay" aria-label="Play through denoising steps">
+                                    <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="7 4 20 12 7 20 7 4" /></svg>
+                                    <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+                                </button>
+                                <input type="range" id="geoStep" min="0" max="49" value="24" aria-label="Denoising step">
+                                <span class="lab" id="geoLab"></span>
+                            </div>
+                            <div class="dbars" id="geoBars"></div>
+                            <p class="excess" id="geoExcess"></p>
+                        </div>
+                        <div>
+                            <div class="geo">
+                                <div class="geo-panel">
+                                    <h4><span class="m">M<sub>real</sub></span> <span class="geo-sub">trained on real photos</span></h4>
+                                    <svg id="geoReal" viewBox="0 0 360 250" role="img" aria-label="Guidance geometry for the model trained on real photos"></svg>
+                                    <div class="geo-read" id="geoReadReal"></div>
+                                </div>
+                                <div class="geo-panel">
+                                    <h4><span class="m">M<sub>syn</sub></span> <span class="geo-sub">trained on synthetic images</span></h4>
+                                    <svg id="geoSyn" viewBox="0 0 360 250" role="img" aria-label="Guidance geometry for the model trained on synthetic images"></svg>
+                                    <div class="geo-read" id="geoReadSyn"></div>
+                                </div>
+                            </div>
+                            <p class="hint" style="text-align:center;margin-top:8px;">Angles are drawn 6&times; wider so that they are visible. Mean over 10 seeds.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card finding wide">
+                    <div class="f-split">
+                        <div>
+                            <h4><span class="num">2</span><span>Semantic.</span></h4>
+                            <p class="body">The class name (&ldquo;a dog&rdquo;) shows nearly the full inflation and a related class (&ldquo;a cat&rdquo;) about half. Unrelated prompts show little to none.</p>
+                            <div class="chips" id="promptChips"></div>
+                        </div>
+                        <div>
+                            <div id="chartPrompts"></div>
+                            <p class="cap" style="margin-top:4px;">Angle excess &theta;<sup><span class="m">M<sub>syn</sub></span></sup>(t) &minus; &theta;<sup><span class="m">M<sub>real</sub></span></sup>(t) for the subject prompt and increasingly semantically distant prompts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card finding wide">
+                    <h4><span class="num">3</span><span>Persists on the same input.</span></h4>
+                    <p class="body" style="margin-bottom:2px;">When <span class="m">M<sub>real</sub></span> and <span class="m">M<sub>syn</sub></span> denoise the same noisy copies of the training images of <span class="m">M<sub>syn</sub></span> (as opposed to their own sampling trajectories in the plots above), the <a class="mlink" href="#delta">&Delta;</a> of <span class="m">M<sub>syn</sub></span> is still larger. The inflation is a property of the model.</p>
+                </div>
+
+                <div class="chart-card finding wide">
+                    <h4><span class="num">4</span><span>High-frequency and time-varying.</span></h4>
+                    <p class="body">High-frequency bands inflate several-fold, and each band follows its own time profile. A lower
+                        guidance weight w acts uniformly across bands and steps, so it cannot undo this.</p>
+                    <div class="wide-split"><div>
+                    <div id="chartHeat"></div>
+                    <p class="cap" style="margin-top:2px;">Energy of <a class="mlink" href="#delta">&Delta;</a> in each radial frequency band k and step t, <span class="m">M<sub>syn</sub></span> divided by <span class="m">M<sub>real</sub></span>; red marks inflation.</p>
+                    </div><div>
+                    <div class="legend" style="margin-top:2px;">
+                        <span class="li"><span class="key-line" style="background:var(--ord-1)"></span>low k (1-8)</span>
+                        <span class="li"><span class="key-line" style="background:var(--ord-2)"></span>mid k (9-24)</span>
+                        <span class="li"><span class="key-line" style="background:var(--ord-3)"></span>high k (25-45)</span>
+                    </div>
+                    <div id="chartBandAng"></div>
+                    <p class="cap" style="margin-top:4px;">Excess of the angle &theta; of <span class="m">M<sub>syn</sub></span> over <span class="m">M<sub>real</sub></span>, in percent, within the low, mid and high bands.</p>
+                    </div></div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ METHOD ============ -->
+    <section id="method">
+        <div class="wrap reveal">
+            <h2 class="section-title">Method</h2>
+            <p class="lead">ReGain uses the base model <span class="m">M<sub>base</sub></span> as the reference for how large <a class="mlink" href="#delta">&Delta;</a> should be, because <span class="m">M<sub>base</sub></span> is
+                freely available and its &Delta; for the subject&rsquo;s class is uninflated.</p>
+
+            <figure class="fig" style="margin-top:16px;">
+                <div class="fig-scroll"><img class="diagram" src="img/overview.webp" loading="lazy" width="1600" height="960"
+                    alt="ReGain overview: (A) personalization on synthetic images, (B) the wider angle inflates the guidance term, (C) one-time calibration against the base model and per-step band-wise correction inside the subject mask"></div>
+                <figcaption class="cap-rows">
+                    <div><b>Overview.</b></div>
+                    <div class="cap-row"><b class="cap-k">A</b><span><span class="m">M<sub>syn</sub></span> is DreamBooth fine-tuned on synthetic subject images generated by <span class="m">M<sub>real</sub></span>.</span></div>
+                    <div class="cap-row"><b class="cap-k">B</b><span>The angle &theta; between the unconditional and conditional predictions is wider for <span class="m">M<sub>syn</sub></span>, so its guidance term &Delta; = &epsilon;<sub>c</sub> &minus; &epsilon;<sub>&empty;</sub> is inflated.</span></div>
+                    <div class="cap-row"><b class="cap-k">C</b><div>
+                        <div>ReGain.</div>
+                        <div class="cap-sub"><b>(i)</b><span>Once per model, <span class="m">M<sub>base</sub></span> and <span class="m">M<sub>syn</sub></span> are evaluated at forward-noised training images z<sub>t</sub>; the square root of the ratio of their masked band energies e gives the gain &gcirc;(k, t), compressed into <a class="mlink vis" href="#gain-schedule">the schedule g<sub>b</sub>(t)</a> (darker blue attenuates more; <a class="mlink" href="#gain-schedule">the gain schedule below</a>).</span></div>
+                        <div class="cap-sub"><b>(ii)</b><span>At each step, &Delta; is rescaled per band group by g<sub>b</sub>(t) inside the subject mask m (green) and left unchanged outside it (grey), then scaled by w and added to &epsilon;<sub>&empty;</sub>, <a class="mlink" href="#regain-update">the ReGain update below</a>.</span></div>
+                    </div></div>
+                </figcaption>
+                <p class="hint" style="margin-top:8px;">c<sub>subj</sub> is the prompt with the identifier [V] and c<sub>class</sub> is the same prompt without it.</p>
+            </figure>
+
+            <div class="formula" id="gain-schedule" aria-label="The gain schedule">
+                <span class="eq-lead eq-title"><b class="eq-k">C (i)</b>Gain schedule <i>g<sub>b</sub></i>(<i>t</i>)</span>
+                <div class="eq-terms gb-target" id="gain-eq"><math displaystyle="true"><mrow><mover accent="true"><mi>g</mi><mo>^</mo></mover><mo stretchy="false">(</mo><mi>k</mi><mo>,</mo><mi>t</mi><mo stretchy="false">)</mo><mo>=</mo><msqrt><mfrac><mrow><msup><mi>e</mi><msub><mi>M</mi><mtext>base</mtext></msub></msup><mo stretchy="false">(</mo><mi>k</mi><mo>,</mo><mi>t</mi><mo stretchy="false">)</mo></mrow><mrow><msup><mi>e</mi><msub><mi>M</mi><mtext>syn</mtext></msub></msup><mo stretchy="false">(</mo><mi>k</mi><mo>,</mo><mi>t</mi><mo stretchy="false">)</mo></mrow></mfrac></msqrt></mrow></math><span class="eq-tail"><span class="eq-words">compressed into</span><span><i>g<sub>b</sub></i>(<i>t</i>)</span></span></div>
+                <div class="eq-legend">
+                    <div><span class="s"><i>e</i>(<i>k</i>, <i>t</i>)</span><span>energy of <a class="mlink" href="#delta">&Delta;</a> in frequency band k at step t, inside the subject mask</span></div>
+                    <div><span class="s"><i>g&#770;</i>(<i>k</i>, <i>t</i>)</span><span>gain for band k at step t</span></div>
+                    <div><span class="s"><i>g<sub>b</sub></i>(<i>t</i>)</span><span>gain schedule, &gcirc; compressed into a few cells of constant gain, one row per band group b</span></div>
+                </div>
+            </div>
+            <p class="lead small" style="margin:16px 0 0;">For different subjects, measured using our setup.</p>
+            <div class="card" style="margin-top:12px;">
+                <div class="seg" id="schedTabs" role="group" aria-label="Subject"></div>
+                <div class="eq-grid">
+                    <div>
+                        <div id="schedHeat"></div>
+                    </div>
+                    <div>
+                        <div id="schedEq"></div>
+                    </div>
+                </div>
+                <div class="scrub">
+                    <button class="play" id="schedPlay" aria-label="Play through denoising steps">
+                        <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="7 4 20 12 7 20 7 4" /></svg>
+                        <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+                    </button>
+                    <input type="range" id="schedStep" min="0" max="49" value="20" aria-label="Denoising step">
+                    <span class="lab" id="schedLab"></span>
+                </div>
+                <p class="cap" id="schedCap"></p>
+            </div>
+
+            <div class="formula" id="regain-update" aria-label="The ReGain update" style="margin-top:26px;">
+                <span class="eq-lead eq-title"><b class="eq-k">C (ii)</b>ReGain update:</span>
+                <div class="eq-terms"><i>&epsilon;&#770;</i> = <i>&epsilon;</i><sub>&empty;</sub><span class="op">+</span><span class="term in"><span class="t-eq"><i>w m</i> &odot; &sum;<sub><i>b</i></sub> <i>g<sub>b</sub></i>(<i>t</i>) <i>B<sub>b</sub></i>(&Delta;)</span><span class="t-tag">inside the subject mask</span></span><span class="op">+</span><span class="term out"><span class="t-eq"><i>w</i> (1 &minus; <i>m</i>) &odot; &Delta;</span><span class="t-tag">outside the mask</span></span></div>
+                <div class="eq-legend">
+                    <div><span class="s"><i>&epsilon;&#770;</i></span><span>corrected noise prediction</span></div>
+                    <div><span class="s"><i>m</i></span><span>binary mask of the subject</span></div>
+                    <div><span class="s"><i>b</i></span><span>band group, a contiguous range of frequency bands that share one gain</span></div>
+                    <div><span class="s"><i>g<sub>b</sub></i>(<i>t</i>)</span><span><a class="mlink vis" href="#gain-schedule">gain schedule</a>, the factor that scales band group b at step t</span></div>
+                    <div><span class="s"><i>B<sub>b</sub></i>(&Delta;)</span><span>component of <a class="mlink" href="#delta">&Delta;</a> in band group b</span></div>
+                    <div><span class="s">&odot;</span><span>elementwise product</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="results">
+        <div class="wrap reveal">
+            <h2 class="section-title">Results</h2>
+            <div class="prop-box" style="margin-top:14px;">
+                <h3 class="section-claim">Visual results</h3>
+                <p class="lead small" style="margin:0;">Each card is one subject, prompt and seed. Drag the slider to compare plain CFG with ReGain at the same guidance weight w.</p>
+                <div style="margin-top:12px;"><div class="seg" id="galTabs" role="group" aria-label="Backbone"></div></div>
+                <div class="gal-grid" id="galGrid"></div>
+            </div>
+
+            <div class="prop-box">
+                <h3 class="section-claim">Quantitative improvements in subject fidelity on the DreamBooth dataset</h3>
+                <p class="lead small" style="margin:0 0 14px;">Each track runs from <span class="m">M<sub>syn</sub></span> with plain CFG to <span class="m">M<sub>real</sub></span>. The number is the share of that gap that ReGain recovers.</p>
+            <div class="card">
+                <div class="seg" id="resTabs" role="group" aria-label="Setting"></div>
+                <div class="legend" style="margin-top:12px;" id="resLegend"></div>
+                <div class="tracks" id="resTracks"></div>
+                <div class="clipt" id="resClipT"></div>
+            </div>
+
+            <details class="tbl">
+                <summary>Show Table 1</summary>
+                <div class="table-scroll">
+                    <table class="results w-min">
+                        <thead>
+                            <tr class="groups"><th class="method"></th><th class="grp" colspan="4">SD1.5, DreamBooth</th><th class="grp" colspan="4">SD1.5, DreamBooth-LoRA</th></tr>
+                            <tr><th class="method">Method</th><th class="grp">CLIP-I</th><th>DINO</th><th>DINOv2</th><th>CLIP-T</th><th class="grp">CLIP-I</th><th>DINO</th><th>DINOv2</th><th>CLIP-T</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="ref"><td class="method"><span class="m">M<sub>real</sub></span> + CFG</td><td class="grp">0.814</td><td>0.681</td><td>0.661</td><td>0.300</td><td class="grp">0.791</td><td>0.630</td><td>0.606</td><td>0.306</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span> + CFG</td><td class="grp">0.788</td><td>0.611</td><td>0.611</td><td>0.289</td><td class="grp">0.750</td><td>0.540</td><td>0.510</td><td>0.300</td></tr>
+                            <tr class="sep"><td class="method"><span class="m">M<sub>syn</sub></span> + S-CFG</td><td class="grp">0.781</td><td>0.605</td><td>0.604</td><td><b>0.292</b></td><td class="grp">0.744</td><td>0.536</td><td>0.503</td><td>0.302</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span> + CFG++</td><td class="grp">0.788</td><td>0.606</td><td>0.608</td><td>0.289</td><td class="grp">0.748</td><td>0.535</td><td>0.508</td><td>0.299</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span> + FDG</td><td class="grp">0.792</td><td>0.608</td><td>0.614</td><td>0.284</td><td class="grp">0.755</td><td>0.538</td><td>0.517</td><td>0.297</td></tr>
+                            <tr class="sep"><td class="method"><span class="m">M<sub>syn</sub></span> + CFG + ReGain</td><td class="grp"><b>0.802</b></td><td><b>0.647</b></td><td><b>0.643</b></td><td>0.290</td><td class="grp"><b>0.775</b></td><td><b>0.594</b></td><td><b>0.568</b></td><td><b>0.304</b></td></tr>
+                            <tr class="gaprow"><td class="method">&nbsp;&nbsp;&hookrightarrow; Gap recovered</td><td class="grp">54%</td><td>51%</td><td>64%</td><td>+0.001</td><td class="grp">61%</td><td>60%</td><td>60%</td><td>+0.004</td></tr>
+                        </tbody>
+                        <tbody>
+                            <tr class="groups"><th class="method"></th><th class="grp" colspan="4">SDXL, DreamBooth-LoRA</th><th class="grp" colspan="4">SD3.5, DreamBooth-LoRA</th></tr>
+                            <tr class="ref"><td class="method"><span class="m">M<sub>real</sub></span> + CFG</td><td class="grp">0.757</td><td>0.558</td><td>0.535</td><td>0.289</td><td class="grp">0.811</td><td>0.682</td><td>0.650</td><td>0.311</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span> + CFG</td><td class="grp">0.724</td><td>0.477</td><td>0.467</td><td>0.278</td><td class="grp">0.776</td><td>0.586</td><td>0.567</td><td>0.307</td></tr>
+                            <tr class="sep"><td class="method"><span class="m">M<sub>syn</sub></span> + CFG + ReGain</td><td class="grp"><b>0.736</b></td><td><b>0.502</b></td><td><b>0.494</b></td><td><b>0.279</b></td><td class="grp"><b>0.792</b></td><td><b>0.605</b></td><td><b>0.596</b></td><td><b>0.307</b></td></tr>
+                            <tr class="gaprow"><td class="method">&nbsp;&nbsp;&hookrightarrow; Gap recovered</td><td class="grp">36%</td><td>31%</td><td>40%</td><td>+0.001</td><td class="grp">46%</td><td>20%</td><td>35%</td><td>0.000</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="tbl-cap"><b>Table 1:</b> Subject and prompt fidelity on DreamBooth, averaged over 30 subjects, 25
+                    prompts and 3 seeds (higher is better). The first row is the reference model <span class="m">M<sub>real</sub></span>,
+                    and every other row samples from <span class="m">M<sub>syn</sub></span>. Baselines, on SD1.5 only: S-CFG (Shen et al.,
+                    2024), CFG++ (Chung et al., 2025) and FDG (Sadat et al., 2025b). Bold marks the best <span class="m">M<sub>syn</sub></span>
+                    result. Gap recovered is the part of the drop from <span class="m">M<sub>real</sub></span> to <span class="m">M<sub>syn</sub></span>,
+                    both with CFG, that ReGain wins back. For CLIP-T we report the change from <span class="m">M<sub>syn</sub></span> + CFG
+                    instead.</p>
+            </details>
+            </div>
+
+            <div class="prop-box">
+                <h3 class="section-claim">Over-guidance artifacts</h3>
+                <p class="lead small" style="margin:0 0 14px;">ReGain moves saturation, contrast and high-band power inside the subject region back toward <span class="m">M<sub>real</sub></span>.</p>
+            <div class="card">
+                <div class="legend" id="artLegend"></div>
+                <div class="tracks" id="artTracks"></div>
+            </div>
+            <details class="tbl">
+                <summary>Show Table 2</summary>
+                <div class="table-scroll">
+                    <table class="results">
+                        <thead><tr><th class="method">Method</th><th>Saturation</th><th>Contrast</th><th>High band</th></tr></thead>
+                        <tbody>
+                            <tr class="ref"><td class="method"><span class="m">M<sub>real</sub></span> + CFG</td><td>0.301</td><td>0.211</td><td>0.061</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span> + CFG</td><td>0.355</td><td>0.258</td><td>0.069</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span> + CFG + ReGain</td><td><b>0.309</b></td><td><b>0.234</b></td><td><b>0.066</b></td></tr>
+                            <tr class="gaprow"><td class="method">&hookrightarrow; Gap recovered</td><td>85%</td><td>51%</td><td>38%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="tbl-cap"><b>Table 2:</b> Over-guidance artifacts inside the subject region (SD1.5, DreamBooth).
+                    Bold marks the <span class="m">M<sub>syn</sub></span> row closer to <span class="m">M<sub>real</sub></span>.</p>
+            </details>
+            </div>
+
+            <!-- Hidden for now: subject-agnostic guidance changes (Table 3) and the compression tolerance (Table 4).
+            <h3 class="sub">Subject-agnostic guidance changes</h3>
+            <p class="lead small">We compare ReGain with guidance changes that are the same for every subject: a lower
+                guidance weight w and adaptive projected guidance (APG).</p>
+            <div class="card" style="margin-top:14px;">
+                <div class="seg" id="ablTabs" role="group" aria-label="Method"></div>
+                <div class="abl-grid">
+                    <div class="abl-imgs" id="ablImgs"></div>
+                    <div>
+                        <div class="legend" id="ablLegend"></div>
+                        <div class="tracks" id="ablTracks"></div>
+                    </div>
+                </div>
+                <p class="cap">Example generations at the same seed. Metrics on SD1.5 with DreamBooth, 30 subjects;
+                    saturation is measured inside the subject region.</p>
+            </div>
+            <details class="tbl">
+                <summary>Show Table 3</summary>
+                <div class="table-scroll">
+                    <table class="results">
+                        <thead><tr><th class="method">Method</th><th>DINO</th><th>CLIP-T</th><th>Saturation</th></tr></thead>
+                        <tbody>
+                            <tr class="ref"><td class="method"><span class="m">M<sub>real</sub></span></td><td>0.681</td><td>0.300</td><td>0.301</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span>, plain CFG</td><td>0.611</td><td>0.289</td><td>0.355</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span>, plain CFG (<i>w</i>=5.0)</td><td>0.632</td><td>0.286</td><td>0.326</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span>, plain CFG (<i>w</i>=3.0)</td><td>0.647</td><td>0.281</td><td>0.292</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span>, APG</td><td>0.641</td><td>0.283</td><td>0.240</td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span>, ReGain</td><td>0.647</td><td><b>0.290</b></td><td><b>0.309</b></td></tr>
+                            <tr><td class="method"><span class="m">M<sub>syn</sub></span>, ReGain w/o mask</td><td><b>0.652</b></td><td>0.282</td><td>0.293</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="tbl-cap"><b>Table 3:</b> Subject-agnostic alternatives and the subject-mask ablation (SD v1.5,
+                    DreamBooth): a lower guidance weight <i>w</i>, APG (Sadat et al., 2025a), and ReGain w/o mask, which
+                    applies the gain to every pixel; <i>w</i>=7.5 unless stated. Saturation is inside the subject region;
+                    bold marks the <span class="m">M<sub>syn</sub></span> row closest to <span class="m">M<sub>real</sub></span>.</p>
+            </details>
+
+            <h3 class="sub">Effect of the compression tolerance &tau;</h3>
+            <p class="lead small">The measured gains are compressed into a schedule of a few cells of constant gain.
+                The tolerance &tau; sets how closely the schedule follows them.</p>
+            <div class="chart-grid tol-grid" style="margin-top:14px;">
+                <div class="chart-card">
+                    <h4>Residual inflation after the schedule</h4>
+                    <p class="sub"><a class="mlink" href="#delta">&#8214;&Delta;&#8214;</a> of <span class="m">M<sub>syn</sub></span> relative to the base model after the correction, by band group and tolerance &tau;. A value of 1 means no inflation. Mean over 30 subjects.</p>
+                    <div class="legend">
+                        <span class="li"><span class="key-line" style="background:var(--ord-1)"></span>Low k</span>
+                        <span class="li"><span class="key-line" style="background:var(--ord-2)"></span>Mid k</span>
+                        <span class="li"><span class="key-line" style="background:var(--ord-3)"></span>High k</span>
+                        <span class="li"><span class="key-line" style="background:var(--text)"></span>All</span>
+                    </div>
+                    <div id="chartTol"></div>
+                </div>
+                <div class="chart-card" style="display:flex;flex-direction:column;justify-content:center;gap:22px;">
+                    <div>
+                        <div class="kicker" style="margin:0;">Before correction</div>
+                        <div class="tol-num">5.31 &plusmn; 1.26</div>
+                        <div class="hint"><a class="mlink" href="#delta">&#8214;&Delta;&#8214;</a> of <span class="m">M<sub>syn</sub></span> relative to the base model, all bands, mean &plusmn; std over 30 subjects</div>
+                    </div>
+                    <div>
+                        <div class="kicker" style="margin:0;">After, at <span style="text-transform:none">&tau;</span> = 0.05 (18 cells)</div>
+                        <div class="tol-num">1.08</div>
+                        <div class="hint">within 10% of the base model</div>
+                    </div>
+                </div>
+            </div>
+            <details class="tbl">
+                <summary>Show Table 4</summary>
+                <div class="table-scroll">
+                    <table class="results">
+                        <thead>
+                            <tr class="groups"><th></th><th></th><th colspan="4" class="grp" style="font-style:normal">After, by tolerance</th></tr>
+                            <tr><th class="method">Band</th><th>Before</th><th class="grp">0.02</th><th><b>0.05</b></th><th>0.1</th><th>0.2</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="ref"><td class="method">cells</td><td></td><td class="grp">70</td><td>18</td><td>6</td><td>2</td></tr>
+                            <tr><td class="method">Low <i>k</i></td><td>4.70 &plusmn; 1.19</td><td class="grp">1.02</td><td><b>1.06</b></td><td>1.13</td><td>1.29</td></tr>
+                            <tr><td class="method">Mid <i>k</i></td><td>4.95 &plusmn; 1.19</td><td class="grp">1.01</td><td><b>1.05</b></td><td>1.16</td><td>1.35</td></tr>
+                            <tr><td class="method">High <i>k</i></td><td>5.76 &plusmn; 1.38</td><td class="grp">1.03</td><td><b>1.11</b></td><td>1.30</td><td>1.57</td></tr>
+                            <tr><td class="method">All</td><td>5.31 &plusmn; 1.26</td><td class="grp">1.02</td><td><b>1.08</b></td><td>1.22</td><td>1.45</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="tbl-cap"><b>Table 4:</b> &Delta; inflation at the calibration states before and after the gain
+                    schedule, by band group and compression tolerance (RMS, target 1, mean &plusmn; std over 30 subjects).</p>
+            </details>
+            -->
+        </div>
+    </section>
+
+    <!-- ============ BIBTEX ============ -->
+    <section id="bibtex">
+        <div class="wrap reveal">
+            <h2 class="section-title">BibTeX</h2>
+            <p class="lead">If you find our work useful, please consider citing:</p>
+            <div class="bibtex-box">
+                <button class="copy-btn" id="copyBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span id="copyLabel">Copy</span>
+                </button>
+                <pre id="bibtexText">@misc{bhatnagar2026regainrestoringsubjectfidelity,
+      title={ReGain: Restoring Subject Fidelity in Personalization on Synthetic Images},
+      author={Shubhang Bhatnagar and Ishan Bhatnagar and Viraj Shah and Narendra Ahuja},
+      year={2026},
+      eprint={2609.38680},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2609.38680},
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="wrap">
+            <p>ReGain &middot; University of Illinois at Urbana-Champaign</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        const D = window.REGAIN;
+        const NS = 'http://www.w3.org/2000/svg';
+        const root = document.documentElement;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ---------- Theme: always load light (never persist dark) ----------
+        root.setAttribute('data-theme', 'light');
+        const rerenders = [];
+        document.getElementById('themeToggle').addEventListener('click', function () {
+            root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            rerenders.forEach(function (f) { f(); });
+        });
+
+        // ---------- helpers ----------
+        const MR = '<span class="m">M<sub>real</sub></span>';
+        const MS = '<span class="m">M<sub>syn</sub></span>';
+        function svg(tag, attrs, parent) {
+            const e = document.createElementNS(NS, tag);
+            for (const k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) e.setAttribute(k, attrs[k]);
+            if (parent) parent.appendChild(e);
+            return e;
+        }
+        function txt(parent, x, y, s, attrs) {
+            const t = svg('text', Object.assign({ x: x, y: y }, attrs || {}), parent);
+            t.textContent = s;
+            return t;
+        }
+        function lin(d0, d1, r0, r1) {
+            const f = function (v) { return r0 + (v - d0) * (r1 - r0) / (d1 - d0); };
+            f.inv = function (p) { return d0 + (p - r0) * (d1 - d0) / (r1 - r0); };
+            return f;
+        }
+        function logs(d0, d1, r0, r1) {
+            const a = Math.log10(d0), b = Math.log10(d1);
+            const f = function (v) { return r0 + (Math.log10(v) - a) * (r1 - r0) / (b - a); };
+            f.inv = function (p) { return Math.pow(10, a + (p - r0) * (b - a) / (r1 - r0)); };
+            return f;
+        }
+        function niceTicks(a, b, n) {
+            const span = b - a;
+            let step = Math.pow(10, Math.floor(Math.log10(span / n)));
+            const err = n / span * step;
+            if (err <= 0.15) step *= 10; else if (err <= 0.35) step *= 5; else if (err <= 0.75) step *= 2;
+            const out = [];
+            for (let v = Math.ceil(a / step) * step; v <= b + step * 1e-9; v += step) out.push(+v.toFixed(10));
+            return out;
+        }
+        function logTicks(a, b) {
+            const out = [];
+            for (let e = Math.floor(Math.log10(a)); e <= Math.ceil(Math.log10(b)); e++)
+                [1, 2, 5].forEach(function (m) { const v = m * Math.pow(10, e); if (v >= a * 0.999 && v <= b * 1.001) out.push(v); });
+            return out;
+        }
+        const SUP = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' };
+        function fmtSci(v) {
+            const e = Math.floor(Math.log10(v) + 1e-9), m = Math.round(v / Math.pow(10, e));
+            return (m === 1 ? '' : m + '×') + '10' + String(e).split('').map(function (c) { return SUP[c]; }).join('');
+        }
+        function cssVar(name) { return getComputedStyle(root).getPropertyValue(name).trim(); }
+        function hex2rgb(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+        function mix(a, b, t) { return a.map(function (v, i) { return Math.round(v + (b[i] - v) * t); }); }
+        // diverging scale about `mid`; reads the theme's poles once per render
+        function divScale(lo, mid, hi) {
+            const neg = hex2rgb(cssVar('--div-neg')), m = hex2rgb(cssVar('--div-mid')), pos = hex2rgb(cssVar('--div-pos'));
+            return function (v) {
+                if (v <= mid) return mix(m, neg, Math.min(1, (mid - v) / (mid - lo)));
+                return mix(m, pos, Math.min(1, (v - mid) / (hi - mid)));
+            };
+        }
+        function rgbStr(c) { return 'rgb(' + c.join(',') + ')'; }
+        function lum(c) { return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255; }
+        function range(n) { return Array.from({ length: n }, function (_, i) { return i; }); }
+
+        // ---------- tooltip ----------
+        const tip = document.getElementById('tip');
+        function showTip(html, x, y) {
+            tip.innerHTML = html;
+            tip.style.opacity = 1;
+            const r = tip.getBoundingClientRect();
+            let left = x + 16, top = y + 14;
+            if (left + r.width > window.innerWidth - 8) left = x - r.width - 16;
+            if (top + r.height > window.innerHeight - 8) top = y - r.height - 14;
+            tip.style.left = Math.max(8, left) + 'px';
+            tip.style.top = Math.max(8, top) + 'px';
+        }
+        function hideTip() { tip.style.opacity = 0; }
+        function tipRow(color, label, val) {
+            return '<div class="tr"><span class="kd" style="background:' + color + '"></span><span>' + label + '</span><b>' + val + '</b></div>';
+        }
+
+        // ---------- responsive render ----------
+        function responsive(el, fn) {
+            let w = el.clientWidth;
+            const run = function () { if (!el.isConnected) return; w = el.clientWidth; fn(); };
+            const ro = new ResizeObserver(function () { if (el.clientWidth && Math.abs(el.clientWidth - w) > 2) run(); });
+            ro.observe(el);
+            rerenders.push(run);
+        }
+
+        // ======================================================================
+        // Generic line chart
+        // ======================================================================
+        function lineChart(box, o) {
+            const state = { hi: null };
+            function render() {
+                box.innerHTML = '';
+                const W = box.clientWidth, H = o.height || 230;
+                const m = { l: o.ml || 48, r: o.mr || 16, t: o.mt || 12, b: o.mb || 40 };
+                const n = o.n;
+                const X = o.x || range(n);
+                const s = svg('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, class: 'chart', role: 'img', 'aria-label': o.aria || '' }, box);
+                const xd = o.xDomain || [X[0], X[n - 1]];
+                let yd = o.yDomain;
+                if (!yd) {
+                    let lo = Infinity, hi = -Infinity;
+                    o.series.forEach(function (se) { se.mean.forEach(function (v, i) { const e = se.sem ? se.sem[i] : 0; lo = Math.min(lo, v - e); hi = Math.max(hi, v + e); }); });
+                    if (o.refY !== undefined) { lo = Math.min(lo, o.refY); hi = Math.max(hi, o.refY); }
+                    if (o.yLog) yd = [lo / 1.15, hi * 1.15];
+                    else { const p = (hi - lo) * 0.06; yd = [lo - p, hi + p]; }
+                }
+                const xs = (o.xLog ? logs : lin)(xd[0], xd[1], m.l, W - m.r);
+                const ys = (o.yLog ? logs : lin)(yd[0], yd[1], H - m.b, m.t);
+                // grid + y ticks
+                const yt = o.yTicks || (o.yLog ? logTicks(yd[0], yd[1]) : niceTicks(yd[0], yd[1], o.yCount || 5));
+                yt.forEach(function (v) {
+                    const y = ys(v);
+                    svg('line', { x1: m.l, x2: W - m.r, y1: y, y2: y, class: 'gridline' }, s);
+                    txt(s, m.l - 7, y + 3.5, o.yFmt ? o.yFmt(v) : (o.yLog ? fmtSci(v) : String(v)), { 'text-anchor': 'end' });
+                });
+                // bands
+                (o.bands || []).forEach(function (b) {
+                    svg('rect', { x: m.l, width: W - m.l - m.r, y: ys(b.y1), height: ys(b.y0) - ys(b.y1), style: 'fill:var(--c-ours);opacity:.10' }, s);
+                    if (b.label) txt(s, W - m.r - 4, ys(b.y1) + 12, b.label, { 'text-anchor': 'end', style: 'fill:var(--text-soft)' });
+                });
+                // x axis
+                svg('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: 'axisline' }, s);
+                const xt = o.xTicks || (o.xLog ? logTicks(xd[0], xd[1]).filter(function (v) { return String(v)[0] === '1'; }) : niceTicks(xd[0], xd[1], o.xCount || 5));
+                xt.forEach(function (t) {
+                    const v = typeof t === 'object' ? t.v : t;
+                    const lab = typeof t === 'object' ? t.label : (o.xFmt ? o.xFmt(v) : String(v));
+                    const x = xs(v);
+                    svg('line', { x1: x, x2: x, y1: H - m.b, y2: H - m.b + 4, class: 'axisline' }, s);
+                    String(lab).split('\n').forEach(function (line, li) { txt(s, x, H - m.b + 16 + li * 12, line, { 'text-anchor': 'middle' }); });
+                });
+                if (o.xLabel) txt(s, (m.l + W - m.r) / 2, H - 4, o.xLabel, { 'text-anchor': 'middle', class: 'ax' });
+                if (o.yLabel) txt(s, 12, (m.t + H - m.b) / 2, o.yLabel, { 'text-anchor': 'middle', class: 'ax', transform: 'rotate(-90 12 ' + ((m.t + H - m.b) / 2) + ')' });
+                if (o.refY !== undefined) svg('line', { x1: m.l, x2: W - m.r, y1: ys(o.refY), y2: ys(o.refY), class: 'refline' }, s);
+                if (o.vline !== undefined) {
+                    svg('line', { x1: xs(o.vline.x), x2: xs(o.vline.x), y1: m.t, y2: H - m.b, style: 'stroke:var(--c-ours);stroke-width:1.5;opacity:.7' }, s);
+                    txt(s, xs(o.vline.x) + 5, m.t + 10, o.vline.label, { style: 'fill:var(--text-soft)' });
+                }
+                // series
+                const groups = {};
+                o.series.forEach(function (se) {
+                    const g = svg('g', { class: 'series', 'data-key': se.key }, s);
+                    groups[se.key] = g;
+                    const pts = se.mean.map(function (v, i) { return [xs(X[i]), ys(v)]; });
+                    if (se.sem) {
+                        const up = se.mean.map(function (v, i) { return [xs(X[i]), ys(o.yLog ? v + se.sem[i] : v + se.sem[i])]; });
+                        const dn = se.mean.map(function (v, i) { return [xs(X[i]), ys(Math.max(o.yLog ? 1e-9 : -Infinity, v - se.sem[i]))]; });
+                        const d = 'M' + up.map(function (p) { return p.join(','); }).join('L') + 'L' + dn.reverse().map(function (p) { return p.join(','); }).join('L') + 'Z';
+                        svg('path', { d: d, style: 'fill:' + se.color + ';opacity:.13' }, g);
+                    }
+                    svg('path', { d: 'M' + pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join('L'), fill: 'none', style: 'stroke:' + se.color + ';stroke-width:' + (se.width || 2) + ';stroke-linejoin:round;stroke-linecap:round' + (se.dash ? ';stroke-dasharray:' + se.dash : '') }, g);
+                    if (o.dots) pts.forEach(function (p) { svg('circle', { cx: p[0], cy: p[1], r: 4, style: 'fill:' + se.color + ';stroke:var(--bg-elev);stroke-width:2' }, g); });
+                    if (se.end) {
+                        const p = pts[pts.length - 1];
+                        txt(g, p[0] + 6, p[1] + (se.endDy || 0) + 4, se.end, { class: 'ink', style: 'font-weight:600' });
+                    }
+                });
+                applyHi();
+                // hover layer
+                const hx = svg('line', { y1: m.t, y2: H - m.b, class: 'xhair', style: 'opacity:0' }, s);
+                const dots = o.series.map(function (se) { return svg('circle', { r: 4.5, style: 'opacity:0;fill:' + se.color + ';stroke:var(--bg-elev);stroke-width:2' }, s); });
+                const hit = svg('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: 'transparent', style: 'cursor:crosshair' }, s);
+                function nearest(px) {
+                    let best = 0, bd = Infinity;
+                    for (let i = 0; i < n; i++) { const d = Math.abs(xs(X[i]) - px); if (d < bd) { bd = d; best = i; } }
+                    return best;
+                }
+                hit.addEventListener('pointermove', function (ev) {
+                    const r = s.getBoundingClientRect();
+                    const i = nearest(ev.clientX - r.left);
+                    const x = xs(X[i]);
+                    hx.setAttribute('x1', x); hx.setAttribute('x2', x); hx.style.opacity = 1;
+                    const rows = [];
+                    o.series.forEach(function (se, j) {
+                        const vis = !state.hi || state.hi === se.key;
+                        dots[j].setAttribute('cx', x); dots[j].setAttribute('cy', ys(se.mean[i]));
+                        dots[j].style.opacity = vis ? 1 : 0;
+                        rows.push({ se: se, v: se.mean[i] });
+                    });
+                    if (o.tipSort) rows.sort(function (a, b) { return b.v - a.v; });
+                    let html = '<div class="tt">' + (o.tipTitle ? o.tipTitle(i, X[i]) : ('t = ' + X[i])) + '</div>';
+                    rows.forEach(function (rw) { html += tipRow(rw.se.color, rw.se.label, o.valFmt ? o.valFmt(rw.v, rw.se, i) : rw.v.toFixed(2)); });
+                    if (o.tipExtra) html += o.tipExtra(i);
+                    showTip(html, ev.clientX, ev.clientY);
+                });
+                hit.addEventListener('pointerleave', function () { hx.style.opacity = 0; dots.forEach(function (d) { d.style.opacity = 0; }); hideTip(); });
+                function applyHi() {
+                    Object.keys(groups).forEach(function (k) { groups[k].classList.toggle('dim', !!state.hi && state.hi !== k); });
+                }
+                state.applyHi = applyHi;
+            }
+            responsive(box, render);
+            render();
+            return { highlight: function (k) { state.hi = k; if (state.applyHi) state.applyHi(); } };
+        }
+
+        // ======================================================================
+        // Compare slider
+        // ======================================================================
+        const KNOB = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 3 12 9 18"/><polyline points="15 6 21 12 15 18"/></svg>';
+        function makeCmp(node, left, right, alt, lazy, tags) {
+            tags = tags || [MS + ', plain CFG', MS + ', ReGain'];
+            node.innerHTML = '';
+            node.setAttribute('tabindex', '0');
+            node.setAttribute('role', 'slider');
+            node.setAttribute('aria-label', 'Compare plain CFG (left) with ReGain (right)');
+            node.setAttribute('aria-valuemin', '0');
+            node.setAttribute('aria-valuemax', '100');
+            const a = document.createElement('img');
+            a.src = left; a.alt = 'Plain CFG: ' + alt; a.className = 'base';
+            const b = document.createElement('img');
+            b.src = right; b.alt = 'ReGain: ' + alt; b.className = 'top';
+            if (lazy) { a.loading = 'lazy'; b.loading = 'lazy'; }
+            a.draggable = false; b.draggable = false;
+            node.appendChild(a); node.appendChild(b);
+            node.insertAdjacentHTML('beforeend',
+                '<div class="bar"></div><div class="knob">' + KNOB + '</div>' +
+                '<span class="tag l"><span class="kd" style="background:var(--c-syn)"></span><span>' + tags[0] + '</span></span>' +
+                '<span class="tag r"><span class="kd" style="background:var(--c-ours)"></span><span>' + tags[1] + '</span></span>');
+            function set(p) {
+                p = Math.max(0, Math.min(100, p));
+                node.style.setProperty('--pos', p + '%');
+                node.setAttribute('aria-valuenow', Math.round(p));
+            }
+            set(50);
+            let drag = false;
+            function fromEv(ev) { const r = node.getBoundingClientRect(); set((ev.clientX - r.left) / r.width * 100); }
+            node.addEventListener('pointerdown', function (ev) { drag = true; node.classList.remove('animating'); node.setPointerCapture(ev.pointerId); fromEv(ev); });
+            node.addEventListener('pointermove', function (ev) { if (drag) fromEv(ev); });
+            node.addEventListener('pointerup', function () { drag = false; });
+            node.addEventListener('pointercancel', function () { drag = false; });
+            node.addEventListener('keydown', function (ev) {
+                const cur = parseFloat(node.style.getPropertyValue('--pos')) || 50;
+                if (ev.key === 'ArrowLeft') { set(cur - 5); ev.preventDefault(); }
+                if (ev.key === 'ArrowRight') { set(cur + 5); ev.preventDefault(); }
+            });
+            return { set: set };
+        }
+
+        // hero slider with a short intro sweep
+        (function () {
+            const node = document.getElementById('heroCmp');
+            const c = makeCmp(node, node.dataset.left, node.dataset.right, node.dataset.alt, false, ['plain CFG', 'ReGain (ours)']);
+            if (reduceMotion) return;
+            node.classList.add('animating');
+            c.set(88);
+            setTimeout(function () { c.set(12); }, 900);
+            setTimeout(function () { c.set(50); }, 1900);
+            setTimeout(function () { node.classList.remove('animating'); }, 2900);
+        })();
+
+        // ======================================================================
+        // Figure 1 charts
+        // ======================================================================
+        const T50 = range(50);
+        lineChart(document.getElementById('chartDnorm'), {
+            n: 50, height: 230, xLabel: 'denoising step t', yLabel: 'guidance ‖Δ‖',
+            series: [
+                { key: 'real', label: MR, color: 'var(--c-real)', mean: D.teaser.M0.mean, sem: D.teaser.M0.sem, end: null },
+                { key: 'syn', label: MS, color: 'var(--c-syn)', mean: D.teaser.M1.mean, sem: D.teaser.M1.sem }
+            ],
+            tipTitle: function (i) { return 'step t = ' + i; },
+            tipExtra: function (i) { const r = D.teaser.M1.mean[i] / D.teaser.M0.mean[i] - 1; return '<div class="tr" style="color:var(--text-soft)"><span>' + MS + ' excess</span><b>' + (r >= 0 ? '+' : '') + Math.round(r * 100) + '%</b></div>'; },
+            aria: 'Line chart: guidance norm per denoising step for the real-trained and synthetic-trained models'
+        });
+        lineChart(document.getElementById('chartSpec'), {
+            n: D.spectrum.k.length, x: D.spectrum.k, xLog: true, yLog: true, height: 230, ml: 56,
+            xLabel: 'radial frequency k', yLabel: 'power spectrum',
+            xTicks: [1, 2, 5, 10, 20].map(function (v) { return { v: v, label: String(v) }; }),
+            series: [
+                { key: 'real', label: MR, color: 'var(--c-real)', mean: D.spectrum.m0.mean, sem: D.spectrum.m0.sem },
+                { key: 'syn', label: MS, color: 'var(--c-syn)', mean: D.spectrum.m1.mean, sem: D.spectrum.m1.sem }
+            ],
+            tipTitle: function (i, k) { return 'frequency k = ' + k; },
+            valFmt: function (v) { return (v / 1e6).toFixed(2) + '×10⁶'; },
+            tipExtra: function (i) { const r = D.spectrum.m1.mean[i] / D.spectrum.m0.mean[i]; return '<div class="tr" style="color:var(--text-soft)"><span>ratio</span><b>' + r.toFixed(2) + '×</b></div>'; },
+            aria: 'Log-log line chart: latent power spectrum of generated images for both models'
+        });
+
+        // ======================================================================
+        // Geometry explorer
+        // ======================================================================
+        (function () {
+            const EXAG = 6, BASE = 14 * Math.PI / 180;
+            const rMax = Math.max.apply(null, D.teaser.M0.r.concat(D.teaser.M1.r));
+            const dMax = Math.max.apply(null, D.teaser.M0.mean.concat(D.teaser.M1.mean));
+            const panels = [
+                { svg: document.getElementById('geoReal'), read: document.getElementById('geoReadReal'), d: D.teaser.M0, color: 'var(--c-real)', id: 'r' },
+                { svg: document.getElementById('geoSyn'), read: document.getElementById('geoReadSyn'), d: D.teaser.M1, color: 'var(--c-syn)', id: 's' }
+            ];
+            const step = document.getElementById('geoStep'), lab = document.getElementById('geoLab');
+            const bars = document.getElementById('geoBars'), excess = document.getElementById('geoExcess');
+            bars.innerHTML =
+                '<div class="dbar"><span>' + MR + '</span><div class="track"><div class="fill" id="gbR" style="background:var(--c-real)"></div></div><span class="v" id="gbRv"></span></div>' +
+                '<div class="dbar"><span>' + MS + '</span><div class="track"><div class="fill" id="gbS" style="background:var(--c-syn)"></div></div><span class="v" id="gbSv"></span></div>';
+            function arrowHead(g, x1, y1, x2, y2, color, size) {
+                const a = Math.atan2(y2 - y1, x2 - x1), s = size || 9;
+                const p1 = [x2 - s * Math.cos(a - 0.4), y2 - s * Math.sin(a - 0.4)], p2 = [x2 - s * Math.cos(a + 0.4), y2 - s * Math.sin(a + 0.4)];
+                svg('path', { d: 'M' + x2 + ',' + y2 + 'L' + p1.join(',') + 'L' + p2.join(',') + 'Z', style: 'fill:' + color }, g);
+            }
+            function vec(g, x1, y1, x2, y2, color, w) {
+                const a = Math.atan2(y2 - y1, x2 - x1);
+                svg('line', { x1: x1, y1: y1, x2: x2 - 7 * Math.cos(a), y2: y2 - 7 * Math.sin(a), style: 'stroke:' + color + ';stroke-width:' + w + ';stroke-linecap:round' }, g);
+                arrowHead(g, x1, y1, x2, y2, color, 10);
+            }
+            function subLabel(parent, x, y, sub) {
+                const t = txt(parent, x, y, 'ε', { 'text-anchor': 'end', style: 'fill:var(--text-soft);font-style:italic;font-size:14px' });
+                const ts = svg('tspan', { dy: 4, style: 'font-size:10px;font-style:' + (sub === 'c' ? 'italic' : 'normal') }, t);
+                ts.textContent = sub;
+            }
+            function draw(t) {
+                panels.forEach(function (p) {
+                    const s = p.svg; s.innerHTML = '';
+                    const O = [34, 222];
+                    const L = 290 * (p.d.r[t] / rMax);
+                    const th = p.d.theta[t] * Math.PI / 180;
+                    const a0 = BASE, a1 = BASE + th * EXAG;
+                    const E0 = [O[0] + L * Math.cos(a0), O[1] - L * Math.sin(a0)];
+                    const E1 = [O[0] + L * Math.cos(a1), O[1] - L * Math.sin(a1)];
+                    // faint guide circle arc
+                    svg('path', { d: 'M' + (O[0] + L * Math.cos(0)) + ',' + O[1] + ' A' + L + ',' + L + ' 0 0 0 ' + (O[0] + L * Math.cos(Math.PI / 2 * 0.95)) + ',' + (O[1] - L * Math.sin(Math.PI / 2 * 0.95)), fill: 'none', style: 'stroke:var(--grid);stroke-width:1' }, s);
+                    vec(s, O[0], O[1], E0[0], E0[1], 'var(--neutral-2)', 2.2);
+                    vec(s, O[0], O[1], E1[0], E1[1], 'var(--neutral-1)', 2.2);
+                    // theta arc
+                    const ra = 52;
+                    svg('path', { d: 'M' + (O[0] + ra * Math.cos(a0)) + ',' + (O[1] - ra * Math.sin(a0)) + ' A' + ra + ',' + ra + ' 0 0 0 ' + (O[0] + ra * Math.cos(a1)) + ',' + (O[1] - ra * Math.sin(a1)), fill: 'none', style: 'stroke:' + p.color + ';stroke-width:2' }, s);
+                    const am = (a0 + a1) / 2;
+                    txt(s, O[0] + (ra + 12) * Math.cos(am), O[1] - (ra + 12) * Math.sin(am) + 4, 'θ', { style: 'fill:var(--text);font-style:italic;font-weight:600' });
+                    // Delta
+                    vec(s, E0[0], E0[1], E1[0], E1[1], p.color, 4);
+                    const mx = (E0[0] + E1[0]) / 2, my = (E0[1] + E1[1]) / 2;
+                    txt(s, mx + 10, my + 4, 'Δ', { style: 'fill:var(--text);font-weight:700;font-size:15px' });
+                    subLabel(s, E0[0] - 8, E0[1] + 20, '∅');
+                    subLabel(s, E1[0] - 14, E1[1] - 6, 'c');
+                    svg('circle', { cx: O[0], cy: O[1], r: 3, style: 'fill:var(--text-faint)' }, s);
+                    p.read.innerHTML = '&theta; = <b>' + p.d.theta[t].toFixed(2) + '&deg;</b> &nbsp;&middot;&nbsp; <a class="mlink" href="#delta">&#8214;&Delta;&#8214;</a> = <b>' + p.d.mean[t].toFixed(2) + '</b>';
+                });
+                lab.innerHTML = 'denoising step <b>t = ' + t + '</b> of 50';
+                const r = D.teaser.M0.mean[t], sy = D.teaser.M1.mean[t];
+                document.getElementById('gbR').style.width = (r / dMax * 100) + '%';
+                document.getElementById('gbS').style.width = (sy / dMax * 100) + '%';
+                document.getElementById('gbRv').textContent = r.toFixed(2);
+                document.getElementById('gbSv').textContent = sy.toFixed(2);
+                const ex = Math.round((sy / r - 1) * 100);
+                excess.innerHTML = 'At step t = ' + t + ', <a class="mlink" href="#delta">&#8214;&Delta;&#8214;</a> of ' + MS + ' is <b>' + Math.abs(ex) + '%</b> ' + (ex >= 0 ? 'larger' : 'smaller') + ' than that of ' + MR + '.';
+            }
+            step.addEventListener('input', function () { draw(+step.value); });
+            rerenders.push(function () { draw(+step.value); });
+            draw(+step.value);
+            player(document.getElementById('geoPlay'), step, function (t) { draw(t); });
+        })();
+
+        function player(btn, range, onStep) {
+            let timer = null;
+            function stop() { clearInterval(timer); timer = null; btn.querySelector('.i-play').style.display = ''; btn.querySelector('.i-pause').style.display = 'none'; btn.setAttribute('aria-label', 'Play through denoising steps'); }
+            btn.addEventListener('click', function () {
+                if (timer) { stop(); return; }
+                if (+range.value >= +range.max) range.value = 0;
+                btn.querySelector('.i-play').style.display = 'none'; btn.querySelector('.i-pause').style.display = '';
+                btn.setAttribute('aria-label', 'Pause');
+                timer = setInterval(function () {
+                    const v = +range.value + 1;
+                    if (v > +range.max) { stop(); return; }
+                    range.value = v; onStep(v);
+                }, 110);
+            });
+            range.addEventListener('pointerdown', stop);
+        }
+
+        // ======================================================================
+        // Findings charts
+        // ======================================================================
+        (function () {
+            const colors = ['var(--ord-3)', 'var(--ord-2)', 'var(--ord-1)', 'var(--neutral-2)', 'var(--neutral-2)', 'var(--neutral-2)', 'var(--neutral-2)', 'var(--neutral-2)'];
+            const series = D.prompts.map(function (p, i) { return { key: p.label, label: p.label, color: colors[i], mean: p.mean, sem: i < 3 ? p.sem : null, width: i === 0 ? 2.8 : 1.8 }; });
+            const ch = lineChart(document.getElementById('chartPrompts'), {
+                n: 50, height: 210, refY: 0, xLabel: 'denoising step t', yLabel: 'angle excess (degrees)',
+                series: series.slice().reverse(), tipSort: true,
+                valFmt: function (v) { return (v >= 0 ? '+' : '') + v.toFixed(2) + '°'; },
+                tipTitle: function (i) { return 'step t = ' + i; },
+                aria: 'Line chart: angle excess over steps for prompts at increasing semantic distance from the subject'
+            });
+            const chips = document.getElementById('promptChips');
+            chips.innerHTML = '<span class="grp">near</span>';
+            series.forEach(function (se, i) {
+                if (i === 3) chips.insertAdjacentHTML('beforeend', '<span class="brk"></span><span class="grp">far</span>');
+                const b = document.createElement('button');
+                b.className = 'chip';
+                b.innerHTML = '<span class="key-line" style="background:' + se.color + ';width:12px"></span>' + se.label;
+                b.addEventListener('mouseenter', function () { ch.highlight(se.key); });
+                b.addEventListener('focus', function () { ch.highlight(se.key); });
+                b.addEventListener('mouseleave', function () { ch.highlight(null); });
+                b.addEventListener('blur', function () { ch.highlight(null); });
+                chips.appendChild(b);
+            });
+        })();
+
+        // heatmap (Figure 2c)
+        (function () {
+            const box = document.getElementById('chartHeat');
+            const H = D.heat;
+            function render() {
+                box.innerHTML = '';
+                const W = box.clientWidth, Hh = 236, m = { l: 48, r: 14, t: 34, b: 40 };
+                const s = svg('svg', { width: W, height: Hh, viewBox: '0 0 ' + W + ' ' + Hh, class: 'chart', role: 'img', 'aria-label': 'Heatmap: band-energy ratio per frequency band and denoising step' }, box);
+                const cw = (W - m.l - m.r) / H.T, chh = (Hh - m.t - m.b) / H.K;
+                const col = divScale(H.vmin, 1, H.vmax);
+                const g = svg('g', {}, s);
+                for (let k = 0; k < H.K; k++) for (let t = 0; t < H.T; t++) {
+                    const v = H.R[k][t];
+                    svg('rect', { x: (m.l + t * cw).toFixed(2), y: (m.t + (H.K - 1 - k) * chh).toFixed(2), width: (cw + 0.6).toFixed(2), height: (chh + 0.6).toFixed(2), fill: rgbStr(col(v)) }, g);
+                }
+                [0, 20, 40].forEach(function (k) { txt(s, m.l - 7, m.t + (H.K - 1 - k) * chh + chh / 2 + 3.5, String(k), { 'text-anchor': 'end' }); });
+                [0, 10, 20, 30, 40].forEach(function (t) { const x = m.l + t * cw + cw / 2; svg('line', { x1: x, x2: x, y1: Hh - m.b, y2: Hh - m.b + 4, class: 'axisline' }, s); txt(s, x, Hh - m.b + 16, String(t), { 'text-anchor': 'middle' }); });
+                txt(s, (m.l + W - m.r) / 2, Hh - 4, 'denoising step t', { 'text-anchor': 'middle', class: 'ax' });
+                txt(s, 12, (m.t + Hh - m.b) / 2, 'frequency band k', { 'text-anchor': 'middle', class: 'ax', transform: 'rotate(-90 12 ' + ((m.t + Hh - m.b) / 2) + ')' });
+                // color legend
+                const lw = Math.min(200, W - m.l - m.r), lx = W - m.r - lw, ly = 8;
+                const n = 40;
+                for (let i = 0; i < n; i++) {
+                    const f = i / (n - 1);
+                    // piecewise: left 1/4 is below 1, rest above (matches the asymmetric range)
+                    const v = f < 0.25 ? H.vmin + (1 - H.vmin) * (f / 0.25) : 1 + (H.vmax - 1) * ((f - 0.25) / 0.75);
+                    svg('rect', { x: lx + f * (lw - lw / n), y: ly, width: lw / n + 0.5, height: 8, fill: rgbStr(col(v)) }, s);
+                }
+                txt(s, lx, ly + 20, H.vmin.toFixed(2), { 'text-anchor': 'start' });
+                txt(s, lx + lw * 0.25, ly + 20, '1.00', { 'text-anchor': 'middle' });
+                txt(s, lx + lw, ly + 20, H.vmax.toFixed(2), { 'text-anchor': 'end' });
+                txt(s, lx - 6, ly + 8, 'ratio', { 'text-anchor': 'end' });
+                const hl = svg('rect', { width: cw + 1, height: chh + 1, fill: 'none', style: 'stroke:var(--text);stroke-width:1.5;opacity:0' }, s);
+                const hit = svg('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: Hh - m.t - m.b, fill: 'transparent', style: 'cursor:crosshair' }, s);
+                hit.addEventListener('pointermove', function (ev) {
+                    const r = s.getBoundingClientRect();
+                    const t = Math.max(0, Math.min(H.T - 1, Math.floor((ev.clientX - r.left - m.l) / cw)));
+                    const k = Math.max(0, Math.min(H.K - 1, H.K - 1 - Math.floor((ev.clientY - r.top - m.t) / chh)));
+                    hl.setAttribute('x', m.l + t * cw - 0.5); hl.setAttribute('y', m.t + (H.K - 1 - k) * chh - 0.5); hl.style.opacity = 1;
+                    const v = H.R[k][t];
+                    showTip('<div class="tt">band k = ' + k + ', step t = ' + t + '</div><div class="tr"><span>band-energy ratio</span><b>' + v.toFixed(2) + '×</b></div>', ev.clientX, ev.clientY);
+                });
+                hit.addEventListener('pointerleave', function () { hl.style.opacity = 0; hideTip(); });
+            }
+            responsive(box, render);
+            render();
+        })();
+
+        lineChart(document.getElementById('chartBandAng'), {
+            n: 50, height: 212, refY: 0, xLabel: 'denoising step t', yLabel: 'angle excess (%)',
+            series: D.bandAngles.map(function (b, i) { return { key: b.label, label: b.label, color: ['var(--ord-1)', 'var(--ord-2)', 'var(--ord-3)'][i], mean: b.pct, width: i === 2 ? 2.6 : 2 }; }),
+            valFmt: function (v) { return (v >= 0 ? '+' : '') + v.toFixed(0) + '%'; },
+            tipTitle: function (i) { return 'step t = ' + i; },
+            aria: 'Line chart: angle inflation of low, mid and high frequency bands over steps'
+        });
+
+        // ======================================================================
+        // Gain schedule explorer
+        // ======================================================================
+        (function () {
+            const subjects = [
+                { id: 'dog6', label: 'dog6' },
+                { id: 'pink_sunglasses', label: 'pink sunglasses' },
+                { id: 'cat2', label: 'cat2' },
+                { id: 'backpack', label: 'backpack' }
+            ];
+            let cur = 'dog6';
+            const tabs = document.getElementById('schedTabs');
+            const heat = document.getElementById('schedHeat'), eq = document.getElementById('schedEq');
+            const step = document.getElementById('schedStep'), lab = document.getElementById('schedLab');
+            const cap = document.getElementById('schedCap');
+            let allG = [];
+            subjects.forEach(function (sb) { D.schedules[sb.id].forEach(function (b) { allG = allG.concat(b.g); }); });
+            const gmin = Math.min.apply(null, allG), gmax = Math.max.apply(null, allG);
+            const lo = Math.max(0, gmin - 0.05), hi = Math.max(gmax, 1) + 0.05;
+            function gainAt(b, t) { for (let i = 0; i < b.g.length; i++) if (t >= b.t[i] && t < b.t[i + 1]) return b.g[i]; return b.g[b.g.length - 1]; }
+            function bandName(b) { return 'k ' + b.k_lo + '-' + (b.k_hi - 1); }
+            subjects.forEach(function (sb) {
+                const bt = document.createElement('button');
+                bt.textContent = sb.label;
+                bt.setAttribute('aria-pressed', sb.id === cur);
+                bt.addEventListener('click', function () {
+                    cur = sb.id;
+                    tabs.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === bt); });
+                    renderAll();
+                });
+                tabs.appendChild(bt);
+            });
+            let playhead = null, bars = [];
+            function renderHeat() {
+                heat.innerHTML = '';
+                const bands = D.schedules[cur];
+                const W = heat.clientWidth, H = 206, m = { l: 62, r: 10, t: 12, b: 40 };
+                const s = svg('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, class: 'chart', role: 'img', 'aria-label': 'Gain schedule heatmap: band groups by denoising step' }, heat);
+                const xs = lin(0, 50, m.l, W - m.r), rh = (H - m.t - m.b) / bands.length;
+                const col = divScale(lo, 1, hi);
+                const gR = svg('g', {}, s);
+                playhead = svg('rect', { y: m.t - 6, height: H - m.t - m.b + 10, width: 2, rx: 1, style: 'fill:var(--text);opacity:.85;pointer-events:none' }, s);
+                playhead._xs = xs;
+                const gT = svg('g', { style: 'pointer-events:none' }, s);
+                bands.forEach(function (b, r) {
+                    const y = m.t + (bands.length - 1 - r) * rh;
+                    for (let i = 0; i < b.g.length; i++) {
+                        const x0 = xs(b.t[i]), x1 = xs(b.t[i + 1]);
+                        const c = col(b.g[i]);
+                        const rect = svg('rect', { x: x0 + 1, y: y + 1, width: Math.max(0, x1 - x0 - 2), height: rh - 2, rx: 3, fill: rgbStr(c) }, gR);
+                        rect.addEventListener('pointermove', function (ev) { showTip('<div class="tt">' + bandName(b) + ', steps ' + b.t[i] + ' to ' + (b.t[i + 1] - 1) + '</div><div class="tr"><span>gain g<sub>b</sub>(t)</span><b>' + b.g[i].toFixed(2) + '</b></div>', ev.clientX, ev.clientY); });
+                        rect.addEventListener('pointerleave', hideTip);
+                        if (x1 - x0 > 30) txt(gT, (x0 + x1) / 2, y + rh / 2 + 4, b.g[i].toFixed(2), { 'text-anchor': 'middle', style: 'font-weight:600;paint-order:stroke;stroke:' + rgbStr(c) + ';stroke-width:3px;fill:' + (lum(c) < 0.5 ? '#fff' : '#14161c') });
+                    }
+                    txt(s, m.l - 8, y + rh / 2 + 4, bandName(b), { 'text-anchor': 'end', class: 'ax' });
+                });
+                [0, 10, 20, 30, 40, 50].forEach(function (t) { svg('line', { x1: xs(t), x2: xs(t), y1: H - m.b, y2: H - m.b + 4, class: 'axisline' }, s); txt(s, xs(t), H - m.b + 16, String(t), { 'text-anchor': 'middle' }); });
+                txt(s, (m.l + W - m.r) / 2, H - 4, 'denoising step t', { 'text-anchor': 'middle', class: 'ax' });
+            }
+            function renderEq() {
+                eq.innerHTML = '';
+                const bands = D.schedules[cur];
+                const W = eq.clientWidth, H = 206, m = { l: 36, r: 8, t: 22, b: 40 };
+                const s = svg('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, class: 'chart', role: 'img', 'aria-label': 'Gain per band group at the selected step' }, eq);
+                const ys = lin(0, Math.max(1.2, hi), H - m.b, m.t);
+                [0, 0.5, 1].forEach(function (v) { svg('line', { x1: m.l, x2: W - m.r, y1: ys(v), y2: ys(v), class: 'gridline' }, s); txt(s, m.l - 6, ys(v) + 4, v.toFixed(1), { 'text-anchor': 'end' }); });
+                svg('line', { x1: m.l, x2: W - m.r, y1: ys(1), y2: ys(1), style: 'stroke:var(--text);stroke-width:1.2' }, s);
+                txt(s, W - m.r, ys(1) - 6, 'plain CFG (g = 1)', { 'text-anchor': 'end', style: 'fill:var(--text-soft)' });
+                const slot = (W - m.l - m.r) / bands.length, bw = Math.min(46, slot * 0.5);
+                bars = bands.map(function (b, i) {
+                    const cx = m.l + slot * (i + 0.5);
+                    const rect = svg('rect', { x: cx - bw / 2, width: bw, rx: 4, style: 'fill:var(--c-ours);transition:y .12s linear,height .12s linear' }, s);
+                    const val = txt(s, cx, 0, '', { 'text-anchor': 'middle', class: 'ink' });
+                    txt(s, cx, H - m.b + 16, bandName(b), { 'text-anchor': 'middle' });
+                    txt(s, cx, H - m.b + 29, i === 0 ? 'low' : (i === bands.length - 1 ? 'high' : 'mid'), { 'text-anchor': 'middle' });
+                    return { b: b, rect: rect, val: val, ys: ys };
+                });
+            }
+            function update() {
+                const t = +step.value;
+                if (playhead) { const xs = playhead._xs; playhead.setAttribute('x', xs(t + 0.5) - 1); }
+                bars.forEach(function (o) {
+                    const g = gainAt(o.b, t), y = o.ys(g), y0 = o.ys(0);
+                    o.rect.setAttribute('y', y); o.rect.setAttribute('height', Math.max(0, y0 - y));
+                    o.val.setAttribute('y', y - 6); o.val.textContent = g.toFixed(2) + '×';
+                });
+                lab.innerHTML = 'denoising step <b>t = ' + t + '</b> of 50';
+            }
+            function renderAll() {
+                renderHeat(); renderEq(); update();
+                cap.innerHTML = 'Each row is one band group b. Darker blue attenuates more, and red marks a gain above 1.';
+            }
+            step.addEventListener('input', update);
+            responsive(heat, function () { renderHeat(); renderEq(); update(); });
+            renderAll();
+            player(document.getElementById('schedPlay'), step, update);
+        })();
+
+        // tolerance chart (Table 4)
+        if (document.getElementById('chartTol')) lineChart(document.getElementById('chartTol'), {
+            n: 4, x: [0, 1, 2, 3], xDomain: [-0.3, 3.3], height: 220, yDomain: [0.95, 1.65], yTicks: [1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6], yFmt: function (v) { return v.toFixed(1); },
+            xTicks: [{ v: 0, label: '0.02\n70 cells' }, { v: 1, label: '0.05\n18 cells' }, { v: 2, label: '0.1\n6 cells' }, { v: 3, label: '0.2\n2 cells' }],
+            mb: 62, dots: true, xLabel: 'tolerance τ', yLabel: 'residual inflation',
+            bands: [{ y0: 1.0, y1: 1.1, label: 'within 10%' }],
+            vline: { x: 1, label: 'τ = 0.05' },
+            series: [
+                { key: 'low', label: 'Low k', color: 'var(--ord-1)', mean: [1.02, 1.06, 1.13, 1.29] },
+                { key: 'mid', label: 'Mid k', color: 'var(--ord-2)', mean: [1.01, 1.05, 1.16, 1.35] },
+                { key: 'high', label: 'High k', color: 'var(--ord-3)', mean: [1.03, 1.11, 1.30, 1.57] },
+                { key: 'all', label: 'All', color: 'var(--text)', mean: [1.02, 1.08, 1.22, 1.45], width: 2.4 }
+            ],
+            tipTitle: function (i) { return 'tolerance τ = ' + ['0.02', '0.05', '0.1', '0.2'][i] + ' (' + [70, 18, 6, 2][i] + ' cells)'; },
+            aria: 'Line chart: residual inflation after the schedule by compression tolerance'
+        });
+
+        // ======================================================================
+        // Gap tracks (Tables 1, 2, 3)
+        // ======================================================================
+        function gapRow(parent, o) {
+            // o: {label, sub, start:{v}, target:{v}, marker:{v, kind}, extras:[{v,label}], head, fmt}
+            const row = document.createElement('div');
+            row.className = 'gt-row';
+            row.innerHTML = '<div class="gt-lab"><b>' + o.label + '</b><span>' + (o.sub || '') + '</span></div><div class="gt-svg"></div><div class="gt-head">' + (o.head || '') + '</div>';
+            parent.appendChild(row);
+            const box = row.querySelector('.gt-svg');
+            const fmt = o.fmt || function (v) { return v.toFixed(3); };
+            function render() {
+                box.innerHTML = '';
+                const W = box.clientWidth, H = 70, pad = 22;
+                const vals = [o.start.v, o.target.v, o.marker ? o.marker.v : o.start.v].concat((o.extras || []).map(function (e) { return e.v; })).concat(o.domainExtra || []);
+                let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+                const p = (hi - lo) * 0.06; lo -= p; hi += p;
+                const rev = o.target.v < o.start.v;
+                const xs = rev ? lin(hi, lo, pad, W - pad) : lin(lo, hi, pad, W - pad);
+                const s = svg('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H }, box);
+                const cy = 34;
+                svg('line', { x1: pad - 6, x2: W - pad + 6, y1: cy, y2: cy, style: 'stroke:var(--axis);stroke-width:1' }, s);
+                const xa = xs(o.start.v), xb = xs(o.target.v);
+                svg('rect', { x: Math.min(xa, xb), y: cy - 6, width: Math.abs(xb - xa), height: 12, rx: 6, style: 'fill:var(--gap-fill)' }, s);
+                // recovered segment
+                const mk = o.marker;
+                let seg = null;
+                if (mk) {
+                    const col = mk.kind === 'alt' ? 'var(--neutral-1)' : 'var(--c-ours)';
+                    seg = svg('rect', { class: 'mv-bar', x: xa, y: cy - 6, width: 0, height: 12, rx: 6, style: 'fill:' + col + ';opacity:.32' }, s);
+                }
+                (o.extras || []).forEach(function (e) {
+                    const c = svg('circle', { cx: xs(e.v), cy: cy, r: 5, style: 'fill:var(--bg-elev);stroke:var(--text-faint);stroke-width:2' }, s);
+                    const hitc = svg('circle', { cx: xs(e.v), cy: cy, r: 12, fill: 'transparent' }, s);
+                    hitc.addEventListener('pointermove', function (ev) { showTip('<div class="tt">' + e.label + '</div><div class="tr"><span>' + o.label + '</span><b>' + fmt(e.v) + '</b></div>', ev.clientX, ev.clientY); });
+                    hitc.addEventListener('pointerleave', hideTip);
+                });
+                function dot(v, color, r, name) {
+                    svg('circle', { cx: xs(v), cy: cy, r: r, style: 'fill:' + color + ';stroke:var(--bg-elev);stroke-width:2' }, s);
+                    const hc = svg('circle', { cx: xs(v), cy: cy, r: 12, fill: 'transparent' }, s);
+                    hc.addEventListener('pointermove', function (ev) { showTip('<div class="tt">' + name + '</div><div class="tr"><span>' + o.label + '</span><b>' + fmt(v) + '</b></div>', ev.clientX, ev.clientY); });
+                    hc.addEventListener('pointerleave', hideTip);
+                }
+                dot(o.start.v, 'var(--c-syn)', 6, o.start.name);
+                dot(o.target.v, 'var(--c-real)', 6, o.target.name);
+                txt(s, xa, cy + 26, fmt(o.start.v), { 'text-anchor': 'middle' });
+                txt(s, xb, cy + 26, fmt(o.target.v), { 'text-anchor': 'middle' });
+                if (mk) {
+                    const g = svg('g', { class: 'mv', style: 'transform:translateX(' + xa + 'px)' }, s);
+                    const filled = mk.kind !== 'ours-alt';
+                    const col = mk.kind === 'alt' ? 'var(--neutral-1)' : 'var(--c-ours)';
+                    svg('circle', { cx: 0, cy: cy, r: 8, style: 'fill:' + (filled ? col : 'var(--bg-elev)') + ';stroke:' + (filled ? 'var(--bg-elev)' : col) + ';stroke-width:' + (filled ? 2 : 3) }, g);
+                    txt(g, 0, cy - 15, fmt(mk.v), { 'text-anchor': 'middle', class: 'mk' });
+                    const hc = svg('circle', { cx: 0, cy: cy, r: 13, fill: 'transparent' }, g);
+                    hc.addEventListener('pointermove', function (ev) { showTip('<div class="tt">' + mk.name + '</div><div class="tr"><span>' + o.label + '</span><b>' + fmt(mk.v) + '</b></div>', ev.clientX, ev.clientY); });
+                    hc.addEventListener('pointerleave', hideTip);
+                    const xm = xs(mk.v);
+                    const go = function () {
+                        g.style.transform = 'translateX(' + xm + 'px)';
+                        seg.setAttribute('x', Math.min(xa, xm)); seg.setAttribute('width', Math.abs(xm - xa));
+                    };
+                    if (reduceMotion || o.noAnim) go(); else requestAnimationFrame(function () { requestAnimationFrame(go); });
+                }
+            }
+            responsive(box, function () { o.noAnim = true; render(); });
+            render();
+            return row;
+        }
+        function legendHTML(items) {
+            return items.map(function (it) {
+                const key = it.ring ? '<span class="key-ring"' + (it.color ? ' style="border-color:' + it.color + '"' : '') + '></span>' : '<span class="key-dot" style="background:' + it.color + '"></span>';
+                return '<span class="li">' + key + it.label + '</span>';
+            }).join('');
+        }
+
+        // ---- Table 1 ----
+        (function () {
+            const METRICS = ['CLIP-I', 'DINO', 'DINOv2'];
+            const S = [
+                { name: 'SD1.5, DreamBooth', real: [0.814, 0.681, 0.661, 0.300], syn: [0.788, 0.611, 0.611, 0.289], ours: [0.802, 0.647, 0.643, 0.290], gap: ['54%', '51%', '64%', '+0.001'],
+                    base: [['S-CFG', [0.781, 0.605, 0.604, 0.292]], ['CFG++', [0.788, 0.606, 0.608, 0.289]], ['FDG', [0.792, 0.608, 0.614, 0.284]]] },
+                { name: 'SD1.5, DreamBooth-LoRA', real: [0.791, 0.630, 0.606, 0.306], syn: [0.750, 0.540, 0.510, 0.300], ours: [0.775, 0.594, 0.568, 0.304], gap: ['61%', '60%', '60%', '+0.004'],
+                    base: [['S-CFG', [0.744, 0.536, 0.503, 0.302]], ['CFG++', [0.748, 0.535, 0.508, 0.299]], ['FDG', [0.755, 0.538, 0.517, 0.297]]] },
+                { name: 'SDXL, DreamBooth-LoRA', real: [0.757, 0.558, 0.535, 0.289], syn: [0.724, 0.477, 0.467, 0.278], ours: [0.736, 0.502, 0.494, 0.279], gap: ['36%', '31%', '40%', '+0.001'], base: [] },
+                { name: 'SD3.5, DreamBooth-LoRA', real: [0.811, 0.682, 0.650, 0.311], syn: [0.776, 0.586, 0.567, 0.307], ours: [0.792, 0.605, 0.596, 0.307], gap: ['46%', '20%', '35%', '0.000'], base: [] }
+            ];
+            const tabs = document.getElementById('resTabs'), tracks = document.getElementById('resTracks');
+            const legend = document.getElementById('resLegend'), clipt = document.getElementById('resClipT');
+            let cur = 0;
+            S.forEach(function (st, i) {
+                const b = document.createElement('button');
+                b.textContent = st.name;
+                b.setAttribute('aria-pressed', i === cur);
+                b.addEventListener('click', function () { cur = i; tabs.querySelectorAll('button').forEach(function (x, j) { x.setAttribute('aria-pressed', j === i); }); render(); });
+                tabs.appendChild(b);
+            });
+            function render() {
+                const st = S[cur];
+                tracks.innerHTML = '';
+                const items = [{ color: 'var(--c-syn)', label: MS + ' + CFG' }, { color: 'var(--c-ours)', label: MS + ' + CFG + ReGain' }, { color: 'var(--c-real)', label: MR + ' + CFG (reference)' }];
+                if (st.base.length) items.push({ ring: true, label: 'other guidance methods (S-CFG, CFG++, FDG)' });
+                legend.innerHTML = legendHTML(items);
+                METRICS.forEach(function (mt, j) {
+                    gapRow(tracks, {
+                        label: mt, sub: '',
+                        start: { v: st.syn[j], name: MS + ' + CFG' }, target: { v: st.real[j], name: MR + ' + CFG' },
+                        marker: { v: st.ours[j], kind: 'ours', name: MS + ' + CFG + ReGain' },
+                        extras: st.base.map(function (b) { return { v: b[1][j], label: MS + ' + ' + b[0] }; }),
+                        head: '<div class="big">' + st.gap[j] + '</div>'
+                    });
+                });
+                clipt.innerHTML = '<span>Prompt fidelity (CLIP-T): plain CFG <b>' + st.syn[3].toFixed(3) + '</b> &rarr; ReGain <b>' + st.ours[3].toFixed(3) + '</b></span>' +
+                    '<span class="pill neutral">' + st.gap[3] + ' vs plain CFG</span><span style="color:var(--text-faint);font-size:.82rem;">reference ' + MR + ': ' + st.real[3].toFixed(3) + '</span>';
+            }
+            render();
+        })();
+
+        // ---- Table 2 ----
+        (function () {
+            const box = document.getElementById('artTracks');
+            document.getElementById('artLegend').innerHTML = legendHTML([{ color: 'var(--c-syn)', label: MS + ' + CFG' }, { color: 'var(--c-ours)', label: MS + ' + CFG + ReGain' }, { color: 'var(--c-real)', label: MR + ' + CFG (target)' }]);
+            [['Saturation', 0.301, 0.355, 0.309, '85%', 'HSV saturation'], ['Contrast', 0.211, 0.258, 0.234, '51%', 'RMS contrast'], ['High band', 0.061, 0.069, 0.066, '38%', 'high-frequency share']].forEach(function (r) {
+                gapRow(box, {
+                    label: r[0], sub: r[5],
+                    start: { v: r[2], name: MS + ' + CFG' }, target: { v: r[1], name: MR + ' + CFG' },
+                    marker: { v: r[3], kind: 'ours', name: MS + ' + CFG + ReGain' },
+                    head: '<div class="big">' + r[4] + '</div><small>of the excess removed</small>'
+                });
+            });
+        })();
+
+        // ---- Table 3 + Figure 7 ----
+        (function () {
+            if (!document.getElementById('ablTabs')) return;
+            const REAL = [0.681, 0.300, 0.301];
+            const START = [0.611, 0.289, 0.355];
+            const M = [
+                { id: 'plain', label: 'Plain CFG, w = 7.5', arm: 'm1_plain', v: [0.611, 0.289, 0.355], kind: 'start' },
+                { id: 'w5', label: 'w = 5.0', arm: 'm1_plain_w5', v: [0.632, 0.286, 0.326], kind: 'alt' },
+                { id: 'w3', label: 'w = 3.0', arm: 'm1_plain_w3', v: [0.647, 0.281, 0.292], kind: 'alt' },
+                { id: 'apg', label: 'APG', arm: 'm1_apg', v: [0.641, 0.283, 0.240], kind: 'alt' },
+                { id: 'ours', label: 'ReGain', arm: 'ours', v: [0.647, 0.290, 0.309], kind: 'ours' }
+            ];
+            const NAMES = ['DINO', 'CLIP-T', 'Saturation'];
+            const SUBS = ['subject fidelity', 'prompt fidelity', 'inside the subject'];
+            const allVals = function (j) { return M.map(function (m) { return m.v[j]; }).concat([REAL[j]]); };
+            const tabs = document.getElementById('ablTabs'), imgs = document.getElementById('ablImgs');
+            const tracks = document.getElementById('ablTracks');
+            let cur = 'ours';
+            M.forEach(function (m) {
+                const b = document.createElement('button');
+                b.textContent = m.label;
+                b.setAttribute('aria-pressed', m.id === cur);
+                b.addEventListener('click', function () { cur = m.id; tabs.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); render(); });
+                tabs.appendChild(b);
+            });
+            function verdict(j, v) {
+                const s = START[j], t = REAL[j];
+                if (Math.abs(v - s) < 1e-9) return '<span class="pill neutral">baseline</span>';
+                const toward = Math.sign(t - s) === Math.sign(v - s);
+                const over = (v - t) * (t - s) > 1e-12;
+                if (toward && over) return '<span class="pill warn">overshoots ' + MR + '</span>';
+                if (toward) return '<span class="pill good">toward ' + MR + '</span>';
+                return '<span class="pill bad">away from ' + MR + '</span>';
+            }
+            function render() {
+                const m = M.find(function (x) { return x.id === cur; });
+                document.getElementById('ablLegend').innerHTML = legendHTML([{ color: 'var(--c-syn)', label: 'plain CFG, w = 7.5' },
+                    { color: m.kind === 'alt' ? 'var(--neutral-1)' : 'var(--c-ours)', label: m.label }, { color: 'var(--c-real)', label: MR + ' (target)' }]);
+                imgs.innerHTML = '';
+                D.ablation.forEach(function (ex) {
+                    const photo = '<div><div class="img-tile"><img src="img/ref/' + ex.subject + '.webp" alt="A real photo of the subject ' + ex.subject.replace(/_/g, ' ') + '" loading="lazy"></div><div class="tcap">real photo of the subject</div></div>';
+                    const real = '<div><div class="img-tile"><img src="' + ex.cells.m0 + '" alt="Generated by the model trained on real photos: ' + ex.prompt + '" loading="lazy"></div><div class="tcap">generated by ' + MR + '</div></div>';
+                    const sel = '<div><div class="img-tile"><img src="' + ex.cells[m.arm] + '" alt="' + m.label + ': ' + ex.prompt + '" loading="lazy"></div><div class="tcap">generated by ' + MS + ', ' + m.label + '</div></div>';
+                    imgs.insertAdjacentHTML('beforeend', photo + real + sel + '<p class="abl-prompt">&ldquo;' + ex.prompt + '&rdquo;</p>');
+                });
+                tracks.innerHTML = '';
+                NAMES.forEach(function (nm, j) {
+                    gapRow(tracks, {
+                        label: nm, sub: SUBS[j],
+                        start: { v: START[j], name: MS + ', plain CFG' }, target: { v: REAL[j], name: MR },
+                        marker: m.kind === 'start' ? null : { v: m.v[j], kind: m.kind === 'alt' ? 'alt' : m.kind, name: MS + ', ' + m.label },
+                        domainExtra: allVals(j),
+                        head: verdict(j, m.v[j])
+                    });
+                });
+            }
+            render();
+        })();
+
+        // ======================================================================
+        // Gallery
+        // ======================================================================
+        (function () {
+            const CH = [{ id: 'sd15', label: 'SD1.5, DreamBooth' }, { id: 'sd15_lora', label: 'SD1.5, DreamBooth-LoRA' }, { id: 'sdxl', label: 'SDXL, DreamBooth-LoRA' }, { id: 'sd35', label: 'SD3.5, DreamBooth-LoRA' }];
+            const tabs = document.getElementById('galTabs'), grid = document.getElementById('galGrid');
+            let cur = 'sd15';
+            CH.forEach(function (c) {
+                const b = document.createElement('button');
+                b.textContent = c.label;
+                b.setAttribute('aria-pressed', c.id === cur);
+                b.addEventListener('click', function () { cur = c.id; tabs.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); render(); });
+                tabs.appendChild(b);
+            });
+            function render() {
+                grid.innerHTML = '';
+                D.gallery.filter(function (g) { return g.chain === cur && !(g.chain === 'sd15' && g.subject === 'dog6'); }).forEach(function (g) {
+                    const card = document.createElement('div');
+                    card.className = 'card gcard';
+                    card.innerHTML = '<div class="gbody"><div class="gstack">' +
+                        '<div><div class="img-tile"><img src="' + g.ref + '" alt="A real photo of the subject ' + g.subject.replace(/_/g, ' ') + '" loading="lazy"></div><div class="tcap">real photo</div></div>' +
+                        '<div><div class="img-tile"><img src="' + g.real + '" alt="Generated by the model trained on real photos: ' + g.prompt + '" loading="lazy"></div><div class="tcap">generated by ' + MR + '</div></div>' +
+                        '</div><div><div class="cmp"></div><div class="tcap">generated by ' + MS + '</div></div></div>' +
+                        '<p class="gprompt">&ldquo;' + g.prompt + '&rdquo;</p>';
+                    grid.appendChild(card);
+                    makeCmp(card.querySelector('.cmp'), g.plain, g.ours, g.prompt, true, ['plain CFG', 'ReGain']);
+                });
+            }
+            render();
+        })();
+
+        // ---------- Links to the gain schedule: highlight g_b(t) in its equation ----------
+        document.querySelectorAll('a[href="#gain-schedule"]').forEach(function (a) {
+            a.addEventListener('click', function () {
+                const el = document.getElementById('gain-eq');
+                el.classList.remove('flash');
+                void el.offsetWidth;
+                el.classList.add('flash');
+            });
+        });
+
+        // ---------- Copy BibTeX ----------
+        document.getElementById('copyBtn').addEventListener('click', function () {
+            const text = document.getElementById('bibtexText').innerText;
+            const label = document.getElementById('copyLabel');
+            navigator.clipboard.writeText(text).then(function () {
+                label.textContent = 'Copied!';
+                setTimeout(function () { label.textContent = 'Copy'; }, 1600);
+            });
+        });
+
+        // ---------- Reveal on scroll ----------
+        (function () {
+            const els = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
+            const io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+            }, { threshold: 0.04 });
+            els.forEach(function (e) { io.observe(e); });
+        })();
+    })();
+    </script>
+</body>
+
+</html>
