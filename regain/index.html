@@ -540,13 +540,13 @@
         /* ===================== Stats ===================== */
         .stat-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 14px;
             margin: 26px 0 4px;
             text-align: left;
         }
 
-        @media (max-width: 860px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .stat-grid { grid-template-columns: 1fr; } }
 
         .stat {
             background: var(--bg-elev);
@@ -1406,10 +1406,6 @@
                 <div class="stat">
                     <div class="num">51 to 64%</div>
                     <div class="lbl">of the lost subject fidelity recovered (SD1.5)</div>
-                </div>
-                <div class="stat">
-                    <div class="num">12 min</div>
-                    <div class="lbl">for the ReGain calibration, once per fine-tuned model (SD1.5)</div>
                 </div>
                 <div class="stat">
                     <div class="num">&le; 0.004</div>
